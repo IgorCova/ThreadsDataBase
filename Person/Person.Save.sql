@@ -7,7 +7,7 @@ go
 
 /*
 ///<description>
-///Процедура сохранения Person.
+/// procedure for Save Person.
 ///</description>
 */
 alter procedure [dbo].[Person.Save]
@@ -30,15 +30,8 @@ begin
   set numeric_roundabort off
   set transaction isolation level read uncommitted
   set xact_abort on
-
   -----------------------------------------------------------------
-  declare   
-     @res    int           -- для Return-кодов вызываемых процедур.
-    ,@ret    int           -- для хранения Return-кода данной процедуры.
-    ,@err    int           -- для хранения @@error-кода после вызовов процедур.
-    ,@cnt    int           -- для хранения количеств обрабатываемых записей.
-    ,@ErrMsg varchar(1000) -- для формирования сообщений об ошибках   
-  
+
   if not exists (
       select * 
         from dbo.Person as c 
@@ -63,7 +56,6 @@ begin
       ,@About
       ,getdate() 
     )
-
   end
   else
   begin
@@ -82,26 +74,27 @@ begin
   return (0)
 end
 go
-----------------------------------------------
--- <WRAPPER>
-----------------------------------------------
-exec [dbo].[Procedure.NativeCheck] '[dbo].[Person.Save]'
-go
-----------------------------------------------
- -- <Заполнение Extended Property объекта>
-----------------------------------------------
 
+----------------------------------------------
+-- <[NativeCheck]>
+----------------------------------------------
+exec [dbo].[NativeCheck] '[dbo].[Person.Save]'
+go
+
+----------------------------------------------
+ -- <Fill Extended Property of db object>
+----------------------------------------------
 exec dbo.FillExtendedProperty
    @ObjSysName  = '[dbo].[Person.Save]'
-  ,@Author      = 'Коваленко Игорь'
-  ,@Description = 'Созранение инфо о Person'
+  ,@Author      = 'Cova Igor'
+  ,@Description = 'procedure for Save Person'
   ,@Params = '
-      @About = описание сообщества \n
-     ,@ID = ID сообщества \n
-     ,@PhotoLink = Ссылка на фото Person \n
-     ,@Name = Имя \n
-     ,@Surname = Фамилия \n
-     ,@UserName = Системное имя пользователя \n'
+      @About = About community \n
+     ,@ID = ID community \n
+     ,@PhotoLink = Link to photo Person \n
+     ,@Name = Name \n
+     ,@Surname = Surname \n
+     ,@UserName = User Name \n'
 go
 
 /* ОТЛАДКА:
@@ -116,3 +109,4 @@ select @err = @@error
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
+grant execute on [dbo].[Person.Save] to [public]

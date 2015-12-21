@@ -11,26 +11,27 @@ go
 /*
 ///<description>
 /// 
-На вход текст 
-   @Params = '@поле1 = описание поля1
-             ,@поле2 = описание поля2
-             ,@поле3 = описание поля3
+To in some text
+   @Params = '@field1 = describe field1
+             ,@field2 = describe field2
+             ,@field3 = describe field3
               .......................
-             ,@полеN = описание полеN'
-На выход таблица из двух столбцов Name и Value
+             ,@fieldN = describe fieldN'
+             
+To out table with two columns Name и Value
 
 Name        Value
-@поле1      описание поля1
-@поле2      описание поля2
-@поле3      описание поля3
+@field1      describe field1
+@field2      describe field2
+@field3      describe field3
 
--- Разделителем между полями явдяется ,@ 
--- Разделителем между полем и описание является первое = 
--- и до следующего ,@ будет считаться описанием поля
+-- The delimiter between the fields is ,@ 
+-- The delimiter between field and describe is first = 
+-- until the next ,@ t will be considered as a description of the field 
 
 ///</description>
 */
-create function tf.ParamsOfStrToTable(@Params varchar(max))
+alter function tf.ParamsOfStrToTable(@Params varchar(max))
 
 returns @ret table(Name varchar(1024), value varchar(max), sort_order int identity(1,1))
 as

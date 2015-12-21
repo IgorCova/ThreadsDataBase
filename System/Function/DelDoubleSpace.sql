@@ -6,14 +6,13 @@ set xact_abort on
 go
 ----------------------------------------------
 -- <Func> [fn].[DelDoubleSpace]
-----------------------------------------------
 -------------------------------------------
 /*
 ///<description>
-/// Функция удаляет лишние пробелы в строке
+/// The function removes extra spaces in a row
 ///</description>
 */
-create function fn.DelDoubleSpace(@str varchar(max))
+alter function fn.DelDoubleSpace(@str varchar(max))
   returns varchar(max)
 as
 begin

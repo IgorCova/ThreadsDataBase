@@ -7,7 +7,7 @@ go
 
 /*
 ///<description>
-///Процедура чтения Сообществ.
+///  Procedure for Saving information about the community
 ///</description>
 */
 alter procedure [dbo].[Community.Save]
@@ -17,8 +17,6 @@ alter procedure [dbo].[Community.Save]
   ,@Link           varchar(1024) = null
   ,@Decription     varchar(1024) = null
   ,@OwnerID        bigint          
-
-  ,@debug_info     int = 0
 as
 begin
 ------------------------------------------------
@@ -30,14 +28,7 @@ begin
   set numeric_roundabort off
   set transaction isolation level read uncommitted
   set xact_abort on
-
   -----------------------------------------------------------------
-  declare   
-     @res    int           -- для Return-кодов вызываемых процедур.
-    ,@ret    int           -- для хранения Return-кода данной процедуры.
-    ,@err    int           -- для хранения @@error-кода после вызовов процедур.
-    ,@cnt    int           -- для хранения количеств обрабатываемых записей.
-    ,@ErrMsg varchar(1000) -- для формирования сообщений об ошибках   
   
   if not exists (
       select * 
@@ -76,43 +67,49 @@ begin
       where ID = @ID
   end
 
- 
   -----------------------------------------------------------------
   -- End Point
   return (0)
 end
 go
+
 ----------------------------------------------
--- <WRAPPER>
+-- <NativeCheck>
 ----------------------------------------------
-exec [dbo].[Procedure.NativeCheck] '[dbo].[Community.Save]'
+exec [dbo].[NativeCheck] '[dbo].[Community.Save]'
 go
 ----------------------------------------------
- -- <Заполнение Extended Property объекта>
+ -- <Fill Extended Property of db object>
 ----------------------------------------------
-
 exec dbo.FillExtendedProperty
    @ObjSysName  = '[dbo].[Community.Save]'
-  ,@Author      = 'Коваленко Игорь'
-  ,@Description = 'Созранение инфо о сообществе'
+  ,@Author      = 'Cova Igor'
+  ,@Description = 'Saving information about the community'
   ,@Params = '
-      @Decription = описание сообщества \n
-     ,@ID = ID сообщества \n
-     ,@Link = Ссылка на сообщество \n
-     ,@LogoLink = Ссылка на логотип сообщества \n
-     ,@Name = Наименование сообщества \n
-     ,@OwnerID = ID создателя сообщества \n'
+      @Decription = Decription community \n
+     ,@ID = ID community \n
+     ,@Link = Link to community \n
+     ,@LogoLink = Linkto logo community \n
+     ,@Name = Name community \n
+     ,@OwnerID = ID owner community \n'
 go
 
-/* ОТЛАДКА:
+/* Debugger:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = [dbo].[Community.Save] -- '[dbo].[Community.Save]'
-   @debug_info      = 0xFF
+exec @ret = [dbo].[Community.Save]
+   @Name          = 'TEstTest'
+  ,@LogoLink      = 'TEstTest.png'
+  ,@Link          = 'comm\TEstTest'
+  ,@Decription    = 'The TEstTest - project for TEstTest'
+  ,@OwnerID       = 1
 
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
+go
+
+grant execute on [dbo].[Community.Save] to [public]
 go

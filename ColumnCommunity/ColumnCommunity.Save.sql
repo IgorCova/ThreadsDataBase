@@ -7,7 +7,7 @@ go
 
 /*
 ///<description>
-///Процедура чтения Сообществ.
+///   procedure for Save column of community.
 ///</description>
 */
 alter procedure [dbo].[ColumnCommunity.Save]
@@ -28,15 +28,8 @@ begin
   set numeric_roundabort off
   set transaction isolation level read uncommitted
   set xact_abort on
-
   -----------------------------------------------------------------
-  declare   
-     @res    int           -- для Return-кодов вызываемых процедур.
-    ,@ret    int           -- для хранения Return-кода данной процедуры.
-    ,@err    int           -- для хранения @@error-кода после вызовов процедур.
-    ,@cnt    int           -- для хранения количеств обрабатываемых записей.
-    ,@ErrMsg varchar(1000) -- для формирования сообщений об ошибках   
-  
+
   if not exists (
       select * 
         from dbo.ColumnCommunity as c 
@@ -78,24 +71,24 @@ begin
   return (0)
 end
 go
+
 ----------------------------------------------
--- <WRAPPER>
+-- <NativeCheck>
 ----------------------------------------------
-exec [dbo].[Procedure.NativeCheck] '[dbo].[ColumnCommunity.Save]'
+exec [dbo].[NativeCheck] '[dbo].[ColumnCommunity.Save]'
 go
 ----------------------------------------------
- -- <Заполнение Extended Property объекта>
+ -- <Fill Extended Property of db object>
 ----------------------------------------------
-
 exec dbo.FillExtendedProperty
    @ObjSysName  = '[dbo].[ColumnCommunity.Save]'
-  ,@Author      = 'Коваленко Игорь'
-  ,@Description = 'Созранение инфо о сообществе'
+  ,@Author      = 'Cova Igor'
+  ,@Description = 'Save column of community'
   ,@Params = '
-      @ID = ID колонки \n
-     ,@CommunityID = ID сообщества \n
-     ,@Name = Название колонки сообщества \n
-     ,@CreatorID = ID создателя колонки \n'
+      @ID = ID column \n
+     ,@CommunityID = ID community \n
+     ,@Name = Name column \n
+     ,@CreatorID = ID creator column \n'
 go
 
 /* ОТЛАДКА:
@@ -110,3 +103,4 @@ select @err = @@error
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
+grant execute on [dbo].[ColumnCommunity.Save] to [public]

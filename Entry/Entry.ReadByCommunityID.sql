@@ -7,12 +7,11 @@ go
 
 /*
 ///<description>
-///Процедура чтения Сообществ.
+///  Procedure read entries communities
 ///</description>
 */
 alter procedure [dbo].[Entry.ReadByCommunityID]
    @CommunityID    bigint
-  ,@debug_info     int          = 0
 as
 begin
 ------------------------------------------------
@@ -24,14 +23,7 @@ begin
   set numeric_roundabort off
   set transaction isolation level read uncommitted
   set xact_abort on
-
   -----------------------------------------------------------------
-  declare   
-     @res    int           -- для Return-кодов вызываемых процедур.
-    ,@ret    int           -- для хранения Return-кода данной процедуры.
-    ,@err    int           -- для хранения @@error-кода после вызовов процедур.
-    ,@cnt    int           -- для хранения количеств обрабатываемых записей.
-    ,@ErrMsg varchar(1000) -- для формирования сообщений об ошибках   
 
   select
        t.ID
@@ -55,31 +47,35 @@ begin
   return (0)
 end
 go
-----------------------------------------------
--- <WRAPPER>
-----------------------------------------------
-exec [dbo].[Procedure.NativeCheck] '[dbo].[Entry.ReadByCommunityID]'
-go
-----------------------------------------------
- -- <Заполнение Extended Property объекта>
-----------------------------------------------
 
+----------------------------------------------
+-- <NativeCheck>
+----------------------------------------------
+exec [dbo].[NativeCheck] '[dbo].[Entry.ReadByCommunityID]'
+go
+
+----------------------------------------------
+ -- <Fill Extended Property of db object>
+----------------------------------------------
 exec dbo.FillExtendedProperty
    @ObjSysName  = '[dbo].[Entry.ReadByCommunityID]'
-  ,@Author      = 'Коваленко Игорь'
-  ,@Description = 'Процедура чтения записей сообществ.'
-  ,@Params = '@CommunityID = id Сообщества'
+  ,@Author      = 'Cova Igor'
+  ,@Description = 'Procedure read entries communities'
+  ,@Params = '@CommunityID = id community'
 go
 
-/* ОТЛАДКА:
+/* Debugger:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = [dbo].[Entry.ReadByCommunityID] -- '[dbo].[Entry.ReadByCommunityID]'
-   @debug_info      = 0xFF
+exec @ret = [dbo].[Entry.ReadByCommunityID]
+   @CommunityID = 1
 
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
+go
+
+grant execute on [dbo].[Entry.ReadByCommunityID] to [public]
 go

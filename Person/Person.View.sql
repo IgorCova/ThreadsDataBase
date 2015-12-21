@@ -9,7 +9,7 @@ go
 -- <VIEW> [dbo].[Person.View]
 ----------------------------------------------
 
-create view [dbo].[Person.View]
+alter view [dbo].[Person.View]
 as
 select
      t.ID
@@ -23,7 +23,6 @@ select
     ,t.LeaveDate
     ,t.LeaveNote
   from [dbo].[Person] as t                                       
-
 go
 
 /*

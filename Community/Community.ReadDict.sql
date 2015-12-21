@@ -7,12 +7,10 @@ go
 
 /*
 ///<description>
-///Процедура чтения Сообществ.
+///  Procedure for reading Communities
 ///</description>
 */
 alter procedure [dbo].[Community.ReadDict]
--- v1.0
-   @debug_info     int          = 0
 as
 begin
 ------------------------------------------------
@@ -24,14 +22,7 @@ begin
   set numeric_roundabort off
   set transaction isolation level read uncommitted
   set xact_abort on
-
   -----------------------------------------------------------------
-  declare   
-     @res    int           -- для Return-кодов вызываемых процедур.
-    ,@ret    int           -- для хранения Return-кода данной процедуры.
-    ,@err    int           -- для хранения @@error-кода после вызовов процедур.
-    ,@cnt    int           -- для хранения количеств обрабатываемых записей.
-    ,@ErrMsg varchar(1000) -- для формирования сообщений об ошибках   
 
   select
        t.ID
@@ -41,31 +32,31 @@ begin
       ,t.Decription
       ,t.OwnerID
       ,t.CreateDate
-      ,t.ClosedDate
-      ,t.ClosedNote
     from dbo.Community as t
+    where t.ClosedDate is null
   -----------------------------------------------------------------
   -- End Point
   return (0)
 end
 go
-----------------------------------------------
--- <WRAPPER>
-----------------------------------------------
-exec [dbo].[Procedure.NativeCheck] '[dbo].[Community.ReadDict]'
-go
-----------------------------------------------
- -- <Заполнение Extended Property объекта>
-----------------------------------------------
 
+----------------------------------------------
+-- <NativeCheck>
+----------------------------------------------
+exec [dbo].[NativeCheck] '[dbo].[Community.ReadDict]'
+go
+
+
+----------------------------------------------
+ -- <Fill Extended Property of db object>
+----------------------------------------------
 exec dbo.FillExtendedProperty
    @ObjSysName  = '[dbo].[Community.ReadDict]'
-  ,@Author      = 'Коваленко Игорь'
-  ,@Description = 'Процедура чтения Сообществ.'
-  ,@Params = ''
+  ,@Author      = 'Cova Igor'
+  ,@Description = 'Procedure for reading Communities'
 go
 
-/* ОТЛАДКА:
+/* Debugger:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()

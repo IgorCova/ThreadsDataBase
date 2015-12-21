@@ -8,7 +8,6 @@ go
 ----------------------------------------------
 -- <TABLE> [dbo].[Person]
 ----------------------------------------------
-
 create table [dbo].[Person] (
    ID                              bigint
   ,Name                            varchar(256)    null
