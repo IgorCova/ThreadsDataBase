@@ -11,7 +11,7 @@ go
 ///</description>
 */
 alter procedure [dbo].[Entry.ReadByCommunityID]
-   @CommunityID    bigint
+   @CommunityID  bigint
 as
 begin
 ------------------------------------------------
@@ -28,20 +28,19 @@ begin
   select
        t.ID
       ,t.CommunityID
-      ,c.Name         as [CommunityID.Name]
+      ,c.Name         as [CommunityID_Name]
       ,t.ColumnID
-      ,cc.Name        as [ColumnID.Name]
+      ,c.Name        as [ColumnID_Name]
       ,t.CreatorID
-      ,p.FullName     as [CreatorID.FullName]
+      ,p.FullName     as [CreatorID_FullName]
       ,t.EntryText
       ,t.CreateDate
-      ,t.DeleteDate
-      ,t.DeleteNote
     from dbo.Entry           as t       
     join dbo.Community       as c on c.ID = t.CommunityID
-    join dbo.ColumnCommunity as cc on cc.ID = t.ColumnID
+    join dbo.Entry as cc on cc.ID = t.ColumnID
     join dbo.[Person.View]   as p on p.ID = t.CreatorID
     where t.CommunityID = @CommunityID
+      and t.DeleteDate is null
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -60,7 +59,7 @@ go
 exec dbo.FillExtendedProperty
    @ObjSysName  = '[dbo].[Entry.ReadByCommunityID]'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'Procedure read entries communities'
+  ,@Description = 'Procedure for read entries communities'
   ,@Params = '@CommunityID = id community'
 go
 

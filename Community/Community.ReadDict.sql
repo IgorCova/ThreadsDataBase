@@ -61,10 +61,12 @@ declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
 exec @ret = [dbo].[Community.ReadDict] -- '[dbo].[Community.ReadDict]'
-   @debug_info      = 0xFF
 
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
+go
+
+grant execute on [dbo].[Community.ReadDict] to [public]
 go
