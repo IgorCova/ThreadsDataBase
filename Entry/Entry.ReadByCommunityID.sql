@@ -24,21 +24,32 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-
+  select
+       0         as ID 
+      ,0         as CommunityID
+      ,'Non'     as [CommunityID_Name] 
+      ,0         as ColumnID
+      ,'Non'     as [ColumnID_Name]
+      ,0         as CreatorID
+      ,'Non'     as [CreatorID_FullName] 
+      ,'Non'     as EntryText
+      ,getdate() as CreateDate
+  union
   select
        t.ID
       ,t.CommunityID
       ,c.Name         as [CommunityID_Name]
       ,t.ColumnID
-      ,c.Name        as [ColumnID_Name]
+      ,m.Name        as [ColumnID_Name]
       ,t.CreatorID
       ,p.FullName     as [CreatorID_FullName]
       ,t.EntryText
       ,t.CreateDate
     from dbo.Entry           as t       
     join dbo.Community       as c on c.ID = t.CommunityID
-    join dbo.Entry as cc on cc.ID = t.ColumnID
     join dbo.[Person.View]   as p on p.ID = t.CreatorID
+    left join dbo.ColumnCommunity as m on m.ID = t.ColumnID 
+                                       and m.CommunityID = t.CommunityID
     where t.CommunityID = @CommunityID
       and t.DeleteDate is null
   -----------------------------------------------------------------

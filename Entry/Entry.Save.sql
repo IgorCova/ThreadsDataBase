@@ -14,7 +14,6 @@ alter procedure [dbo].[Entry.Save]
    @ID             bigint  = null out
   ,@CommunityID    bigint 
   ,@ColumnID       bigint
-  ,@Name           varchar(128)
   ,@CreatorID      bigint          
   ,@EntryText      varchar(4048)
 as
@@ -80,7 +79,6 @@ exec dbo.FillExtendedProperty
   ,@Params = '
       @ID = ID column \n
      ,@CommunityID = ID community \n
-     ,@Name = Name column \n
      ,@CreatorID = ID creator column \n
      ,@ColumnID = ID Column of community \n
      ,@EntryText = Text  \n
@@ -91,7 +89,7 @@ go
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = [dbo].[Entry.Save] -- '[dbo].[Entry.Save]'
+exec @ret = [dbo].[Entry.Save] 
    @debug_info      = 0xFF
 
 select @err = @@error
