@@ -14,7 +14,7 @@ create table [dbo].[Person] (
   ,Surname                         varchar(256)    null
   ,UserName                        varchar(32)     null
   ,About                           varchar(1024)   null
-
+  ,Phone                           varchar(32)     null
   ,JoinedDate                      datetime        null
   ,LeaveDate                       datetime        null
   ,LeaveNote                       varchar(1024)   null

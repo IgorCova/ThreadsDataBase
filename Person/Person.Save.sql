@@ -11,11 +11,12 @@ go
 ///</description>
 */
 alter procedure [dbo].[Person.Save]
-   @ID             bigint  = null out
+   @ID             bigint        = null out
   ,@Name           varchar(256)
-  ,@Surname        varchar(256) = null
-  ,@UserName       varchar(32) = null
+  ,@Surname        varchar(256)  = null
+  ,@UserName       varchar(32)   = null
   ,@About          varchar(1024) = null
+  ,@Phone          varchar(32)   = null
 
   ,@debug_info     int = 0
 as
@@ -45,6 +46,7 @@ begin
       ,UserName
       ,About
       ,JoinedDate 
+      ,Phone
     ) values (
        @ID
       ,@Name
@@ -52,6 +54,7 @@ begin
       ,@UserName
       ,@About
       ,getdate() 
+      ,@Phone
     )
   end
   else
@@ -61,6 +64,7 @@ begin
         ,t.Surname        = @Surname
         ,t.UserName       = @UserName
         ,t.About          = @About
+        ,t.Phone          = @Phone
       from dbo.Person as t
       where t.ID = @ID
   end
@@ -89,7 +93,9 @@ exec dbo.FillExtendedProperty
      ,@ID = ID community \n
      ,@Name = Name \n
      ,@Surname = Surname \n
-     ,@UserName = User Name \n'
+     ,@UserName = User Name \n
+     ,@Phone = номер телефона
+     '
 go
 
 /* ОТЛАДКА:
