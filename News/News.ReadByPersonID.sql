@@ -27,11 +27,11 @@ begin
 
   select
        e.CommunityID as CommunityID
-      ,c.Name        as [CommunityID.Name]
+      ,c.Name        as [CommunityID_Name]
       ,e.ID          as [EntryID]
-      ,m.Name        as [ColumnCommunityID.Name]
-      ,e.EntryText   as [EntryID.EntryText]
-      ,e.CreateDate  as [EntryID.CreateDate]
+      ,m.Name        as [ColumnCommunityID_Name]
+      ,e.EntryText   as [EntryID_EntryText]
+      ,e.CreateDate  as [EntryID_CreateDate]
     from dbo.PersonCommunity as t
     join dbo.Community       as c on c.ID = t.CommunityID
 
