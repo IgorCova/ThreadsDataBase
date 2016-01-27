@@ -40,7 +40,7 @@ begin
       ,t.CommunityID
       ,c.Name         as [CommunityID_Name]
       ,t.ColumnID
-      ,m.Name        as [ColumnID_Name]
+      ,m.Name         as [ColumnID_Name]
       ,t.CreatorID
       ,p.FullName     as [CreatorID_FullName]
       ,t.EntryText

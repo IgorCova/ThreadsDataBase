@@ -17,7 +17,6 @@ select
     ,t.Surname
     ,ltrim(concat(t.Name + ' ', t.Surname)) as FullName
     ,t.UserName
-    ,t.PhotoLink
     ,t.About
     ,t.JoinedDate
     ,t.LeaveDate

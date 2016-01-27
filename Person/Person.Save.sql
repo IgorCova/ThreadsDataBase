@@ -15,7 +15,6 @@ alter procedure [dbo].[Person.Save]
   ,@Name           varchar(256)
   ,@Surname        varchar(256) = null
   ,@UserName       varchar(32) = null
-  ,@PhotoLink      varchar(1024) = null
   ,@About          varchar(1024) = null
 
   ,@debug_info     int = 0
@@ -44,7 +43,6 @@ begin
       ,Name
       ,Surname
       ,UserName
-      ,PhotoLink
       ,About
       ,JoinedDate 
     ) values (
@@ -52,7 +50,6 @@ begin
       ,@Name
       ,@Surname
       ,@UserName
-      ,@PhotoLink
       ,@About
       ,getdate() 
     )
@@ -63,7 +60,6 @@ begin
          t.Name           = @Name
         ,t.Surname        = @Surname
         ,t.UserName       = @UserName
-        ,t.PhotoLink      = @PhotoLink
         ,t.About          = @About
       from dbo.Person as t
       where t.ID = @ID
@@ -91,7 +87,6 @@ exec dbo.FillExtendedProperty
   ,@Params = '
       @About = About community \n
      ,@ID = ID community \n
-     ,@PhotoLink = Link to photo Person \n
      ,@Name = Name \n
      ,@Surname = Surname \n
      ,@UserName = User Name \n'

@@ -40,4 +40,4 @@ go
 create sequence seq.Community as bigint
     start with 1
     increment by 1 ;
-GO
+go

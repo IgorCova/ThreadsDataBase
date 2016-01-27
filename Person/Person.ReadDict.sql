@@ -29,7 +29,6 @@ begin
       ,t.Name
       ,t.UserName
       ,concat(t.Name +  ' ', t.Surname) as FullName
-      ,t.PhotoLink
       ,t.About
       ,t.JoinedDate
       ,t.LeaveDate

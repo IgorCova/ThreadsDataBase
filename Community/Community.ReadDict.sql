@@ -27,7 +27,6 @@ begin
   select
        t.ID
       ,t.Name
-      ,t.LogoLink
       ,t.Link
       ,t.Decription
       ,t.OwnerID

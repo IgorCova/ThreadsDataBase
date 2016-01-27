@@ -13,7 +13,6 @@ go
 alter procedure [dbo].[Community.Save]
    @ID             bigint  = null out
   ,@Name           varchar(128)
-  ,@LogoLink       varchar(1024) = null
   ,@Link           varchar(1024) = null
   ,@Decription     varchar(1024) = null
   ,@OwnerID        bigint          
@@ -40,7 +39,6 @@ begin
     insert into dbo.Community ( 
        ID
       ,Name
-      ,LogoLink
       ,Link
       ,Decription
       ,OwnerID
@@ -48,7 +46,6 @@ begin
     ) values (
        @ID
       ,@Name
-      ,@LogoLink
       ,@Link
       ,@Decription
       ,@OwnerID
@@ -60,7 +57,6 @@ begin
   begin
     update t set    
          t.Name           = @Name
-        ,t.LogoLink       = @LogoLink
         ,t.Link           = @Link
         ,t.Decription     = @Decription
       from dbo.Community as t
@@ -89,7 +85,6 @@ exec dbo.FillExtendedProperty
       @Decription = Decription community \n
      ,@ID = ID community \n
      ,@Link = Link to community \n
-     ,@LogoLink = Linkto logo community \n
      ,@Name = Name community \n
      ,@OwnerID = ID owner community \n'
 go

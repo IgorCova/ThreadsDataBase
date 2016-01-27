@@ -13,7 +13,6 @@ create table [dbo].[Person] (
   ,Name                            varchar(256)    null
   ,Surname                         varchar(256)    null
   ,UserName                        varchar(32)     null
-  ,PhotoLink                       varchar(1024)   null
   ,About                           varchar(1024)   null
 
   ,JoinedDate                      datetime        null
