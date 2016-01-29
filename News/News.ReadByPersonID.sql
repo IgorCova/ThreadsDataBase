@@ -26,12 +26,12 @@ begin
   -----------------------------------------------------------------
 
   select
-       e.CommunityID as CommunityID
-      ,c.Name        as [CommunityID_Name]
-      ,e.ID          as [EntryID]
-      ,m.Name        as [ColumnCommunityID_Name]
-      ,e.EntryText   as [EntryID_EntryText]
-      ,e.CreateDate  as [EntryID_CreateDate]
+       e.CommunityID as [Community_ID]
+      ,c.Name        as [Community_Name]
+      ,e.ID          as [Entry_ID]
+      ,m.Name        as [ColumnCommunity_Name]
+      ,e.EntryText   as [Entry_Text]
+      ,e.CreateDate  as [Entry_CreateDate]
     from dbo.PersonCommunity as t
     join dbo.Community       as c on c.ID = t.CommunityID
 

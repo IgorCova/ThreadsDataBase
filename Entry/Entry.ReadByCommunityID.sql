@@ -25,24 +25,18 @@ begin
   set xact_abort on
   -----------------------------------------------------------------
   select
-       0         as ID 
-      ,0         as CommunityID
-      ,'Non'     as [CommunityID_Name] 
-      ,0         as ColumnID
-      ,'Non'     as [ColumnID_Name]
-      ,0         as CreatorID
-      ,'Non'     as [CreatorID_FullName] 
-      ,'Non'     as EntryText
-      ,getdate() as CreateDate
+       0         as Entry_ID 
+      ,0         as Community_ID
+      ,'Non'     as Community_Name
+      ,'Non'     as ColumnCommunity_Name
+      ,'Non'     as Entry_Text
+      ,getdate() as Entry_CreateDate
   union
   select
        t.ID
       ,t.CommunityID
-      ,c.Name         as [CommunityID_Name]
-      ,t.ColumnID
-      ,m.Name         as [ColumnID_Name]
-      ,t.CreatorID
-      ,p.FullName     as [CreatorID_FullName]
+      ,c.Name
+      ,m.Name
       ,t.EntryText
       ,t.CreateDate
     from dbo.Entry           as t       
