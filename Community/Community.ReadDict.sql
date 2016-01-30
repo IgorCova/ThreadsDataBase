@@ -10,7 +10,8 @@ go
 ///  Procedure for reading Communities
 ///</description>
 */
-alter procedure [dbo].[Community.ReadDict]
+alter procedure [dbo].[Community.ReadSuggestDict]
+   @MemberID bigint = null
 as
 begin
 ------------------------------------------------
@@ -23,6 +24,9 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
+  declare
+     @true  bit = cast(1 as bit)
+    ,@false bit = cast(0 as bit)
 
   select
        t.ID
@@ -31,8 +35,17 @@ begin
       ,t.Decription
       ,t.OwnerID
       ,t.CreateDate
+      ,isnull(m.IsMember, @false) as IsMember
     from dbo.Community as t
+    outer apply (
+      select top 1 
+           @true as IsMember
+        from dbo.MemberCommunity as m 
+        where m.CommunityID = t.ID
+          and m.MemberID = @MemberID
+    ) as m
     where t.ClosedDate is null
+    order by isnull(m.IsMember, @false) desc, t.Name
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -42,7 +55,7 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec [dbo].[NativeCheck] '[dbo].[Community.ReadDict]'
+exec [dbo].[NativeCheck] '[dbo].[Community.ReadSuggestDict]'
 go
 
 
@@ -50,22 +63,23 @@ go
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = '[dbo].[Community.ReadDict]'
+   @ObjSysName  = '[dbo].[Community.ReadSuggestDict]'
   ,@Author      = 'Cova Igor'
   ,@Description = 'Procedure for reading Communities'
+  ,@Params      = '@MemberID = Member ID'
 go
 
 /* Debugger:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = [dbo].[Community.ReadDict] -- '[dbo].[Community.ReadDict]'
-
+exec @ret = [dbo].[Community.ReadSuggestDict]
+  @MemberID = 3
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
 
-grant execute on [dbo].[Community.ReadDict] to [public]
+grant execute on [dbo].[Community.ReadSuggestDict] to [public]
 go

@@ -10,11 +10,12 @@ go
 ///  Procedure for reading Communities
 ///</description>
 */
-alter procedure [dbo].[Community.ReadDict]
+alter procedure [dbo].[Community.ReadSuggestDict]
+   @MemberID bigint = null
 as
 begin
 ------------------------------------------------
--- v1.0: Created by Cova Igor 20.12.2015
+-- v1.0: Created by Cova Igor 31.12.2015
 ------------------------------------------------
   set nocount on
   set quoted_identifier, ansi_nulls, ansi_warnings, arithabort,
@@ -23,6 +24,8 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
+  declare
+     @false bit = cast(0 as bit)
 
   select
        t.ID
@@ -31,8 +34,11 @@ begin
       ,t.Decription
       ,t.OwnerID
       ,t.CreateDate
-    from dbo.Community as t
+      ,@false as IsMember
+    from dbo.Community       as t
+    join dbo.MemberCommunity as m on m.CommunityID = t.ID
     where t.ClosedDate is null
+      and m.MemberID <> @MemberID
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -42,30 +48,30 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec [dbo].[NativeCheck] '[dbo].[Community.ReadDict]'
+exec [dbo].[NativeCheck] '[dbo].[Community.ReadSuggestDict]'
 go
-
 
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = '[dbo].[Community.ReadDict]'
+   @ObjSysName  = '[dbo].[Community.ReadSuggestDict]'
   ,@Author      = 'Cova Igor'
   ,@Description = 'Procedure for reading Communities'
+  ,@Params      = '@MemberID = Member ID'
 go
 
 /* Debugger:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = [dbo].[Community.ReadDict] -- '[dbo].[Community.ReadDict]'
-
+exec @ret = [dbo].[Community.ReadSuggestDict]
+  @MemberID = 1
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
 
-grant execute on [dbo].[Community.ReadDict] to [public]
+grant execute on [dbo].[Community.ReadSuggestDict] to [public]
 go

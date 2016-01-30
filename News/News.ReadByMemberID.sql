@@ -32,14 +32,14 @@ begin
       ,m.Name        as [ColumnCommunity_Name]
       ,e.EntryText   as [Entry_Text]
       ,e.CreateDate  as [Entry_CreateDate]
-    from dbo.PersonCommunity as t
+    from dbo.MemberCommunity as t
     join dbo.Community       as c on c.ID = t.CommunityID
 
     join dbo.Entry           as e on e.CommunityID = c.ID
 
     join dbo.ColumnCommunity as m on m.ID = e.ColumnID 
                                  and m.CommunityID = e.CommunityID
-    where t.PersonID = @MemberID
+    where t.MemberID = @MemberID
     order by 
        e.CreateDate desc
 

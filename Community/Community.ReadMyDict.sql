@@ -24,6 +24,9 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
+  declare
+     @true  bit = cast(1 as bit)
+    ,@false bit = cast(0 as bit)
 
   select
        t.ID
@@ -32,8 +35,16 @@ begin
       ,t.Decription
       ,t.OwnerID
       ,t.CreateDate
+      ,isnull(c.IsMember, @false) as IsMember
     from dbo.Community as t
     join dbo.MemberCommunity as m on m.CommunityID = t.ID
+    outer apply (
+      select top 1 
+           @true as IsMember
+        from dbo.MemberCommunity as m 
+        where m.CommunityID = t.ID
+          and m.MemberID = @MemberID
+    ) as c
     where t.ClosedDate is null
       and m.MemberID = @MemberID
   -----------------------------------------------------------------
@@ -63,7 +74,7 @@ declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
 exec @ret = [dbo].[Community.ReadMyDict]
-  @MemberID = 2
+  @MemberID = 1
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
