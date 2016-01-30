@@ -6,24 +6,24 @@ set xact_abort on
 go
 
 ----------------------------------------------
--- <TABLE> [dbo].[PersonCommunity]
+-- <TABLE> [dbo].[MemberCommunity]
 ----------------------------------------------
 
-create table [dbo].[PersonCommunity] (
-   PersonID                        bigint
+create table [dbo].[MemberCommunity] (
+   MemberID                        bigint
   ,CommunityID                     bigint
 
   ,CreateDate                      datetime
-  ,constraint [PersonCommunity.pk] primary key clustered (PersonID, CommunityID)
+  ,constraint [MemberCommunity.pk] primary key clustered (MemberID, CommunityID)
 )
 go
 
-alter table [dbo].[PersonCommunity]
-  add constraint [PersonCommunity.fkCommunityID]
+alter table [dbo].[MemberCommunity]
+  add constraint [MemberCommunity.fkCommunityID]
   foreign key (CommunityID) references dbo.Community ([ID])
 go
 
-alter table [dbo].[PersonCommunity]
-  add constraint [PersonCommunity.fkCreatorID]
-  foreign key (PersonID) references dbo.Person ([ID])
+alter table [dbo].[MemberCommunity]
+  add constraint [MemberCommunity.fkMemberID]
+  foreign key (MemberID) references dbo.Member ([ID])
 go

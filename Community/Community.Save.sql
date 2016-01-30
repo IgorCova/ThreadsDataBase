@@ -51,7 +51,12 @@ begin
       ,@OwnerID
       ,getdate()
     )
-
+    
+    exec dbo.[ColumnCommunity.Save]
+       @ID          = null   
+      ,@CommunityID = @ID   
+      ,@Name        = 'Post'   
+      ,@CreatorID   = @OwnerID
   end
   else
   begin

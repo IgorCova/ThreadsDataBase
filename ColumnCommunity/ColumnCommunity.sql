@@ -29,7 +29,7 @@ go
 
 alter table [dbo].[ColumnCommunity]
   add constraint [ColumnCommunity.fkCreatorID]
-  foreign key (CreatorID) references dbo.Person ([ID])
+  foreign key (CreatorID) references dbo.Member ([ID])
 go
 
 create sequence seq.[ColumnCommunity] as bigint

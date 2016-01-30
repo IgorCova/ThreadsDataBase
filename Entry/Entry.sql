@@ -35,7 +35,7 @@ go
 
 alter table [dbo].[Entry]
   add constraint [Entry.fkCreatorID]
-  foreign key (CreatorID) references dbo.Person ([ID])
+  foreign key (CreatorID) references dbo.Member ([ID])
 go
 
 create sequence seq.[Entry] as bigint

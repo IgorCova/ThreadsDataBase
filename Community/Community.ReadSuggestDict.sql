@@ -7,11 +7,10 @@ go
 
 /*
 ///<description>
-///  Procedure read entries communities
+///  Procedure for reading Communities
 ///</description>
 */
-alter procedure [dbo].[Entry.ReadByCommunityID]
-   @CommunityID  bigint
+alter procedure [dbo].[Community.ReadDict]
 as
 begin
 ------------------------------------------------
@@ -24,28 +23,16 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  select
-       0         as Entry_ID 
-      ,0         as Community_ID
-      ,'Non'     as Community_Name
-      ,'Non'     as ColumnCommunity_Name
-      ,'Non'     as Entry_Text
-      ,getdate() as Entry_CreateDate
-  union
+
   select
        t.ID
-      ,t.CommunityID
-      ,c.Name
-      ,m.Name
-      ,t.EntryText
+      ,t.Name
+      ,t.Link
+      ,t.Decription
+      ,t.OwnerID
       ,t.CreateDate
-    from dbo.Entry           as t       
-    join dbo.Community       as c on c.ID = t.CommunityID
-    join dbo.[Member.View]   as p on p.ID = t.CreatorID
-    left join dbo.ColumnCommunity as m on m.ID = t.ColumnID 
-                                       and m.CommunityID = t.CommunityID
-    where t.CommunityID = @CommunityID
-      and t.DeleteDate is null
+    from dbo.Community as t
+    where t.ClosedDate is null
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -55,25 +42,24 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec [dbo].[NativeCheck] '[dbo].[Entry.ReadByCommunityID]'
+exec [dbo].[NativeCheck] '[dbo].[Community.ReadDict]'
 go
+
 
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = '[dbo].[Entry.ReadByCommunityID]'
+   @ObjSysName  = '[dbo].[Community.ReadDict]'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'Procedure for read entries communities'
-  ,@Params = '@CommunityID = id community'
+  ,@Description = 'Procedure for reading Communities'
 go
 
 /* Debugger:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = [dbo].[Entry.ReadByCommunityID]
-   @CommunityID = 1
+exec @ret = [dbo].[Community.ReadDict] -- '[dbo].[Community.ReadDict]'
 
 select @err = @@error
 
@@ -81,5 +67,5 @@ select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtim
 --*/
 go
 
-grant execute on [dbo].[Entry.ReadByCommunityID] to [public]
+grant execute on [dbo].[Community.ReadDict] to [public]
 go

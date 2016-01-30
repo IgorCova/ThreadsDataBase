@@ -15,8 +15,6 @@ alter procedure [dbo].[ColumnCommunity.Save]
   ,@CommunityID    bigint 
   ,@Name           varchar(128)
   ,@CreatorID      bigint          
-
-  ,@debug_info     int = 0
 as
 begin
 ------------------------------------------------
@@ -65,7 +63,6 @@ begin
       where ID = @ID
   end
 
- 
   -----------------------------------------------------------------
   -- End Point
   return (0)

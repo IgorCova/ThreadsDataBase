@@ -12,7 +12,6 @@ go
 create table [dbo].[Community] (
    ID                              bigint
   ,Name                            varchar(128)
-  ,LogoLink                        varchar(1024)   null
   ,Link                            varchar(1024)   null
   ,Decription                      varchar(1024)   null
   ,OwnerID                         bigint          
@@ -34,7 +33,7 @@ go
 
 alter table [dbo].[Community]
   add constraint [Community.fkOwner]
-  foreign key (OwnerID) references dbo.Person ([ID])
+  foreign key (OwnerID) references dbo.Member ([ID])
 go
 
 create sequence seq.Community as bigint

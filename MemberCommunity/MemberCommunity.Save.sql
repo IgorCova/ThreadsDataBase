@@ -7,11 +7,11 @@ go
 
 /*
 ///<description>
-///   procedure for add/del community for person.
+///   procedure for add/del community for Member.
 ///</description>
 */
-alter procedure [dbo].[PersonCommunity.Save]
-   @PersonID       bigint
+create procedure [dbo].[MemberCommunity.Save]
+   @MemberID       bigint
   ,@CommunityID    bigint
 as
 begin
@@ -26,18 +26,18 @@ begin
   set xact_abort on
   -----------------------------------------------------------------
 
-  if exists(select * from dbo.PersonCommunity as t where t.PersonID = @PersonID and t.CommunityID = @CommunityID)
+  if exists(select * from dbo.MemberCommunity as t where t.MemberID = @MemberID and t.CommunityID = @CommunityID)
     delete t
-      from dbo.PersonCommunity as t 
-      where t.PersonID = @PersonID 
+      from dbo.MemberCommunity as t 
+      where t.MemberID = @MemberID 
         and t.CommunityID = @CommunityID
   else 
-    insert into PersonCommunity ( 
-       PersonID
+    insert into MemberCommunity ( 
+       MemberID
       ,CommunityID
       ,CreateDate 
     ) values (
-       @PersonID
+       @MemberID
       ,@CommunityID
       ,getdate() 
     )
@@ -50,17 +50,17 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec [dbo].[NativeCheck] '[dbo].[PersonCommunity.Save]'
+exec [dbo].[NativeCheck] '[dbo].[MemberCommunity.Save]'
 go
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = '[dbo].[PersonCommunity.Save]'
+   @ObjSysName  = '[dbo].[MemberCommunity.Save]'
   ,@Author      = 'Cova Igor'
-  ,@Description = ' procedure for add/del community for person.'
+  ,@Description = ' procedure for add/del community for Member.'
   ,@Params = '
-      @PersonID = ID Person \n
+      @MemberID = ID Member \n
      ,@CommunityID = ID community \n'
 go
 
@@ -68,7 +68,7 @@ go
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = [dbo].[PersonCommunity.Save] -- '[dbo].[PersonCommunity.Save]'
+exec @ret = [dbo].[MemberCommunity.Save] -- '[dbo].[MemberCommunity.Save]'
    @debug_info      = 0xFF
 
 select @err = @@error
@@ -76,4 +76,4 @@ select @err = @@error
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on [dbo].[PersonCommunity.Save] to [public]
+grant execute on [dbo].[MemberCommunity.Save] to [public]

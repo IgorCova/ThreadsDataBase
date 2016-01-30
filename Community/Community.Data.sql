@@ -47,3 +47,10 @@ exec dbo.[Community.Save]
   ,@Decription   =  'Япония... Это целый мир неожиданных впечатлений, страна, отличающаяся самобытностью своей культуры. Данная группа призвана обьединить всех поклонников японского веяния в тюнинге автомобилей, JDM, если быть более точным'
   ,@OwnerID       = 2
 go 
+
+exec dbo.[Community.Save] 
+   @Name          = 'Mortal Kombat'
+  ,@Link          = 'comm\MortalKombat'
+  ,@Decription   =  'MORTAL KOMBAT BATTLE - живые турниры по MK9'
+  ,@OwnerID       = 4
+go          
