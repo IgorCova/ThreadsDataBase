@@ -7,10 +7,11 @@ go
 
 /*
 ///<description>
-///  Procedure read dict of persons
+///  Procedure read Instance of Members
 ///</description>
 */
-alter procedure [dbo].[Person.ReadDict]
+alter procedure [dbo].[Member.ReadInstance]
+   @ID bigint
 as
 begin
 ------------------------------------------------
@@ -28,12 +29,13 @@ begin
        t.ID
       ,t.Name
       ,t.UserName
-      ,concat(t.Name +  ' ', t.Surname) as FullName
+      ,concat(t.Name + ' ' ,t.Surname)  as FullName
       ,t.About
       ,t.JoinedDate
       ,t.LeaveDate
       ,t.LeaveNote
-    from dbo.Person as t
+    from dbo.Member as t
+    where t.ID = @ID
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -43,29 +45,30 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec [dbo].[NativeCheck] '[dbo].[Person.ReadDict]'
+exec [dbo].[NativeCheck] '[dbo].[Member.ReadInstance]'
 go
 
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = '[dbo].[Person.ReadDict]'
+   @ObjSysName  = '[dbo].[Member.ReadInstance]'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'Procedure read dict of persons'
+  ,@Description = 'Procedure read Instance of Member'
+  ,@Params = '@ID = ID Member'
 go
 
 /* Debugger:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = [dbo].[Person.ReadDict]
-
+exec @ret = [dbo].[Member.ReadInstance]
+  @ID = 1
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go 
 
-grant execute on [dbo].[Person.ReadDict] to [public]
+grant execute on [dbo].[Member.ReadInstance] to [public]
 go

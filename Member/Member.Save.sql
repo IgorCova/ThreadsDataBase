@@ -7,10 +7,10 @@ go
 
 /*
 ///<description>
-/// procedure for Save Person.
+/// procedure for Save Member.
 ///</description>
 */
-alter procedure [dbo].[Person.Save]
+alter procedure [dbo].[Member.Save]
    @ID             bigint        = null out
   ,@Name           varchar(256)
   ,@Surname        varchar(256)  = null
@@ -34,12 +34,12 @@ begin
 
   if not exists (
       select * 
-        from dbo.Person as c 
+        from dbo.Member as c 
         where c.ID = @ID)
   begin
-    set @ID = next value for seq.Person
+    set @ID = next value for seq.Member
     
-    insert into dbo.Person ( 
+    insert into dbo.Member ( 
        ID
       ,Name
       ,Surname
@@ -65,7 +65,7 @@ begin
         ,t.UserName       = @UserName
         ,t.About          = @About
         ,t.Phone          = @Phone
-      from dbo.Person as t
+      from dbo.Member as t
       where t.ID = @ID
   end
 
@@ -78,16 +78,16 @@ go
 ----------------------------------------------
 -- <[NativeCheck]>
 ----------------------------------------------
-exec [dbo].[NativeCheck] '[dbo].[Person.Save]'
+exec [dbo].[NativeCheck] '[dbo].[Member.Save]'
 go
 
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = '[dbo].[Person.Save]'
+   @ObjSysName  = '[dbo].[Member.Save]'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for Save Person'
+  ,@Description = 'procedure for Save Member'
   ,@Params = '
       @About = About community \n
      ,@ID = ID community \n
@@ -102,7 +102,7 @@ go
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = [dbo].[Person.Save] -- '[dbo].[Person.Save]'
+exec @ret = [dbo].[Member.Save] -- '[dbo].[Member.Save]'
    @debug_info      = 0xFF
 
 select @err = @@error
@@ -110,4 +110,4 @@ select @err = @@error
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on [dbo].[Person.Save] to [public]
+grant execute on [dbo].[Member.Save] to [public]

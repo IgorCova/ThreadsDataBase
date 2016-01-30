@@ -6,9 +6,9 @@ set xact_abort on
 go
 
 ----------------------------------------------
--- <TABLE> [dbo].[Person]
+-- <TABLE> [dbo].[Member]
 ----------------------------------------------
-create table [dbo].[Person] (
+create table [dbo].[Member] (
    ID                              bigint
   ,Name                            varchar(256)    null
   ,Surname                         varchar(256)    null
@@ -18,19 +18,19 @@ create table [dbo].[Person] (
   ,JoinedDate                      datetime        null
   ,LeaveDate                       datetime        null
   ,LeaveNote                       varchar(1024)   null
-  ,constraint [Person.pk] primary key clustered ([ID])
+  ,constraint [Member.pk] primary key clustered ([ID])
 )
 go
 
-create index [Person.ixName]
-  on dbo.[Person] (Name, Surname)
+create index [Member.ixName]
+  on dbo.[Member] (Name, Surname)
 go
 
-create index [Person.ixJoinedDate]
-  on dbo.[Person] (JoinedDate)
+create index [Member.ixJoinedDate]
+  on dbo.[Member] (JoinedDate)
 go
 
-create sequence seq.[Person] as bigint
+create sequence seq.[Member] as bigint
     start with 1
     increment by 1 ;
 go

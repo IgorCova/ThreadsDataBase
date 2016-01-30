@@ -7,11 +7,11 @@ go
 
 /*
 ///<description>
-/// Procedure read news for user
+/// Procedure read news for member
 ///</description>
 */
-alter procedure [dbo].[News.ReadByPersonID]
-   @PersonID bigint
+alter procedure [dbo].[News.ReadByMemberID]
+   @MemberID bigint
 as
 begin
 ------------------------------------------------
@@ -39,7 +39,7 @@ begin
 
     join dbo.ColumnCommunity as m on m.ID = e.ColumnID 
                                  and m.CommunityID = e.CommunityID
-    where t.PersonID = @PersonID
+    where t.PersonID = @MemberID
     order by 
        e.CreateDate desc
 
@@ -52,25 +52,25 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec [dbo].[NativeCheck] '[dbo].[News.ReadByPersonID]'
+exec [dbo].[NativeCheck] '[dbo].[News.ReadByMemberID]'
 go
 
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = '[dbo].[News.ReadByPersonID]'
+   @ObjSysName  = '[dbo].[News.ReadByMemberID]'
   ,@Author      = 'Cova Igor'
   ,@Description = 'Procedure read news for user.'
-  ,@Params = '@PersonID = ID Person'
+  ,@Params = '@MemberID = ID Member'
 go
 
 /* Debugger:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = [dbo].[News.ReadByPersonID]
-   @PersonID = 1
+exec @ret = [dbo].[News.ReadByMemberID]
+   @MemberID = 1
 
 select @err = @@error
 
@@ -78,5 +78,5 @@ select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtim
 --*/
 go
 
-grant execute on [dbo].[News.ReadByPersonID] to [public]
+grant execute on [dbo].[News.ReadByMemberID] to [public]
 go

@@ -1,4 +1,4 @@
-exec dbo.[Person.Save] 
+exec dbo.[Member.Save] 
    @Name       = 'Igor'
   ,@Surname    = 'Cova'
   ,@UserName   = 'cova'
@@ -6,7 +6,7 @@ exec dbo.[Person.Save]
   ,@Phone      = '79164913669'
  go
 
-exec dbo.[Person.Save] 
+exec dbo.[Member.Save] 
    @Name       = 'Antony'
   ,@Surname    = 'Bubas'
   ,@UserName   = 'bubas'
@@ -14,10 +14,18 @@ exec dbo.[Person.Save]
   ,@Phone      = '79253396965'
  go
 
-exec dbo.[Person.Save] 
+exec dbo.[Member.Save] 
    @Name       = 'Andrew'
   ,@Surname    = 'Fisher'
   ,@UserName   = 'fisher'
   ,@About      = 'I"m superman'
   ,@Phone      = '79264308272'
+ go
+
+exec dbo.[Member.Save] 
+   @Name       = 'Ivan'
+  ,@Surname    = 'Tyler'
+  ,@UserName   = 'tyler'
+  ,@About      = 'I"m web developer'
+  ,@Phone      = '79152212864'
  go

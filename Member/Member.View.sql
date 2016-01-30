@@ -6,10 +6,10 @@ set xact_abort on
 go
 
 ----------------------------------------------
--- <VIEW> [dbo].[Person.View]
+-- <VIEW> [dbo].[Member.View]
 ----------------------------------------------
 
-alter view [dbo].[Person.View]
+create view [dbo].[Member.View]
 as
 select
      t.ID
@@ -21,10 +21,10 @@ select
     ,t.JoinedDate
     ,t.LeaveDate
     ,t.LeaveNote
-  from [dbo].[Person] as t                                       
+  from [dbo].[Member] as t                                       
 go
 
 /*
-select * from [dbo].[Person.View]
+select * from [dbo].[Member.View]
 --*/
 go
