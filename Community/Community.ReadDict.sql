@@ -36,6 +36,7 @@ begin
       ,t.OwnerID
       ,t.CreateDate
       ,isnull(m.IsMember, @false) as IsMember
+      ,cc.DefaultColumnID
     from dbo.Community as t
     outer apply (
       select top 1 
@@ -44,6 +45,14 @@ begin
         where m.CommunityID = t.ID
           and m.MemberID = @MemberID
     ) as m
+
+    outer apply (
+      select top 1 
+           c.ID as DefaultColumnID
+        from dbo.ColumnCommunity  as c      
+        where c.CommunityID = t.ID 
+          and c.Name = 'Post' 
+    ) as cc
     where t.ClosedDate is null
     order by isnull(m.IsMember, @false) desc, t.Name
   -----------------------------------------------------------------

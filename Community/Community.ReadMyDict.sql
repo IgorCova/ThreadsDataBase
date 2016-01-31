@@ -36,6 +36,7 @@ begin
       ,t.OwnerID
       ,t.CreateDate
       ,isnull(c.IsMember, @false) as IsMember
+      ,cc.DefaultColumnID
     from dbo.Community as t
     join dbo.MemberCommunity as m on m.CommunityID = t.ID
     outer apply (
@@ -45,6 +46,14 @@ begin
         where m.CommunityID = t.ID
           and m.MemberID = @MemberID
     ) as c
+    
+    outer apply (
+      select top 1 
+           c.ID as DefaultColumnID
+        from dbo.ColumnCommunity  as c      
+        where c.CommunityID = t.ID 
+          and c.Name = 'Post' 
+    ) as cc
     where t.ClosedDate is null
       and m.MemberID = @MemberID
   -----------------------------------------------------------------
