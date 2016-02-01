@@ -30,6 +30,7 @@ begin
       ,c.Name        as [Community_Name]
       ,e.ID          as [Entry_ID]
       ,m.Name        as [ColumnCommunity_Name]
+      ,m.ID          as [ColumnCommunity_ID]
       ,e.EntryText   as [Entry_Text]
       ,e.CreateDate  as [Entry_CreateDate]
     from dbo.MemberCommunity as t

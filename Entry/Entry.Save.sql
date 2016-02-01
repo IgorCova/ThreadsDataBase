@@ -61,7 +61,11 @@ begin
     ,getdate() 
   )
 
-  select @ID as ID
+  select
+       t.ID         as ID
+    from dbo.Entry  as t       
+    where t.ID = @ID
+
 
   -----------------------------------------------------------------
   -- End Point

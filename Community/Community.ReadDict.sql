@@ -10,7 +10,7 @@ go
 ///  Procedure for reading Communities
 ///</description>
 */
-alter procedure [dbo].[Community.ReadSuggestDict]
+alter procedure [dbo].[Community.ReadDict]
    @MemberID bigint = null
 as
 begin
@@ -64,7 +64,7 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec [dbo].[NativeCheck] '[dbo].[Community.ReadSuggestDict]'
+exec [dbo].[NativeCheck] '[dbo].[Community.ReadDict]'
 go
 
 
@@ -72,7 +72,7 @@ go
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = '[dbo].[Community.ReadSuggestDict]'
+   @ObjSysName  = '[dbo].[Community.ReadDict]'
   ,@Author      = 'Cova Igor'
   ,@Description = 'Procedure for reading Communities'
   ,@Params      = '@MemberID = Member ID'
@@ -82,13 +82,13 @@ go
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = [dbo].[Community.ReadSuggestDict]
-  @MemberID = 3
+exec @ret = [dbo].[Community.ReadDict]
+  @MemberID = 1
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
 
-grant execute on [dbo].[Community.ReadSuggestDict] to [public]
+grant execute on [dbo].[Community.ReadDict] to [public]
 go

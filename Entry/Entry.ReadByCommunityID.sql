@@ -24,28 +24,67 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  select
-       0         as Entry_ID 
-      ,0         as Community_ID
-      ,'Non'     as Community_Name
-      ,'Non'     as ColumnCommunity_Name
-      ,'Non'     as Entry_Text
-      ,getdate() as Entry_CreateDate
-  union
+  
+declare @Table table (
+   id                   int identity(1,1)
+  ,Entry_ID             bigint 
+  ,Community_ID         bigint 
+  ,Community_Name       varchar(256) 
+  ,ColumnCommunity_ID   bigint 
+  ,ColumnCommunity_Name varchar(256) 
+  ,Entry_Text           varchar(4048) 
+  ,Entry_CreateDate datetime
+  ,primary key(Entry_ID))  
+  
+  insert into @Table ( 
+     Entry_ID
+    ,Community_ID
+    ,Community_Name
+    ,ColumnCommunity_ID
+    ,ColumnCommunity_Name
+    ,Entry_Text
+    ,Entry_CreateDate 
+  ) values (
+     0
+    ,0
+    ,'Non'
+    ,0
+    ,'Non'
+    ,'Non'
+    ,getdate() 
+  )
+  
+  insert into @Table ( 
+     Entry_ID
+    ,Community_ID
+    ,Community_Name
+    ,ColumnCommunity_ID
+    ,ColumnCommunity_Name
+    ,Entry_Text
+    ,Entry_CreateDate 
+  )
   select
        t.ID
       ,t.CommunityID
       ,c.Name
+      ,m.ID
       ,m.Name
       ,t.EntryText
       ,t.CreateDate
-    from dbo.Entry           as t       
+    from dbo.[Entry]           as t       
     join dbo.Community       as c on c.ID = t.CommunityID
     join dbo.[Member.View]   as p on p.ID = t.CreatorID
     left join dbo.ColumnCommunity as m on m.ID = t.ColumnID 
                                        and m.CommunityID = t.CommunityID
     where t.CommunityID = @CommunityID
       and t.DeleteDate is null
+    order by t.CreateDate desc
+    
+    select
+         t.Entry_ID, t.Community_ID, t.Community_Name, t.ColumnCommunity_ID,
+         t.ColumnCommunity_Name, t.Entry_Text, t.Entry_CreateDate
+      from @Table as t       
+      order by t.id
   -----------------------------------------------------------------
   -- End Point
   return (0)
