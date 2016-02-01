@@ -11,8 +11,7 @@ go
 ///</description>
 */
 alter procedure [dbo].[Entry.Save]
-   @ID             bigint  = null out
-  ,@CommunityID    bigint 
+   @CommunityID    bigint 
   ,@ColumnID       bigint
   ,@CreatorID      bigint          
   ,@EntryText      varchar(4048)
@@ -28,36 +27,42 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
+  declare
+      @ID bigint
 
-  if not exists (
-      select * 
-        from dbo.Entry as c 
-        where c.ID = @ID)
-  begin
-    set @ID = next value for seq.Entry
-    
+  set @ID = next value for seq.Entry
+
+  if @CreatorID is null
     select
-         @CreatorID = c.OwnerID
+          @CreatorID = c.OwnerID
       from dbo.Community as c       
       where c.ID = @CommunityID
 
-    insert into dbo.Entry ( 
-       ID
-      ,CommunityID
-      ,ColumnID
-      ,CreatorID
-      ,EntryText
-      ,CreateDate 
-    ) values (
-       @ID
-      ,@CommunityID
-      ,@ColumnID
-      ,@CreatorID
-      ,@EntryText      
-      ,getdate() 
-    )
+  if @ColumnID is null
+    select
+          @ColumnID = c.ID
+      from dbo.ColumnCommunity as c       
+      where c.CommunityID = c.CommunityID
+        and c.Name = 'Post'
 
-  end
+  insert into dbo.Entry ( 
+     ID
+    ,CommunityID
+    ,ColumnID
+    ,CreatorID
+    ,EntryText
+    ,CreateDate 
+  ) values (
+     @ID
+    ,@CommunityID
+    ,@ColumnID
+    ,@CreatorID
+    ,@EntryText      
+    ,getdate() 
+  )
+
+  select @ID as ID
+
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -77,8 +82,7 @@ exec dbo.FillExtendedProperty
   ,@Author      = 'Cova Igor'
   ,@Description = 'Procedure for Save entry of community.'
   ,@Params = '
-      @ID = ID column \n
-     ,@CommunityID = ID community \n
+      @CommunityID = ID community \n
      ,@CreatorID = ID creator column \n
      ,@ColumnID = ID Column of community \n
      ,@EntryText = Text  \n
