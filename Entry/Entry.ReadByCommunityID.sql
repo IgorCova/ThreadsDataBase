@@ -79,12 +79,19 @@ declare @Table table (
     where t.CommunityID = @CommunityID
       and t.DeleteDate is null
     order by t.CreateDate desc
-    
+
     select
-         t.Entry_ID, t.Community_ID, t.Community_Name, t.ColumnCommunity_ID,
-         t.ColumnCommunity_Name, t.Entry_Text, t.Entry_CreateDate
+         t.Entry_ID
+        ,t.Community_ID
+        ,t.Community_Name
+        ,t.ColumnCommunity_ID
+        ,t.ColumnCommunity_Name
+        ,t.Entry_Text
+        ,fn.datetime_to_str_ForUser(t.Entry_CreateDate)  as Entry_CreateDate
+        ,fn.datetime_to_text_ForUser(t.Entry_CreateDate) as Entry_CreateDateEst
       from @Table as t       
-      order by t.id
+      order by
+         t.id
   -----------------------------------------------------------------
   -- End Point
   return (0)
