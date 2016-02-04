@@ -26,13 +26,14 @@ begin
   -----------------------------------------------------------------
 
   select
-       e.CommunityID as [Community_ID]
-      ,c.Name        as [Community_Name]
-      ,e.ID          as [Entry_ID]
-      ,m.Name        as [ColumnCommunity_Name]
-      ,m.ID          as [ColumnCommunity_ID]
-      ,e.EntryText   as [Entry_Text]
-      ,e.CreateDate  as [Entry_CreateDate]
+       e.CommunityID as Community_ID
+      ,c.Name        as Community_Name
+      ,e.ID          as Entry_ID
+      ,m.Name        as ColumnCommunity_Name
+      ,m.ID          as ColumnCommunity_ID
+      ,e.EntryText   as Entry_Text
+      ,fn.datetime_to_str_ForUser(e.CreateDate)  as Entry_CreateDate
+      ,fn.datetime_to_text_ForUser(e.CreateDate) as Entry_CreateDateEst
     from dbo.MemberCommunity as t
     join dbo.Community       as c on c.ID = t.CommunityID
 
