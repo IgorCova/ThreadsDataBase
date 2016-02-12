@@ -25,7 +25,7 @@ begin
   set xact_abort on
   -----------------------------------------------------------------
 
-  select
+  select top 10
        e.CommunityID as Community_ID
       ,c.Name        as Community_Name
       ,e.ID          as Entry_ID

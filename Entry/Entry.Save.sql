@@ -28,7 +28,8 @@ begin
   set xact_abort on
   -----------------------------------------------------------------
   declare
-      @ID bigint
+      @ID  bigint
+     ,@len int
 
   set @ID = next value for seq.Entry
 
@@ -44,6 +45,12 @@ begin
       from dbo.ColumnCommunity as c       
       where c.CommunityID = c.CommunityID
         and c.Name = 'Post'
+  
+  while @EntryText like '%' + char(10)
+  begin
+    set @len = len(@EntryText)
+    set @EntryText = left(@EntryText, @len-1)
+  end
 
   insert into dbo.Entry ( 
      ID
@@ -57,7 +64,7 @@ begin
     ,@CommunityID
     ,@ColumnID
     ,@CreatorID
-    ,@EntryText      
+    ,rtrim(ltrim(@EntryText))     
     ,getdate() 
   )
 
