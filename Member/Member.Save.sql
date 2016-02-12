@@ -17,8 +17,6 @@ alter procedure [dbo].[Member.Save]
   ,@UserName       varchar(32)   = null
   ,@About          varchar(1024) = null
   ,@Phone          varchar(32)   = null
-
-  ,@debug_info     int = 0
 as
 begin
 ------------------------------------------------
@@ -38,7 +36,7 @@ begin
         where c.ID = @ID)
   begin
     set @ID = next value for seq.Member
-    
+
     insert into dbo.Member ( 
        ID
       ,Name
@@ -68,6 +66,19 @@ begin
       from dbo.Member as t
       where t.ID = @ID
   end
+
+
+  select
+       m.ID
+      ,m.Name
+      ,m.Surname
+      ,m.FullName
+      ,m.UserName
+      ,m.About
+      ,m.Phone
+      ,m.JoinedDate
+    from dbo.[Member.View] as m       
+    where m.ID = @ID
 
   -----------------------------------------------------------------
   -- End Point

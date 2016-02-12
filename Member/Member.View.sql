@@ -9,7 +9,7 @@ go
 -- <VIEW> [dbo].[Member.View]
 ----------------------------------------------
 
-create view [dbo].[Member.View]
+alter view [dbo].[Member.View]
 as
 select
      t.ID
@@ -21,6 +21,7 @@ select
     ,t.JoinedDate
     ,t.LeaveDate
     ,t.LeaveNote
+    ,t.Phone
   from [dbo].[Member] as t                                       
 go
 

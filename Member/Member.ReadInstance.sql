@@ -28,13 +28,11 @@ begin
   select
        t.ID
       ,t.Name
+      ,t.Surname
       ,t.UserName
-      ,concat(t.Name + ' ' ,t.Surname)  as FullName
       ,t.About
-      ,t.JoinedDate
-      ,t.LeaveDate
-      ,t.LeaveNote
-    from dbo.Member as t
+      ,t.Phone
+    from dbo.Member as t       
     where t.ID = @ID
   -----------------------------------------------------------------
   -- End Point
