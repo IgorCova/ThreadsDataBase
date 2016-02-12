@@ -48,7 +48,7 @@ begin
 
     outer apply (
       select
-           count(m.MemberID) as CountMembers
+           try_cast(count(m.MemberID) as varchar(32)) as CountMembers
         from dbo.MemberCommunity as m       
         where m.CommunityID = t.ID 
     ) as m
@@ -56,7 +56,7 @@ begin
       and not exists (select * 
                         from dbo.MemberCommunity as m 
                         where m.CommunityID = t.ID 
-                          and m.MemberID <> @MemberID)
+                          and m.MemberID = @MemberID)
 
   -----------------------------------------------------------------
   -- End Point
