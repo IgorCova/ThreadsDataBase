@@ -37,6 +37,7 @@ begin
       ,t.CreateDate
       ,isnull(c.IsMember, @false) as IsMember
       ,cc.DefaultColumnID
+      ,cm.CountMembers
     from dbo.Community as t
     join dbo.MemberCommunity as m on m.CommunityID = t.ID
     outer apply (
@@ -54,6 +55,13 @@ begin
         where c.CommunityID = t.ID 
           and c.Name = 'Post' 
     ) as cc
+
+    outer apply (
+      select
+           count(m.MemberID) as CountMembers
+        from dbo.MemberCommunity as m       
+        where m.CommunityID = t.ID 
+    ) as cm
     where t.ClosedDate is null
       and m.MemberID = @MemberID
   -----------------------------------------------------------------

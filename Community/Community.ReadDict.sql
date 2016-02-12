@@ -36,7 +36,8 @@ begin
       ,t.OwnerID
       ,t.CreateDate
       ,isnull(m.IsMember, @false) as IsMember
-      ,cc.DefaultColumnID
+      ,c.DefaultColumnID
+      ,cm.CountMembers
     from dbo.Community as t
     outer apply (
       select top 1 
@@ -52,7 +53,14 @@ begin
         from dbo.ColumnCommunity  as c      
         where c.CommunityID = t.ID 
           and c.Name = 'Post' 
-    ) as cc
+    ) as c
+
+    outer apply (
+      select
+           count(m.MemberID) as CountMembers
+        from dbo.MemberCommunity as m       
+        where m.CommunityID = t.ID 
+    ) as cm
     where t.ClosedDate is null
     order by isnull(m.IsMember, @false) desc, t.Name
   -----------------------------------------------------------------
