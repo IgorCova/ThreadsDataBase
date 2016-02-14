@@ -12,6 +12,7 @@ go
 */
 alter procedure [dbo].[Session.Save]
    @SessionReqID bigint
+  ,@DID          varchar(64)
 as
 begin
 ------------------------------------------------
@@ -37,12 +38,14 @@ begin
     from dbo.SessionReq as t
     join dbo.Member     as m on m.Phone = t.Phone
     where t.ID = @SessionReqID
-  
- /* if @MemberID is null
-  begin
-    exec dbo.mem
-  end
-*/
+     and t.DID = @DID
+
+   /* if @MemberID is null
+    begin
+      exec dbo.mem
+    end
+  */
+
   insert into dbo.Session ( 
      ID
     ,SessionReqID
@@ -78,7 +81,8 @@ exec dbo.FillExtendedProperty
   ,@Author      = 'Cova Igor'
   ,@Description = 'procedure for Save Session.'
   ,@Params = '
-      @SessionReqID = Request Session ID \n'
+      @SessionReqID = Request Session ID \n
+      @DID = Device ID \n'
 go
 
 /* Œ“À¿ƒ ¿:
