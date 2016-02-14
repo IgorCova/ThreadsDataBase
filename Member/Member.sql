@@ -30,6 +30,11 @@ create index [Member.ixJoinedDate]
   on dbo.[Member] (JoinedDate)
 go
 
+create unique index [Member.ixPhone]
+  on dbo.[Member] (Phone)
+go
+
+
 create sequence seq.[Member] as bigint
     start with 1
     increment by 1 ;

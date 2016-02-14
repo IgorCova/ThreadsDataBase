@@ -69,7 +69,7 @@ declare @Table table (
       ,c.Name
       ,m.ID
       ,m.Name
-      ,t.EntryText
+      ,concat(t.EntryText, char(13)+char(10) + char(13)+char(10) + 'Editor: ', p.FullName) as EntryText
       ,t.CreateDate
     from dbo.[Entry]           as t       
     join dbo.Community       as c on c.ID = t.CommunityID

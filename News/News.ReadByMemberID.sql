@@ -25,19 +25,21 @@ begin
   set xact_abort on
   -----------------------------------------------------------------
 
-  select top 10
+  select top 25
        e.CommunityID as Community_ID
       ,c.Name        as Community_Name
       ,e.ID          as Entry_ID
       ,m.Name        as ColumnCommunity_Name
       ,m.ID          as ColumnCommunity_ID
-      ,e.EntryText   as Entry_Text
+      ,concat(e.EntryText, char(13)+char(10) + char(13)+char(10) + 'Editor: ', p.FullName) as Entry_Text
       ,fn.datetime_to_str_ForUser(e.CreateDate)  as Entry_CreateDate
       ,fn.datetime_to_text_ForUser(e.CreateDate) as Entry_CreateDateEst
     from dbo.MemberCommunity as t
     join dbo.Community       as c on c.ID = t.CommunityID
 
     join dbo.Entry           as e on e.CommunityID = c.ID
+
+    join dbo.[Member.View]   as p on p.ID = e.CreatorID
 
     join dbo.ColumnCommunity as m on m.ID = e.ColumnID 
                                  and m.CommunityID = e.CommunityID
