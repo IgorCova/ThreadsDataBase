@@ -33,7 +33,9 @@ declare @Table table (
   ,ColumnCommunity_ID   bigint 
   ,ColumnCommunity_Name varchar(256) 
   ,Entry_Text           varchar(4048) 
-  ,Entry_CreateDate datetime
+  ,Entry_CreateDate     datetime
+  ,CreatorID            bigint
+  ,CreatorID_Fullname   varchar(512)
   ,primary key(Entry_ID))  
   
   insert into @Table ( 
@@ -44,6 +46,8 @@ declare @Table table (
     ,ColumnCommunity_Name
     ,Entry_Text
     ,Entry_CreateDate 
+    ,CreatorID
+    ,CreatorID_Fullname
   ) values (
      0
     ,0
@@ -52,6 +56,8 @@ declare @Table table (
     ,'Non'
     ,'Non'
     ,getdate() 
+    ,0
+    ,'Non'
   )
   
   insert into @Table ( 
@@ -62,6 +68,8 @@ declare @Table table (
     ,ColumnCommunity_Name
     ,Entry_Text
     ,Entry_CreateDate 
+    ,CreatorID
+    ,CreatorID_Fullname
   )
   select
        t.ID
@@ -69,8 +77,10 @@ declare @Table table (
       ,c.Name
       ,m.ID
       ,m.Name
-      ,concat(t.EntryText, char(13)+char(10) + char(13)+char(10) + 'Editor: ', p.FullName) as EntryText
+      ,t.EntryText
       ,t.CreateDate
+      ,t.CreatorID
+      ,p.FullName    as CreatorID_FullName
     from dbo.[Entry]           as t       
     join dbo.Community       as c on c.ID = t.CommunityID
     join dbo.[Member.View]   as p on p.ID = t.CreatorID
@@ -89,6 +99,8 @@ declare @Table table (
         ,t.Entry_Text
         ,fn.datetime_to_str_ForUser(t.Entry_CreateDate)  as Entry_CreateDate
         ,fn.datetime_to_text_ForUser(t.Entry_CreateDate) as Entry_CreateDateEst
+        ,t.CreatorID
+        ,t.CreatorID_Fullname
       from @Table as t       
       order by t.id
   -----------------------------------------------------------------

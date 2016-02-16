@@ -31,9 +31,11 @@ begin
       ,e.ID          as Entry_ID
       ,m.Name        as ColumnCommunity_Name
       ,m.ID          as ColumnCommunity_ID
-      ,concat(e.EntryText, char(13)+char(10) + char(13)+char(10) + 'Editor: ', p.FullName) as Entry_Text
+      ,e.EntryText   as Entry_Text
       ,fn.datetime_to_str_ForUser(e.CreateDate)  as Entry_CreateDate
       ,fn.datetime_to_text_ForUser(e.CreateDate) as Entry_CreateDateEst
+      ,e.CreatorID   as CreatorID
+      ,p.FullName    as CreatorID_Fullname
     from dbo.MemberCommunity as t
     join dbo.Community       as c on c.ID = t.CommunityID
 
