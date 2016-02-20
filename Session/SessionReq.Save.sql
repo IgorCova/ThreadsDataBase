@@ -25,9 +25,16 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  declare @ID bigint
+  declare 
+     @ID bigint
+    ,@MemberID bigint
 
   set @ID = next value for seq.SessionReq
+
+  select
+       @MemberID = m.ID
+    from dbo.Member as m       
+    where m.Phone = @Phone  
 
   insert into dbo.SessionReq ( 
      ID
@@ -40,8 +47,10 @@ begin
     ,@Phone
     ,getdate() 
   )
-  
-  select @ID as ID
+
+  select
+       @ID                  as ID
+      ,isnull(@MemberID, 0) as MemberID
   -----------------------------------------------------------------
   -- End Point
   return (0)

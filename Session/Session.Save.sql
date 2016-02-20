@@ -29,22 +29,40 @@ begin
      @ID        bigint
     ,@SessionID uniqueidentifier
     ,@MemberID  bigint
+    ,@Phone     varchar(32)
+    ,@About     varchar(max)
+    ,@IsNewMember bit = 0
 
   set @SessionID = newid()
   set @ID = next value for seq.Session
-    
+
   select top 1
        @MemberID = m.ID
-    from dbo.SessionReq as t
-    join dbo.Member     as m on m.Phone = t.Phone
-    where t.ID = @SessionReqID
-     and t.DID = @DID
+      ,@Phone = t.Phone
+    from dbo.SessionReq  as t
+    left join dbo.Member as m on m.Phone = t.Phone       
+    where t.ID = @SessionReqID 
+      and t.DID = @DID
+  
+  if @MemberID is null
+  begin
+    set @About = 'Joined on ' + convert(varchar, getdate(), 106)
+    set @IsNewMember = 1
 
-   /* if @MemberID is null
+    if @Phone is null
     begin
-      exec dbo.mem
+      raiserror (15600,-1,-1, 'Fuck')
+      return 0
     end
-  */
+
+    exec dbo.[Member.New]
+       @ID       = @MemberID out   
+      ,@Name     = 'NoN'   
+      ,@Surname  = null   
+      ,@UserName = @Phone   
+      ,@About    = @About
+      ,@Phone    = @Phone
+  end
 
   insert into dbo.Session ( 
      ID
@@ -59,8 +77,11 @@ begin
   )
 
   select
-       @SessionID  as SessionID
-      ,@MemberID   as MemberID
+       t.SessionID      as SessionID
+      ,@MemberID        as MemberID
+      ,@IsNewMember     as IsNewMember
+    from dbo.[Session]  as t       
+    where t.ID = @ID
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -85,7 +106,7 @@ exec dbo.FillExtendedProperty
       @DID = Device ID \n'
 go
 
-/* Œ“À¿ƒ ¿:
+/* Debugger:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()

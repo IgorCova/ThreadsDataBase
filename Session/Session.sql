@@ -11,7 +11,7 @@ go
 create table [dbo].[Session] (
    ID                              bigint
   ,SessionReqID                    bigint
-  ,SessionID                       varchar(64)
+  ,SessionID                       uniqueidentifier
   ,CreateDate                      datetime 
   ,constraint [Session.pk] primary key nonclustered ([ID])
 )
