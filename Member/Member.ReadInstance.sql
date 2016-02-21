@@ -32,7 +32,7 @@ begin
       ,t.UserName
       ,t.About
       ,t.Phone
-    from dbo.Member as t       
+    from dbo.[Member.View] as t       
     where t.ID = @ID
   -----------------------------------------------------------------
   -- End Point

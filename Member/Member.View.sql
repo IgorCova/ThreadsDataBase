@@ -14,10 +14,10 @@ as
 select
      t.ID
     ,t.Name
-    ,t.Surname
+    ,isnull(t.Surname, '') as Surname
     ,ltrim(concat(t.Name + ' ', t.Surname)) as FullName
-    ,t.UserName
-    ,t.About
+    ,isnull(t.UserName, '') as UserName
+    ,isnull(t.About, '') as About
     ,t.JoinedDate
     ,t.LeaveDate
     ,t.LeaveNote
