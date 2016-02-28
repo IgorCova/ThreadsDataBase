@@ -17,6 +17,7 @@ alter procedure [dbo].[Member.New]
   ,@UserName       varchar(32)   = null
   ,@About          varchar(1024) = null
   ,@Phone          varchar(32)   = null
+  ,@IsMale         bit           = null
 as
 begin
 ------------------------------------------------
@@ -45,6 +46,7 @@ begin
       ,About
       ,JoinedDate 
       ,Phone
+      ,IsMale
     ) values (
        @ID
       ,@Name
@@ -53,6 +55,7 @@ begin
       ,@About
       ,getdate() 
       ,@Phone
+      ,isnull(@IsMale, 1)
     )
   end
   else
@@ -63,6 +66,7 @@ begin
         ,t.UserName       = @UserName
         ,t.About          = @About
         ,t.Phone          = @Phone
+        ,t.IsMale         = isnull(@IsMale, 1)
       from dbo.Member as t
       where t.ID = @ID
   end
@@ -91,7 +95,8 @@ exec dbo.FillExtendedProperty
      ,@Name = Name \n
      ,@Surname = Surname \n
      ,@UserName = User Name \n
-     ,@Phone = номер телефона
+     ,@Phone = Phone number \n
+     ,@IsMale = Is Male \n
      '
 go
 

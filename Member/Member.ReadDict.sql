@@ -30,6 +30,7 @@ begin
       ,t.UserName
       ,concat(t.Name +  ' ', t.Surname) as FullName
       ,t.About
+      ,t.IsMale
       ,t.JoinedDate
       ,t.LeaveDate
       ,t.LeaveNote

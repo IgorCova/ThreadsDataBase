@@ -142,11 +142,7 @@ begin
   select 'DateCreate', master.dbo.fn_datetime_to_str_ForUser(getdate())
   union
   select 'Creator suser sname', suser_sname()
-  union 
-  select 'RowSets',  isnull(fn.DelDoubleSpace(@RowSets), '')
-  union 
-  select 'Errors',  isnull(fn.DelDoubleSpace(@Errors), '') 
-     
+
   --|| In params
   declare @InParamsObj table(Name sysname, Value varchar(4000))  
   insert into @InParamsObj (Name, Value) 
@@ -195,7 +191,7 @@ begin
     from @ObjExtendedProp   as p  
     inner join @InParamsObj as r on r.Name = p.Name 
                                 and r.Value <> p.Value
-    where p.Name not in ('DateCreate', 'CreatorLoginDev')     
+    where p.Name not in ('DateCreate')     
   
   --|| List add 
   declare @AddExtendedProp table (Name sysname, Value varchar(4000))

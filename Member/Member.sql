@@ -15,6 +15,7 @@ create table [dbo].[Member] (
   ,UserName                        varchar(32)     null
   ,About                           varchar(1024)   null
   ,Phone                           varchar(32)     null
+  ,IsMale                          bit
   ,JoinedDate                      datetime        null
   ,LeaveDate                       datetime        null
   ,LeaveNote                       varchar(1024)   null
@@ -33,7 +34,6 @@ go
 create unique index [Member.ixPhone]
   on dbo.[Member] (Phone)
 go
-
 
 create sequence seq.[Member] as bigint
     start with 1

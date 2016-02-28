@@ -31,7 +31,8 @@ begin
       ,t.Surname
       ,t.UserName
       ,t.About
-      ,t.Phone
+      ,dbo.FormatPhone(t.Phone) as Phone
+      ,t.IsMale
     from dbo.[Member.View] as t       
     where t.ID = @ID
   -----------------------------------------------------------------

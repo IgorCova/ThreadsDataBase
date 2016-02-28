@@ -22,6 +22,7 @@ select
     ,t.LeaveDate
     ,t.LeaveNote
     ,t.Phone
+    ,t.IsMale
   from [dbo].[Member] as t                                       
 go
 
