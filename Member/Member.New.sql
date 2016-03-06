@@ -49,10 +49,10 @@ begin
       ,IsMale
     ) values (
        @ID
-      ,@Name
-      ,@Surname
-      ,@UserName
-      ,@About
+      ,fn.Trim(@Name)
+      ,fn.Trim(@Surname)
+      ,fn.Trim(@UserName)
+      ,fn.Trim(@About)
       ,getdate() 
       ,@Phone
       ,isnull(@IsMale, 1)
@@ -61,10 +61,10 @@ begin
   else
   begin
     update t set    
-         t.Name           = @Name
-        ,t.Surname        = @Surname
-        ,t.UserName       = @UserName
-        ,t.About          = @About
+         t.Name           = fn.Trim(@Name)
+        ,t.Surname        = fn.Trim(@Surname)
+        ,t.UserName       = fn.Trim(@UserName)
+        ,t.About          = fn.Trim(@About)
         ,t.Phone          = @Phone
         ,t.IsMale         = isnull(@IsMale, 1)
       from dbo.Member as t

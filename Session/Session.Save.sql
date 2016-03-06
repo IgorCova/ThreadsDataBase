@@ -51,15 +51,15 @@ begin
 
     if @Phone is null
     begin
-      raiserror (15600,-1,-1, 'Fuck')
+      raiserror (15600,-1,-1, 'Fuck6')
       return 0
     end
 
     exec dbo.[Member.New]
        @ID       = @MemberID out   
-      ,@Name     = 'NoN'   
+      ,@Name     = ''   
       ,@Surname  = null   
-      ,@UserName = @Phone   
+      ,@UserName = null   
       ,@About    = @About
       ,@Phone    = @Phone
   end

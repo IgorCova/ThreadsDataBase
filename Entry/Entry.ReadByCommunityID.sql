@@ -71,7 +71,7 @@ declare @Table table (
     ,CreatorID
     ,CreatorID_Fullname
   )
-  select
+  select top 15
        t.ID
       ,t.CommunityID
       ,c.Name

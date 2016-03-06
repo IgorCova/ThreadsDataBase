@@ -141,7 +141,7 @@ begin
   union 
   select 'DateCreate', master.dbo.fn_datetime_to_str_ForUser(getdate())
   union
-  select 'Creator suser sname', suser_sname()
+  select 'Creator suser_sname', suser_sname()
 
   --|| In params
   declare @InParamsObj table(Name sysname, Value varchar(4000))  
@@ -233,7 +233,7 @@ begin
     select 
          a.Name                           as Name
         ,a.Value                          as Value
-        ,'Add new paramter with desrcribe'  as Status
+        ,'Add new parameter with desrcribe'  as Status
       from @AddExtendedProp as a
     
   end 
@@ -289,7 +289,7 @@ begin
       end
       close cursor_for_add_param
       deallocate cursor_for_add_param  
-      print 'Добавление параметров с описанием в Extended Property объекта: '  + cast(@cnt as varchar) + ' шт.' + @El
+      print 'Add parameters with description to Extended Property db object: '  + cast(@cnt as varchar) + ' шт.' + @El
       -----------------------------
       --|| */Add new parameters to Extended Property of object
       -----------------------------     
@@ -430,8 +430,8 @@ begin
   select @InfoMsgPrms =  ( select '  ,' + c.Name + ' = ' + c.Value + char(10) as 'data()' 
                              from @InNotIncludedParams as c
                              for xml path('')) + @el                      
-  select @InfoMsg = 'Список входных параметров без описания: ' + @el + '    ' + right(@InfoMsg, len(@InfoMsg) - 3)   
-  select @InfoMsgPrms =  'Список параметров с описанием  (не декларированных в объекте)' + @el + '    ' + right(@InfoMsgPrms, len(@InfoMsgPrms) - 3)                  
+  select @InfoMsg = 'The list of input parameters with no description: ' + @el + '    ' + right(@InfoMsg, len(@InfoMsg) - 3)   
+  select @InfoMsgPrms =  'List of parameters describing the (undeclared in the object): ' + @el + '    ' + right(@InfoMsgPrms, len(@InfoMsgPrms) - 3)                  
                         
   -- modify according to the text output
   if (isnull(@InfoMsg, '') <> '') or (isnull(@InfoMsgPrms, '') <> '')   
