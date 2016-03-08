@@ -33,6 +33,7 @@ begin
       ,t.About
       ,dbo.FormatPhone(t.Phone) as Phone
       ,t.IsMale
+      ,try_convert(varchar, t.BirthdayDate, 111) as BirthdayDate
     from dbo.[Member.View] as t       
     where t.ID = @ID
   -----------------------------------------------------------------

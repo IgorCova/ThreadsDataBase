@@ -16,6 +16,7 @@ create table [dbo].[Member] (
   ,About                           varchar(1024)   null
   ,Phone                           varchar(32)     null
   ,IsMale                          bit
+  ,BirthdayDate                    datetime        null
   ,JoinedDate                      datetime        null
   ,LeaveDate                       datetime        null
   ,LeaveNote                       varchar(1024)   null

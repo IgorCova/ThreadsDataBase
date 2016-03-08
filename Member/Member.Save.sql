@@ -18,6 +18,7 @@ alter procedure [dbo].[Member.Save]
   ,@About          varchar(1024) = null
   ,@Phone          varchar(32)   = null
   ,@IsMale         bit           = null
+  ,@BirthdayDate   varchar(32)   = null
 as
 begin
 ------------------------------------------------
@@ -47,6 +48,7 @@ begin
       ,JoinedDate 
       ,Phone
       ,IsMale
+      ,BirthdayDate
     ) values (
        @ID
       ,fn.Trim(@Name)
@@ -56,6 +58,7 @@ begin
       ,getdate() 
       ,@Phone
       ,isnull(@IsMale, 1)
+      ,try_convert(datetime, @BirthdayDate)
     )
   end
   else
@@ -67,6 +70,7 @@ begin
         ,t.About          = fn.Trim(@About)
       --  ,t.Phone          = @Phone
         ,t.IsMale         = isnull(@IsMale, 1)
+        ,t.BirthdayDate   = try_convert(datetime, @BirthdayDate)
       from dbo.Member as t
       where t.ID = @ID
   end
@@ -82,6 +86,7 @@ begin
       ,m.Phone
       ,m.IsMale
       ,m.JoinedDate
+      ,try_convert(varchar, m.BirthdayDate, 111) as BirthdayDate
     from dbo.[Member.View] as m       
     where m.ID = @ID
 
@@ -112,6 +117,7 @@ exec dbo.FillExtendedProperty
      ,@UserName = User Name \n
      ,@Phone = Phone number \n
      ,@IsMale = Is Male \n
+     ,@BirthdayDate = Date of Birthday \n 
      '
 go
 

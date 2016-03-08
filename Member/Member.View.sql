@@ -23,6 +23,7 @@ select
     ,t.LeaveNote
     ,t.Phone
     ,t.IsMale
+    ,t.BirthdayDate
   from [dbo].[Member] as t                                       
 go
 

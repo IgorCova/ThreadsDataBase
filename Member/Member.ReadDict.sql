@@ -34,6 +34,7 @@ begin
       ,t.JoinedDate
       ,t.LeaveDate
       ,t.LeaveNote
+      ,t.BirthdayDate
     from dbo.Member as t
   -----------------------------------------------------------------
   -- End Point

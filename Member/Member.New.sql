@@ -96,7 +96,7 @@ exec dbo.FillExtendedProperty
      ,@Surname = Surname \n
      ,@UserName = User Name \n
      ,@Phone = Phone number \n
-     ,@IsMale = Is Male \n
+     ,@IsMale = Is Male \n 
      '
 go
 
