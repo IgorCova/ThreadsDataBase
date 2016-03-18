@@ -14,7 +14,7 @@ create table [dbo].[Entry] (
   ,CommunityID                     bigint
   ,ColumnID                        bigint
   ,CreatorID                       bigint
-  ,EntryText                       varchar(4048)   null
+  ,EntryText                       varchar(max)   null
 
   ,CreateDate                      datetime
   ,DeleteDate                      datetime        null

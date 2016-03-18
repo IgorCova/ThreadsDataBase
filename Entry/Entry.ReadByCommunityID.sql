@@ -12,6 +12,7 @@ go
 */
 alter procedure [dbo].[Entry.ReadByCommunityID]
    @CommunityID  bigint
+  ,@MemberID     bigint
 as
 begin
 ------------------------------------------------
@@ -81,15 +82,17 @@ declare @Table table (
       ,t.CreateDate
       ,t.CreatorID
       ,p.FullName    as CreatorID_FullName
+     
     from dbo.[Entry]           as t       
     join dbo.Community       as c on c.ID = t.CommunityID
     join dbo.[Member.View]   as p on p.ID = t.CreatorID
     left join dbo.ColumnCommunity as m on m.ID = t.ColumnID 
-                                       and m.CommunityID = t.CommunityID
+                                      and m.CommunityID = t.CommunityID
+    
     where t.CommunityID = @CommunityID
       and t.DeleteDate is null
     order by t.CreateDate desc
-    
+
     select
          t.Entry_ID
         ,t.Community_ID
@@ -101,7 +104,15 @@ declare @Table table (
         ,fn.datetime_to_text_ForUser(t.Entry_CreateDate) as Entry_CreateDateEst
         ,t.CreatorID
         ,t.CreatorID_Fullname
-      from @Table as t       
+        ,isnull(b.IsPin, cast(0 as bit)) as IsPin
+      from @Table as t
+      outer apply (
+        select
+             cast(1 as bit) as IsPin
+          from dbo.Bookmark as b
+          where b.EntryID = t.Entry_ID
+            and b.MemberID = @MemberID
+      ) as b
       order by t.id
   -----------------------------------------------------------------
   -- End Point
@@ -122,7 +133,8 @@ exec dbo.FillExtendedProperty
    @ObjSysName  = '[dbo].[Entry.ReadByCommunityID]'
   ,@Author      = 'Cova Igor'
   ,@Description = 'Procedure for read entries communities'
-  ,@Params = '@CommunityID = id community'
+  ,@Params = '@CommunityID = id community \n
+             ,@MemberID = id Member'
 go
 
 /* Debugger:
@@ -131,6 +143,7 @@ declare @ret int, @err int, @runtime datetime
 select @runtime = getdate()
 exec @ret = [dbo].[Entry.ReadByCommunityID]
    @CommunityID = 1
+  ,@MemberID = 1
 
 select @err = @@error
 

@@ -7,18 +7,18 @@ go
 
 /*
 ///<description>
-///   procedure for Save entry of community.
+///  Procedure for save ErrorLog's.
 ///</description>
 */
-alter procedure [dbo].[Entry.Save]
-   @CommunityID    bigint 
-  ,@ColumnID       bigint
-  ,@CreatorID      bigint          
-  ,@EntryText      varchar(max)
+alter procedure dbo.ErrorLog_Save
+   @Session                         varchar(64)
+  ,@FuncName                        sysname      = null
+  ,@Params                          varchar(max) = null
+  ,@ErrorText                       varchar(max) = null
 as
 begin
 ------------------------------------------------
--- v1.0: Created by Cova Igor 22.12.2015
+-- v1.0: Created by Cova Igor 12.03.2016
 ------------------------------------------------
   set nocount on
   set quoted_identifier, ansi_nulls, ansi_warnings, arithabort,
@@ -30,50 +30,38 @@ begin
   declare
       @ID  bigint
      ,@len int
+     ,@SessionID bigint
+
+  select
+       @SessionID
+    from dbo.Session as s       
+    where s.SessionID = @Session
 
   set @ID = next value for seq.Entry
-
-  if @CreatorID is null
-    select
-          @CreatorID = c.OwnerID
-      from dbo.Community as c       
-      where c.ID = @CommunityID
-
-  if @ColumnID is null
-    select
-          @ColumnID = c.ID
-      from dbo.ColumnCommunity as c       
-      where c.CommunityID = c.CommunityID
-        and c.Name = 'Post'
   
-  while @EntryText like '%' + char(10)
+  while @ErrorText like '%' + char(10)
   begin
-    set @len = len(@EntryText)
-    set @EntryText = left(@EntryText, @len-1)
+    set @len = len(@ErrorText)
+    set @ErrorText = left(@ErrorText, @len-1)
   end
 
-  insert into dbo.Entry ( 
+  set @ErrorText = fn.DelDoubleSpace(@ErrorText)
+
+  insert into dbo.ErrorLog ( 
      ID
-    ,CommunityID
-    ,ColumnID
-    ,CreatorID
-    ,EntryText
+    ,SessionID
+    ,FuncName
+    ,Params
+    ,ErrorText
     ,CreateDate 
   ) values (
      @ID
-    ,@CommunityID
-    ,@ColumnID
-    ,@CreatorID
-    ,rtrim(ltrim(@EntryText))     
+    ,@SessionID
+    ,@FuncName
+    ,@Params
+    ,@ErrorText
     ,getdate() 
   )
-
-  select
-       t.ID         as ID
-    from dbo.Entry as t       
-    where t.ID = @ID
-
-
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -83,28 +71,27 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec [dbo].[NativeCheck] '[dbo].[Entry.Save]'
+exec [dbo].[NativeCheck] 'dbo.ErrorLog_Save'
 go
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = '[dbo].[Entry.Save]'
+   @ObjSysName  = 'dbo.ErrorLog_Save'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'Procedure for Save entry of community.'
+  ,@Description = 'Procedure for save ErrorLogs.'
   ,@Params = '
-      @CommunityID = ID community \n
-     ,@CreatorID = ID creator column \n
-     ,@ColumnID = ID Column of community \n
-     ,@EntryText = Text  \n
-     '
+       @ErrorText = Text of error \n
+      ,@FuncName = function/procedure name \n
+      ,@Session = Session uniqident \n
+      ,@Params = list of input parameters \n'
 go
 
 /* Œ“À¿ƒ ¿:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = [dbo].[Entry.Save] 
+exec @ret = dbo.ErrorLog_Save 
    @debug_info      = 0xFF
 
 select @err = @@error
@@ -112,4 +99,4 @@ select @err = @@error
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on [dbo].[Entry.Save] to [public]
+grant execute on dbo.ErrorLog_Save to [public]
