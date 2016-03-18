@@ -34,6 +34,7 @@ begin
       ,t.Name
       ,t.Link
       ,t.Decription
+      ,t.Tagline
       ,t.OwnerID
       ,t.CreateDate
       ,isnull(m.IsMember, @false) as IsMember

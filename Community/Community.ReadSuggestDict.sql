@@ -32,6 +32,7 @@ begin
       ,t.Name
       ,t.Link
       ,t.Decription
+      ,t.Tagline
       ,t.OwnerID
       ,t.CreateDate
       ,@false as IsMember

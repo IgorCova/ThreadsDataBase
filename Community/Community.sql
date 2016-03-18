@@ -14,6 +14,7 @@ create table [dbo].[Community] (
   ,Name                            varchar(128)
   ,Link                            varchar(1024)   null
   ,Decription                      varchar(1024)   null
+  ,Tagline                         varchar(64)     null
   ,OwnerID                         bigint          
 
   ,CreateDate                      datetime

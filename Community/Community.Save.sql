@@ -11,10 +11,11 @@ go
 ///</description>
 */
 alter procedure [dbo].[Community.Save]
-   @ID             bigint  = null out
+   @ID             bigint        = null
   ,@Name           varchar(128)
   ,@Link           varchar(1024) = null
   ,@Decription     varchar(1024) = null
+  ,@Tagline        varchar(64)   = null
   ,@OwnerID        bigint          
 as
 begin
@@ -41,6 +42,7 @@ begin
       ,Name
       ,Link
       ,Decription
+      ,Tagline
       ,OwnerID
       ,CreateDate 
     ) values (
@@ -48,6 +50,7 @@ begin
       ,@Name
       ,@Link
       ,@Decription
+      ,@Tagline
       ,@OwnerID
       ,getdate()
     )
@@ -64,9 +67,15 @@ begin
          t.Name           = @Name
         ,t.Link           = @Link
         ,t.Decription     = @Decription
+        ,t.Tagline        = @Tagline
       from dbo.Community as t
       where ID = @ID
   end
+
+  select
+       top 1 c.ID
+    from dbo.Community as c       
+    where c.ID = @ID
 
   -----------------------------------------------------------------
   -- End Point
@@ -91,7 +100,8 @@ exec dbo.FillExtendedProperty
      ,@ID = ID community \n
      ,@Link = Link to community \n
      ,@Name = Name community \n
-     ,@OwnerID = ID owner community \n'
+     ,@OwnerID = ID owner community \n
+     ,@Tagline = Tagline community'
 go
 
 /* Debugger:
