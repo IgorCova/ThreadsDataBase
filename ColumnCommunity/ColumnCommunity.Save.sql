@@ -92,8 +92,10 @@ go
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = [dbo].[ColumnCommunity.Save] -- '[dbo].[ColumnCommunity.Save]'
-   @debug_info      = 0xFF
+exec @ret = [dbo].[ColumnCommunity.Save]
+   @CommunityID    = 1 
+  ,@Name           = 'Debug'
+  ,@CreatorID      = 1 
 
 select @err = @@error
 

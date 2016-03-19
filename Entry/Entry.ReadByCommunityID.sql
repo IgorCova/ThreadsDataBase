@@ -12,6 +12,7 @@ go
 */
 alter procedure [dbo].[Entry.ReadByCommunityID]
    @CommunityID  bigint
+  ,@ColumnID     bigint = null
   ,@MemberID     bigint
 as
 begin
@@ -25,41 +26,20 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  
-declare @Table table (
-   id                   int identity(1,1)
-  ,Entry_ID             bigint 
-  ,Community_ID         bigint 
-  ,Community_Name       varchar(256) 
-  ,ColumnCommunity_ID   bigint 
-  ,ColumnCommunity_Name varchar(256) 
-  ,Entry_Text           varchar(4048) 
-  ,Entry_CreateDate     datetime
-  ,CreatorID            bigint
-  ,CreatorID_Fullname   varchar(512)
-  ,primary key(Entry_ID))  
-  
-  insert into @Table ( 
-     Entry_ID
-    ,Community_ID
-    ,Community_Name
-    ,ColumnCommunity_ID
-    ,ColumnCommunity_Name
-    ,Entry_Text
-    ,Entry_CreateDate 
-    ,CreatorID
-    ,CreatorID_Fullname
-  ) values (
-     0
-    ,0
-    ,'Non'
-    ,0
-    ,'Non'
-    ,'Non'
-    ,getdate() 
-    ,0
-    ,'Non'
-  )
+  set @ColumnID = nullif(@ColumnID, 0)
+
+  declare @Table table (
+     id                   int identity(1,1)
+    ,Entry_ID             bigint 
+    ,Community_ID         bigint 
+    ,Community_Name       varchar(256) 
+    ,ColumnCommunity_ID   bigint 
+    ,ColumnCommunity_Name varchar(256) 
+    ,Entry_Text           varchar(4048) 
+    ,Entry_CreateDate     datetime
+    ,CreatorID            bigint
+    ,CreatorID_Fullname   varchar(512)
+    ,primary key(Entry_ID))  
   
   insert into @Table ( 
      Entry_ID
@@ -82,7 +62,7 @@ declare @Table table (
       ,t.CreateDate
       ,t.CreatorID
       ,p.FullName    as CreatorID_FullName
-     
+
     from dbo.[Entry]           as t       
     join dbo.Community       as c on c.ID = t.CommunityID
     join dbo.[Member.View]   as p on p.ID = t.CreatorID
@@ -90,6 +70,7 @@ declare @Table table (
                                       and m.CommunityID = t.CommunityID
     
     where t.CommunityID = @CommunityID
+      and t.ColumnID = isnull(@ColumnID, t.ColumnID)
       and t.DeleteDate is null
     order by t.CreateDate desc
 
@@ -134,7 +115,8 @@ exec dbo.FillExtendedProperty
   ,@Author      = 'Cova Igor'
   ,@Description = 'Procedure for read entries communities'
   ,@Params = '@CommunityID = id community \n
-             ,@MemberID = id Member'
+             ,@MemberID = id Member \n
+             ,@ColumnID = id Column'
 go
 
 /* Debugger:
@@ -143,6 +125,7 @@ declare @ret int, @err int, @runtime datetime
 select @runtime = getdate()
 exec @ret = [dbo].[Entry.ReadByCommunityID]
    @CommunityID = 1
+  ,@ColumnID = null
   ,@MemberID = 1
 
 select @err = @@error

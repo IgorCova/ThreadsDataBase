@@ -58,7 +58,7 @@ begin
     exec dbo.[ColumnCommunity.Save]
        @ID          = null   
       ,@CommunityID = @ID   
-      ,@Name        = 'Post'   
+      ,@Name        = 'Timeline'   
       ,@CreatorID   = @OwnerID
   end
   else

@@ -39,12 +39,12 @@ begin
       from dbo.Community as c       
       where c.ID = @CommunityID
 
-  if @ColumnID is null
+  if nullif(@ColumnID, 0) is null
     select
           @ColumnID = c.ID
       from dbo.ColumnCommunity as c       
       where c.CommunityID = c.CommunityID
-        and c.Name = 'Post'
+        and c.Name = 'Timeline'
   
   while @EntryText like '%' + char(10)
   begin
