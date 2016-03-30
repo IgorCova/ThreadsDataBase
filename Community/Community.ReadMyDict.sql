@@ -54,7 +54,7 @@ begin
            c.ID as DefaultColumnID
         from dbo.ColumnCommunity  as c      
         where c.CommunityID = t.ID 
-          and c.Name = 'Timeine' 
+          and c.Name = 'Timeline' 
     ) as cc
 
     outer apply (

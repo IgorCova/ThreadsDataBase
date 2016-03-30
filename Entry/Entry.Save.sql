@@ -43,7 +43,7 @@ begin
     select
           @ColumnID = c.ID
       from dbo.ColumnCommunity as c       
-      where c.CommunityID = c.CommunityID
+      where c.CommunityID = @CommunityID
         and c.Name = 'Timeline'
   
   while @EntryText like '%' + char(10)

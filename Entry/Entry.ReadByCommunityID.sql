@@ -35,7 +35,7 @@ begin
     ,Community_Name       varchar(256) 
     ,ColumnCommunity_ID   bigint 
     ,ColumnCommunity_Name varchar(256) 
-    ,Entry_Text           varchar(4048) 
+    ,Entry_Text           varchar(max) 
     ,Entry_CreateDate     datetime
     ,CreatorID            bigint
     ,CreatorID_Fullname   varchar(512)
@@ -124,8 +124,8 @@ declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
 exec @ret = [dbo].[Entry.ReadByCommunityID]
-   @CommunityID = 1
-  ,@ColumnID = null
+   @CommunityID = 4
+  ,@ColumnID = 69
   ,@MemberID = 1
 
 select @err = @@error
