@@ -1,3 +1,6 @@
+use Hub
+go
+
 set nocount on
 set quoted_identifier, ansi_nulls, ansi_warnings, arithabort, concat_null_yields_null, ansi_padding on
 set numeric_roundabort off
@@ -10,19 +13,19 @@ go
 ----------------------------------------------
 create table dbo.SubjectComm (
    id           bigint
-  ,ownerPubID   bigint
+  ,ownerHubID   bigint
   ,name         varchar(256)
   ,constraint SubjectComm_pk primary key clustered (id)
 )
 go
 
 create unique index SubjectComm_uixName
-  on dbo.SubjectComm (ownerPubID, name)
+  on dbo.SubjectComm (ownerHubID, name)
 go
 
 alter table dbo.SubjectComm
-  add constraint SubjectComm_fkownerPubID
-  foreign key (ownerPubID) references dbo.OwnerPub (id)
+  add constraint SubjectComm_fkownerHubID
+  foreign key (ownerHubID) references dbo.OwnerHub (id)
 go
 
 create sequence seq.SubjectComm as bigint

@@ -1,3 +1,6 @@
+use Hub
+go
+
 set nocount on
 set quoted_identifier, ansi_nulls, ansi_warnings, arithabort, concat_null_yields_null, ansi_padding on
 set numeric_roundabort off
@@ -6,24 +9,24 @@ set xact_abort on
 go
 
 ----------------------------------------------
--- <TABLE> dbo.OwnerPub
+-- <TABLE> dbo.OwnerHub
 ----------------------------------------------
 
-create table dbo.OwnerPub (
+create table dbo.OwnerHub (
    id             bigint
   ,firstName      varchar(512)
   ,lastName       varchar(512)
   ,phone          varchar(32)
   ,linkFB         varchar(512)
-  ,constraint ownerPub_pk primary key clustered (id)
+  ,constraint ownerHub_pk primary key clustered (id)
 )
 go
 
-create unique index OwnerPub_uixPhone
-  on dbo.OwnerPub (phone)
+create unique index OwnerHub_uixPhone
+  on dbo.OwnerHub (phone)
 go
 
-create sequence seq.OwnerPub as bigint
+create sequence seq.OwnerHub as bigint
     start with 1
     increment by 1 ;
 go

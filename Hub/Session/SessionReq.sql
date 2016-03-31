@@ -1,4 +1,4 @@
-use Pub
+use Hub
 go
 
 set nocount on
@@ -9,27 +9,22 @@ set xact_abort on
 go
 
 ----------------------------------------------
--- <TABLE> dbo.Session
+-- <TABLE> dbo.SessionReq
 ----------------------------------------------
-create table dbo.Session (
+create table dbo.SessionReq (
    id                              bigint
-  ,sessionReqID                    bigint
-  ,sessionID                       uniqueidentifier
+  ,dID                             varchar(64)
+  ,phone                           varchar(64)
   ,createDate                      datetime 
-  ,constraint Session_pk primary key nonclustered (id)
+  ,constraint SessionReq_pk primary key nonclustered (id)
 )
 go
 
-alter table dbo.Session 
-add constraint Session_fkReqID
-  foreign key (SessionReqID) references dbo.SessionReq (id)
+create index SessionReq_ixSessionReqID
+  on dbo.SessionReq (id)
 go
 
-create index Session_ixSessionID
-  on dbo.Session (SessionID)
-go
-
-create sequence seq.Session as bigint
+create sequence seq.SessionReq as bigint
     start with 1
     increment by 1 ;
 go

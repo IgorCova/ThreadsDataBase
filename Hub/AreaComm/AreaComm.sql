@@ -1,3 +1,6 @@
+use Hub
+go
+
 set nocount on
 set quoted_identifier, ansi_nulls, ansi_warnings, arithabort, concat_null_yields_null, ansi_padding on
 set numeric_roundabort off

@@ -1,4 +1,4 @@
-use Pub
+use Hub
 go
 
 set nocount on
@@ -10,12 +10,12 @@ go
 
 /*
 ///<description>
-/// procedure for read owner pub.
+/// procedure for Save Session request.
 ///</description>
 */
-alter procedure dbo.Comm_Read
-   @id             bigint
-  ,@ownerPubID     bigint
+alter procedure dbo.SessionReq_Save
+   @dID            varchar(64)
+  ,@phone          varchar(64)
 as
 begin
 ------------------------------------------------
@@ -28,17 +28,32 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
+  declare 
+     @id bigint
+    ,@OwnerHubID bigint
 
-  select top 1
-       t.id
-      ,t.ownerPubID
-      ,t.subjectCommID
-      ,t.areaCommID
-      ,t.name
-      ,t.adminCommID
-    from dbo.Comm as t       
-    where t.id = @id
-      and t.ownerPubID = @ownerPubID
+  set @id = next value for seq.SessionReq
+
+  select
+       @OwnerHubID = m.id
+    from dbo.OwnerHub as m       
+    where m.Phone = @Phone  
+
+  insert into dbo.SessionReq ( 
+     id
+    ,dID
+    ,phone
+    ,createDate 
+  ) values (
+     @id
+    ,@dID
+    ,@phone
+    ,getdate() 
+  )
+
+  select
+       @id                    as id
+      ,isnull(@OwnerHubID, 0) as ownerHubID 
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -48,30 +63,31 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec dbo.[NativeCheck] 'dbo.Comm_Read'
+exec dbo.NativeCheck 'dbo.SessionReq_Save'
 go
 
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.Comm_Read'
+   @ObjSysName  = 'dbo.SessionReq_Save'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for read owner pub.'
-  ,@Params      = '@ownerPubID = owner pub id \n'
+  ,@Description = 'procedure for Save Session request.'
+  ,@Params = '
+     ,@dID = Device ID \n
+     ,@phone = Phone number \n
+     '
 go
 
 /* Œ“À¿ƒ ¿:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.Comm_Read 
-   @id = 1
-  ,@ownerPubId = 1
+exec @ret = dbo.SessionReq_Save 
 
 select @err = @@error
 
-select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
+select @ret as RETURN, @err as ERROR, convert(varchar(20), getdate()-@runtime, 114) as RUN_TIME
 --*/
 go
-grant execute on dbo.Comm_Read to [public]
+grant execute on dbo.SessionReq_Save to public

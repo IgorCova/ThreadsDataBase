@@ -1,4 +1,4 @@
-use Pub
+use Hub
 go
 
 set nocount on
@@ -10,13 +10,12 @@ go
 
 /*
 ///<description>
-///   procedure for Save subject of community.
+///   procedure for del subject of community.
 ///</description>
 */
-alter procedure dbo.SubjectComm_Save
-   @id         bigint = null
-  ,@ownerPubID bigint 
-  ,@name       varchar(256)
+alter procedure dbo.SubjectComm_Del
+   @id         bigint
+  ,@ownerHubID bigint 
 as
 begin
 ------------------------------------------------
@@ -29,32 +28,11 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  if not exists (
-      select * 
-        from dbo.SubjectComm as s 
-        where s.id = @id)
-  begin
-    set @id = next value for seq.SubjectComm
-
-    insert into dbo.SubjectComm ( 
-       id
-      ,ownerPubID
-      ,name 
-    ) values (
-       @id
-      ,@ownerPubID
-      ,@name 
-    )   
-
-   end
-   else
-   begin
-     update t set  
-          t.name = @name
-       from dbo.SubjectComm as t
-       where t.id = @id
-         and t.ownerPubID = @ownerPubID
-   end
+  delete  
+    from dbo.SubjectComm
+    where id = @id 
+      and ownerHubID = @ownerHubID 
+  
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -64,26 +42,25 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec dbo.[NativeCheck] 'dbo.SubjectComm_Save'
+exec dbo.[NativeCheck] 'dbo.SubjectComm_Del'
 go
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.SubjectComm_Save'
+   @ObjSysName  = 'dbo.SubjectComm_Del'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for Save subject of community.'
+  ,@Description = 'procedure for del subject of community.'
   ,@Params = '
       @id = id SubjectComm \n 
-     ,@name = name \n
-     ,@ownerPubID = owner pub id \n'
+     ,@ownerHubID = owner Hub id \n'
 go
 
 /* Œ“À¿ƒ ¿:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.SubjectComm_Save 
+exec @ret = dbo.SubjectComm_Del 
    @MemberID = 1
   ,@EntryID = 410  
 
@@ -92,4 +69,4 @@ select @err = @@error
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.SubjectComm_Save to [public]
+grant execute on dbo.SubjectComm_Del to [public]

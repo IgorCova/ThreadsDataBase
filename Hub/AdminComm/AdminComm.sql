@@ -1,3 +1,6 @@
+use Hub 
+go
+
 set nocount on
 set quoted_identifier, ansi_nulls, ansi_warnings, arithabort, concat_null_yields_null, ansi_padding on
 set numeric_roundabort off
@@ -11,7 +14,7 @@ go
 
 create table dbo.AdminComm (
    id             bigint
-  ,ownerPubId     bigint
+  ,ownerHubId     bigint
   ,firstName      varchar(512)
   ,lastName       varchar(512)
   ,phone          varchar(32)
@@ -21,12 +24,12 @@ create table dbo.AdminComm (
 go
 
 create unique index AdminComm_uixName
-  on dbo.AdminComm (phone, ownerPubId)
+  on dbo.AdminComm (phone, ownerHubId)
 go
 
 alter table dbo.AdminComm
-  add constraint AdminComm_fkownerPubID
-  foreign key (ownerPubID) references dbo.OwnerPub (id)
+  add constraint AdminComm_fkownerHubID
+  foreign key (ownerHubID) references dbo.OwnerHub (id)
 go
 
 create sequence seq.AdminComm as bigint

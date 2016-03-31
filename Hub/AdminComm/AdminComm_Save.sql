@@ -1,4 +1,4 @@
-use Pub
+use Hub
 go
 
 set nocount on
@@ -10,17 +10,16 @@ go
 
 /*
 ///<description>
-/// procedure for Save comm.
+///   procedure for Save Admin of community.
 ///</description>
 */
-alter procedure dbo.Comm_Save
-   @id              bigint  = null out
-  ,@ownerPubID      bigint
-  ,@subjectCommID   bigint
-  ,@areaCommID      int
-  ,@name            varchar(256)
-  ,@adminCommID     bigint
-  ,@link            varchar(512)
+alter procedure dbo.AdminComm_Save
+   @id             bigint = null
+  ,@ownerHubID     bigint
+  ,@firstName      varchar(512)
+  ,@lastName       varchar(512)
+  ,@phone          varchar(32)
+  ,@linkFB         varchar(512)
 as
 begin
 ------------------------------------------------
@@ -33,56 +32,46 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  set @name = fn.Trim(@name)
+  set @linkFB = fn.ClearLinkToFB(@linkFB)
+  set @firstName = fn.Trim(@firstName)
+  set @lastName = fn.Trim(@lastName)
+  set @phone = fn.ClearPhone(@phone)
 
   if not exists (
       select * 
-        from dbo.Comm as s 
+        from dbo.AdminComm as s 
         where s.id = @id)
   begin
-    set @id = next value for seq.Comm
+    set @id = next value for seq.AdminComm
 
-    insert into dbo.Comm ( 
+    insert into dbo.AdminComm ( 
        id
-      ,ownerPubID
-      ,subjectCommID
-      ,areaCommID
-      ,name
-      ,adminCommID 
-      ,link
+      ,ownerHubId
+      ,firstName
+      ,lastName
+      ,phone
+      ,linkFB 
     ) values (
        @id
-      ,@ownerPubID
-      ,@subjectCommID
-      ,@areaCommID
-      ,@name
-      ,@adminCommID
-      ,@link
+      ,@ownerHubID
+      ,@firstName
+      ,@lastName
+      ,@phone
+      ,@linkFB 
     )
+
   end
   else
   begin
     update t set    
-         t.subjectCommID = @subjectCommID
-        ,t.link          = @link
-        ,t.name          = @name
-        ,t.adminCommID   = @adminCommID
-        ,t.areaCommID = @areaCommID
-      from dbo.Comm as t
-      where t.id = @id
-        and t.ownerPubID = @ownerPubID
+         t.firstName     = @firstName
+        ,t.lastName      = @lastName
+        ,t.phone         = @phone
+        ,t.linkFB        = @linkFB  
+      from dbo.AdminComm as t
+      where t.id = @id 
+        and t.ownerHubID = @ownerHubID
   end
-
-  select top 1
-       t.id
-      ,t.ownerPubID
-      ,t.subjectCommID
-      ,t.areaCommID
-      ,t.name
-      ,t.adminCommID
-    from dbo.Comm as t       
-    where t.id = @id 
-      and t.ownerPubID = @ownerPubID
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -92,33 +81,34 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec dbo.[NativeCheck] 'dbo.Comm_Save'
+exec dbo.[NativeCheck] 'dbo.AdminComm_Save'
 go
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.Comm_Save'
+   @ObjSysName  = 'dbo.AdminComm_Save'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for Save comm.'
+  ,@Description = 'procedure for Save Admin of community.'
   ,@Params = '
-       @adminCommID = admin comm id \n
-      ,@areaCommID = area social network \n
-      ,@link = link to community \n
-      ,@name = name \n
-      ,@ownerPubID = owner pub id \n
-      ,@subjectCommID = subject comm id \n'
+     @firstName = Firstname \n
+    ,@lastName = Lastname \n
+    ,@linkFB = lint to facebook \n
+    ,@phone = phone number \n
+    ,@ownerHubID = Owner Hub id \n'
 go
 
 /* Œ“À¿ƒ ¿:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.Comm_Save 
+exec @ret = dbo.AdminComm_Save 
+   @MemberID = 1
+  ,@EntryID = 410  
 
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.Comm_Save to [public]
+grant execute on dbo.AdminComm_Save to [public]

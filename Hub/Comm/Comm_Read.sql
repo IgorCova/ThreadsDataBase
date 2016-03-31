@@ -1,4 +1,4 @@
-use Pub
+use Hub
 go
 
 set nocount on
@@ -10,11 +10,12 @@ go
 
 /*
 ///<description>
-///   procedure for read subjects of community.
+/// procedure for read owner Hub.
 ///</description>
 */
-alter procedure dbo.SubjectComm_ReadDict
-  @ownerPubID bigint 
+alter procedure dbo.Comm_Read
+   @id             bigint
+  ,@ownerHubID     bigint
 as
 begin
 ------------------------------------------------
@@ -27,12 +28,17 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  select
+
+  select top 1
        t.id
-      ,t.ownerPubID
+      ,t.ownerHubID
+      ,t.subjectCommID
+      ,t.areaCommID
       ,t.name
-    from dbo.SubjectComm as t       
-    where t.ownerPubID = @ownerPubID
+      ,t.adminCommID
+    from dbo.Comm as t       
+    where t.id = @id
+      and t.ownerHubID = @ownerHubID
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -42,29 +48,30 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec dbo.[NativeCheck] 'dbo.SubjectComm_ReadDict'
+exec dbo.[NativeCheck] 'dbo.Comm_Read'
 go
+
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.SubjectComm_ReadDict'
+   @ObjSysName  = 'dbo.Comm_Read'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for Save subject of community.'
-  ,@Params = '
-     ,@ownerPubID = owner pub id \n'
+  ,@Description = 'procedure for read owner Hub.'
+  ,@Params      = '@ownerHubID = owner Hub id \n'
 go
 
 /* Œ“À¿ƒ ¿:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.SubjectComm_ReadDict 
-   @ownerPubID = 1
+exec @ret = dbo.Comm_Read 
+   @id = 1
+  ,@ownerHubId = 1
 
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.SubjectComm_ReadDict to [public]
+grant execute on dbo.Comm_Read to [public]

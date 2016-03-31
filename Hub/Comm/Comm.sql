@@ -1,3 +1,6 @@
+use Hub
+go
+
 set nocount on
 set quoted_identifier, ansi_nulls, ansi_warnings, arithabort, concat_null_yields_null, ansi_padding on
 set numeric_roundabort off
@@ -10,7 +13,7 @@ go
 ----------------------------------------------
 create table dbo.Comm (
    id              bigint
-  ,ownerPubID      bigint
+  ,ownerHubID      bigint
   ,subjectCommID   bigint
   ,areaCommID      int
   ,name            varchar(256)
@@ -21,8 +24,8 @@ create table dbo.Comm (
 go
 
 alter table dbo.Comm
-  add constraint Comm_fkOwnerPubID
-  foreign key (ownerPubID) references dbo.OwnerPub (id)
+  add constraint Comm_fkOwnerHubID
+  foreign key (ownerHubID) references dbo.OwnerHub (id)
 go
 
 alter table dbo.Comm

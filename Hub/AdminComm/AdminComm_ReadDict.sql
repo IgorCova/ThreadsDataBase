@@ -1,4 +1,4 @@
-use Pub
+use Hub
 go
 
 set nocount on
@@ -10,11 +10,11 @@ go
 
 /*
 ///<description>
-///   procedure for Save Admin of community.
+///   procedure for read Admin of community.
 ///</description>
 */
 alter procedure dbo.AdminComm_ReadDict
-   @ownerPubID     bigint
+   @ownerHubID     bigint
 as
 begin
 ------------------------------------------------
@@ -30,13 +30,13 @@ begin
 
   select
        t.id
-      ,t.ownerPubId
+      ,t.ownerHubId
       ,t.firstName
       ,t.lastName
       ,t.phone
       ,t.linkFB
     from dbo.AdminComm as t       
-    where t.ownerPubId = @ownerPubID
+    where t.ownerHubId = @ownerHubID
 
   -----------------------------------------------------------------
   -- End Point
@@ -55,9 +55,9 @@ go
 exec dbo.FillExtendedProperty
    @ObjSysName  = 'dbo.AdminComm_ReadDict'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for Save Admin of community.'
+  ,@Description = 'procedure for read Admin of community.'
   ,@Params = '
-     @ownerPubID = Owner pub id \n'
+     @ownerHubID = Owner Hub id \n'
 go
 
 /* Œ“À¿ƒ ¿:
@@ -65,7 +65,7 @@ declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
 exec @ret = dbo.AdminComm_ReadDict 
-   @ownerPubID = 1  
+   @ownerHubID = 1  
 
 select @err = @@error
 

@@ -1,13 +1,7 @@
-/*
-exec dbo.SubjectComm_Save
-  @id = null,
-  @ownerPubID = 1,
-  @name = 'Цветочные горшки'
-go
-*/
+
 
 /*
-exec dbo.OwnerPub_Save
+exec dbo.OwnerHub_Save
    @id = null   
   ,@firstName = 'Igor'   
   ,@lastName = 'Cova'   
@@ -15,12 +9,18 @@ exec dbo.OwnerPub_Save
   ,@linkFB = 'emptyparam'
 go  
 */
-
+/*
+exec dbo.SubjectComm_Save
+  @id = null,
+  @ownerHubID = 1,
+  @name = 'Entertainment'
+go
+*/
 
 /*
 exec dbo.AdminComm_Save
   @id = null,
-  @ownerPubID = 1,
+  @ownerHubID = 1,
   @firstName = 'Andrew',
   @lastName = 'Dzhur',
   @phone = '79264308272',
@@ -28,7 +28,7 @@ exec dbo.AdminComm_Save
 go
 exec dbo.AdminComm_Save
   @id = null,
-  @ownerPubID = 1,
+  @ownerHubID = 1,
   @firstName = 'Antony',
   @lastName = 'Bubas',
   @phone = '79253396965',
@@ -42,7 +42,7 @@ exec dbo.SessionReq_Save
 go
 
 exec dbo.Session_Save
-  @sessionReqID = 5,
+  @sessionReqID = 1,
   @dID = 'iPhone-Jin'
 go
 */
@@ -53,7 +53,7 @@ exec dbo.SessionReq_Save
 go
 
 exec dbo.Session_Save
-  @sessionReqID = 6,
+  @sessionReqID = 2,
   @dID = 'iPhone-Torry'
 go
 */
@@ -63,7 +63,7 @@ insert into dbo.AreaComm (
   ,links
   ,name 
 ) values (
-   nexy value for seq.AreaComm
+   next value for seq.AreaComm
   ,'vk.сom, vkontakte.com, vkontakte.ru'
   ,'ВКонтакте'
 )
@@ -78,11 +78,11 @@ insert into dbo.AreaComm (
   ,'Одноклассники'
 )
 */
-
+/*
 exec dbo.Comm_Save
   @id = null,
-  @ownerPubID = 1,
-  @subjectCommID = 1,
+  @ownerHubID = 1,
+  @subjectCommID = 3,
   @areaCommID = 1,
   @name = 'Run Foundation',
   @adminCommID = 1,
@@ -91,16 +91,16 @@ go
 
 exec dbo.Comm_Save
   @id = null,
-  @ownerPubID = 1,
-  @subjectCommID = 3,
+  @ownerHubID = 1,
+  @subjectCommID = 4,
   @areaCommID = 1,
   @name = 'Major Mafia',
   @adminCommID = 1,
   @link = 'http://vk.com/majormafia'
 go
-
+*/
 select * from dbo.SubjectComm
-select * from dbo.OwnerPub
+select * from dbo.OwnerHub
 select * from dbo.AdminComm
 select * from dbo.AreaComm
 select * from dbo.Comm

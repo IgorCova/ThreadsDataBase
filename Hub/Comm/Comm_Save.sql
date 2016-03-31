@@ -1,4 +1,4 @@
-use Pub
+use Hub
 go
 
 set nocount on
@@ -10,15 +10,17 @@ go
 
 /*
 ///<description>
-/// procedure for Save owner pub.
+/// procedure for Save comm.
 ///</description>
 */
-alter procedure dbo.OwnerPub_Save
-   @id             bigint  = null out
-  ,@firstName      varchar(512) 
-  ,@lastName       varchar(512)
-  ,@phone          varchar(32)
-  ,@linkFB         varchar(512)
+alter procedure dbo.Comm_Save
+   @id              bigint  = null out
+  ,@ownerHubID      bigint
+  ,@subjectCommID   bigint
+  ,@areaCommID      int
+  ,@name            varchar(256)
+  ,@adminCommID     bigint
+  ,@link            varchar(512)
 as
 begin
 ------------------------------------------------
@@ -31,51 +33,56 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  set @linkFB = fn.ClearLinkToFB(@linkFB)
-  set @firstName = fn.Trim(@firstName)
-  set @lastName = fn.Trim(@lastName)
-  set @phone = fn.ClearPhone(@phone)
+  set @name = fn.Trim(@name)
 
   if not exists (
       select * 
-        from dbo.OwnerPub as s 
+        from dbo.Comm as s 
         where s.id = @id)
   begin
-    set @id = next value for seq.OwnerPub
+    set @id = next value for seq.Comm
 
-    insert into dbo.OwnerPub ( 
+    insert into dbo.Comm ( 
        id
-      ,firstName
-      ,lastName
-      ,phone
-      ,linkFB 
+      ,ownerHubID
+      ,subjectCommID
+      ,areaCommID
+      ,name
+      ,adminCommID 
+      ,link
     ) values (
        @id
-      ,@firstName
-      ,@lastName
-      ,@phone
-      ,@linkFB
+      ,@ownerHubID
+      ,@subjectCommID
+      ,@areaCommID
+      ,@name
+      ,@adminCommID
+      ,@link
     )
   end
   else
   begin
     update t set    
-         t.firstName = @firstName
-        ,t.lastName  = @lastName
-        ,t.phone     = @phone
-        ,t.linkFB    = @linkFB  
-      from dbo.OwnerPub as t
+         t.subjectCommID = @subjectCommID
+        ,t.link          = @link
+        ,t.name          = @name
+        ,t.adminCommID   = @adminCommID
+        ,t.areaCommID = @areaCommID
+      from dbo.Comm as t
       where t.id = @id
+        and t.ownerHubID = @ownerHubID
   end
 
   select top 1
        t.id
-      ,t.firstName
-      ,t.lastName
-      ,t.phone
-      ,t.linkFB
-    from dbo.OwnerPub as t
-    where t.id = @id
+      ,t.ownerHubID
+      ,t.subjectCommID
+      ,t.areaCommID
+      ,t.name
+      ,t.adminCommID
+    from dbo.Comm as t       
+    where t.id = @id 
+      and t.ownerHubID = @ownerHubID
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -85,31 +92,33 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec dbo.[NativeCheck] 'dbo.OwnerPub_Save'
+exec dbo.[NativeCheck] 'dbo.Comm_Save'
 go
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.OwnerPub_Save'
+   @ObjSysName  = 'dbo.Comm_Save'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for Save owner pub.'
+  ,@Description = 'procedure for Save comm.'
   ,@Params = '
-      @firstName = First Name \n
-     ,@lastName = Last Name \n
-     ,@linkFB = link to facebook \n
-     ,@phone = phone number \n'
+       @adminCommID = admin comm id \n
+      ,@areaCommID = area social network \n
+      ,@link = link to community \n
+      ,@name = name \n
+      ,@ownerHubID = owner Hub id \n
+      ,@subjectCommID = subject comm id \n'
 go
 
 /* Œ“À¿ƒ ¿:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.OwnerPub_Save 
+exec @ret = dbo.Comm_Save 
 
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.OwnerPub_Save to [public]
+grant execute on dbo.Comm_Save to [public]

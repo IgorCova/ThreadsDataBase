@@ -4,7 +4,7 @@
  Ltrim + rtrim, and change double spaces to single space in string, and return changed string.
 ///</description>
 */
-alter function fn.Trim(@str varchar(max))
+create function fn.Trim(@str varchar(max))
 returns varchar(max) 
 as
 begin

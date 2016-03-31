@@ -1,3 +1,6 @@
+use Hub
+go
+
 set nocount on
 set quoted_identifier, ansi_nulls, ansi_warnings, arithabort, concat_null_yields_null, ansi_padding on
 set numeric_roundabort off
@@ -28,7 +31,7 @@ begin
   declare 
      @id          bigint
     ,@sessionID   uniqueidentifier
-    ,@ownerPubID  bigint
+    ,@ownerHubID  bigint
     ,@phone       varchar(32)
     ,@about       varchar(max)
     ,@isNewMember bit = cast(0 as bit)
@@ -37,14 +40,14 @@ begin
   set @ID = next value for seq.Session
 
   select top 1
-       @ownerPubID = m.id
+       @ownerHubID = m.id
       ,@Phone = t.Phone
     from dbo.SessionReq    as t
-    left join dbo.OwnerPub as m on m.Phone = t.Phone       
+    left join dbo.OwnerHub as m on m.Phone = t.Phone       
     where t.id = @sessionReqID 
       and t.dID = @dID
 
-  if @ownerPubID is null
+  if @ownerHubID is null
   begin
     set @About = 'Joined on ' + convert(varchar, getdate(), 106)
     set @isNewMember = cast(1 as bit)
@@ -55,8 +58,8 @@ begin
       return 0
     end
 
-    exec dbo.OwnerPub_Save
-       @id        = @ownerPubID out    
+    exec dbo.OwnerHub_Save
+       @id        = @ownerHubID out    
       ,@firstName = ''   
       ,@lastName  = ''   
       ,@phone     = @phone   
@@ -77,7 +80,7 @@ begin
 
   select
        t.sessionID      as SessionID
-      ,@ownerPubID       as MemberID
+      ,@ownerHubID       as MemberID
       ,@isNewMember     as IsNewMember
     from dbo.Session  as t       
     where t.id = @id

@@ -14,8 +14,6 @@ go
 ///</description>
 */
 alter procedure dbo.GetExtendedProperty
--- v1.0
-  -- of(Object):   
    @ObjSysName     sysname
 with execute as owner 
 as

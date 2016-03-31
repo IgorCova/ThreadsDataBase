@@ -1,4 +1,4 @@
-use Pub
+use Hub
 go
 
 set nocount on
@@ -10,16 +10,13 @@ go
 
 /*
 ///<description>
-///   procedure for Save Admin of community.
+///   procedure for Save subject of community.
 ///</description>
 */
-alter procedure dbo.AdminComm_Save
-   @id             bigint = null
-  ,@ownerPubID     bigint
-  ,@firstName      varchar(512)
-  ,@lastName       varchar(512)
-  ,@phone          varchar(32)
-  ,@linkFB         varchar(512)
+alter procedure dbo.SubjectComm_Save
+   @id         bigint = null
+  ,@ownerHubID bigint 
+  ,@name       varchar(256)
 as
 begin
 ------------------------------------------------
@@ -32,46 +29,32 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  set @linkFB = fn.ClearLinkToFB(@linkFB)
-  set @firstName = fn.Trim(@firstName)
-  set @lastName = fn.Trim(@lastName)
-  set @phone = fn.ClearPhone(@phone)
-
   if not exists (
       select * 
-        from dbo.AdminComm as s 
+        from dbo.SubjectComm as s 
         where s.id = @id)
   begin
-    set @id = next value for seq.AdminComm
+    set @id = next value for seq.SubjectComm
 
-    insert into dbo.AdminComm ( 
+    insert into dbo.SubjectComm ( 
        id
-      ,ownerPubId
-      ,firstName
-      ,lastName
-      ,phone
-      ,linkFB 
+      ,ownerHubID
+      ,name 
     ) values (
        @id
-      ,@ownerPubID
-      ,@firstName
-      ,@lastName
-      ,@phone
-      ,@linkFB 
-    )
+      ,@ownerHubID
+      ,@name 
+    )   
 
-  end
-  else
-  begin
-    update t set    
-         t.firstName     = @firstName
-        ,t.lastName      = @lastName
-        ,t.phone         = @phone
-        ,t.linkFB        = @linkFB  
-      from dbo.AdminComm as t
-      where t.id = @id 
-        and t.ownerPubID = @ownerPubID
-  end
+   end
+   else
+   begin
+     update t set  
+          t.name = @name
+       from dbo.SubjectComm as t
+       where t.id = @id
+         and t.ownerHubID = @ownerHubID
+   end
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -81,28 +64,26 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec dbo.[NativeCheck] 'dbo.AdminComm_Save'
+exec dbo.[NativeCheck] 'dbo.SubjectComm_Save'
 go
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.AdminComm_Save'
+   @ObjSysName  = 'dbo.SubjectComm_Save'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for Save Admin of community.'
+  ,@Description = 'procedure for Save subject of community.'
   ,@Params = '
-     @firstName = Firstname \n
-    ,@lastName = Lastname \n
-    ,@linkFB = lint to facebook \n
-    ,@phone = phone number \n
-    ,@ownerPubID = Owner pub id \n'
+      @id = id SubjectComm \n 
+     ,@name = name \n
+     ,@ownerHubID = owner Hub id \n'
 go
 
 /* Œ“À¿ƒ ¿:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.AdminComm_Save 
+exec @ret = dbo.SubjectComm_Save 
    @MemberID = 1
   ,@EntryID = 410  
 
@@ -111,4 +92,4 @@ select @err = @@error
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.AdminComm_Save to [public]
+grant execute on dbo.SubjectComm_Save to [public]

@@ -1,4 +1,4 @@
-use Pub
+use Hub
 go
 
 set nocount on
@@ -10,10 +10,10 @@ go
 
 /*
 ///<description>
-/// procedure for read owner pub.
+/// procedure for read owner Hub.
 ///</description>
 */
-alter procedure dbo.OwnerPub_Read
+alter procedure dbo.OwnerHub_Read
    @id             bigint
 as
 begin
@@ -34,7 +34,7 @@ begin
       ,t.lastName
       ,t.phone
       ,t.linkFB
-    from dbo.OwnerPub as t
+    from dbo.OwnerHub as t
     where t.id = @id
   -----------------------------------------------------------------
   -- End Point
@@ -45,23 +45,23 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec dbo.[NativeCheck] 'dbo.OwnerPub_Read'
+exec dbo.[NativeCheck] 'dbo.OwnerHub_Read'
 go
 
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.OwnerPub_Read'
+   @ObjSysName  = 'dbo.OwnerHub_Read'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for read owner pub.'
+  ,@Description = 'procedure for read owner Hub.'
 go
 
 /* Œ“À¿ƒ ¿:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.OwnerPub_Read 
+exec @ret = dbo.OwnerHub_Read 
    @id = 1
 
 select @err = @@error
@@ -69,4 +69,4 @@ select @err = @@error
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.OwnerPub_Read to [public]
+grant execute on dbo.OwnerHub_Read to [public]
