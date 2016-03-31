@@ -98,22 +98,22 @@ begin
 
   select
        @Params = isnull(fn.DelDoubleSpace(@Params), '')     
-	  ,@TemplateMsg = 'Fallow next blank: '   + @El + @El
-	  + 'exec [dbo].[FillExtendedProperty]' + @El 
-	  + ' @ObjSysName = ''схема.НазваниеОбьекта'''   + @El
-	  + ',@ObjWrapName = ''схема.НазваниеОбьекта'''+ @El
-	  + ',@Author = ''Создатель объекта'''+ @El
-	  + ',@Description = ''Описание Обьекта'''+ @El
-	  + ',@Params = ''  параметр1 = описание параметра1 \n' + @El
-	  + '             ,параметр2 = описание параметра2 \n' + @El
-	  + '             ,параметр3 = описание параметра3 \n' + @El
-	  + '             ,параметрN = описание параметраN ''' + @El + @El
-	  + 'Разделителем между параметрами обекта является \n' + @El
-	  + 'Разделителем между параметром и описанием параметром является знак ='  + @El
-	  + ',@RowSets = ''Возвращаемые наборы данных'''+ @El
-	  + ',@Errors = ''Возможные ошибки'''+ @El
-	  + '@ObjWrapName параметр не обязательный. Вычисляется автоматически.'  
-  --|| */Аргументы
+	    ,@TemplateMsg = 'Fallow next blank: '   + @El + @El
+	    + 'exec [dbo].[FillExtendedProperty]' + @El 
+	    + ' @ObjSysName = ''схема.НазваниеОбьекта'''   + @El
+	    + ',@ObjWrapName = ''схема.НазваниеОбьекта'''+ @El
+	    + ',@Author = ''Создатель объекта'''+ @El
+	    + ',@Description = ''Описание Обьекта'''+ @El
+	    + ',@Params = ''  параметр1 = описание параметра1 \n' + @El
+	    + '             ,параметр2 = описание параметра2 \n' + @El
+	    + '             ,параметр3 = описание параметра3 \n' + @El
+	    + '             ,параметрN = описание параметраN ''' + @El + @El
+	    + 'Разделителем между параметрами обекта является \n' + @El
+	    + 'Разделителем между параметром и описанием параметром является знак ='  + @El
+	    + ',@RowSets = ''Возвращаемые наборы данных'''+ @El
+	    + ',@Errors = ''Возможные ошибки'''+ @El
+	    + '@ObjWrapName параметр не обязательный. Вычисляется автоматически.'  
+  --|| */Arguments
   
   --||/* RAISERROR   
   if isnull(@ObjSysName, 'help') = 'help' 
@@ -289,7 +289,7 @@ begin
       end
       close cursor_for_add_param
       deallocate cursor_for_add_param  
-      print 'Add parameters with description to Extended Property db object: '  + cast(@cnt as varchar) + ' шт.' + @El
+      print 'Add parameters with description to Extended Property db object: '  + cast(@cnt as varchar) + ' psc.' + @El
       -----------------------------
       --|| */Add new parameters to Extended Property of object
       -----------------------------     
@@ -340,7 +340,7 @@ begin
       end
       close cursor_for_update_param
       deallocate cursor_for_update_param
-      print 'Changing the parameter descriptions in the Extended Property object: '  + cast(@cnt as varchar) + ' шт.'  + @El 
+      print 'Changing the parameter descriptions in the Extended Property object: '  + cast(@cnt as varchar) + ' pcs.'  + @El 
       ------------------------------------
       --|| */Change values parameters in Extended Property
       ------------------------------------ 
@@ -386,7 +386,7 @@ begin
       end
       close cursor_for_rem_param
       deallocate cursor_for_rem_param  
-      print 'Deleting parameters from the Extended Property object: ' + cast(@cnt as varchar) + ' шт.' + @El 
+      print 'Deleting parameters from the Extended Property object: ' + cast(@cnt as varchar) + ' pcs.' + @El 
       -------------------------
       --|| */Deleting parameters from the Extended Property object         
       -------------------------    
@@ -414,7 +414,7 @@ begin
                            from @RequiredPrms as s)    
                           
   --|| List of input parameters with no description
-  select @InfoMsg = ( select '  ,' + c.Name + char(10) as 'data()' 
+  select @InfoMsg = ( select '  ,' + c.Name + ' =  \n' + char(10) as 'data()' 
                         from sys.syscolumns               as c
                         left join sys.extended_properties as p on p.major_id = c.id
                                                               and p.minor_id = 0
@@ -423,7 +423,7 @@ begin
                         where c.id = object_id(@ObjSysName) 
                           and c.Name not in (select Name from @InParamsObj)
                           and isnull(p.Value, '') = ''
-                          and c.Name <> '@debug_info'
+                          and not (c.Name in ('@debug_info', '@id'))
                         for xml path('')) + @el
                         
   --|| Parameters which are in Extended Properties object, but not in the list of parameters of the object (an arbitrary parameter description)                      

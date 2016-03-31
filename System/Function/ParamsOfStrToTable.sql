@@ -31,8 +31,8 @@ Name        Value
 
 ///</description>
 */
-alter function tf.ParamsOfStrToTable(@Params varchar(max))
-
+create function tf.ParamsOfStrToTable(@Params varchar(max))
+--create schema tf
 returns @ret table(Name varchar(1024), value varchar(max), sort_order int identity(1,1))
 as
 begin

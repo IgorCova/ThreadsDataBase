@@ -13,7 +13,7 @@ go
 /// returns clean phone with no characters .. or any other numerical value
 ///</description>
 */
-create function [dbo].[ClearPhone](@phone varchar(512))
+create function fn.[ClearPhone](@phone varchar(512))
 returns varchar(512)
 as
 begin
@@ -39,7 +39,7 @@ go
 declare @ret varchar(32), @err int, @runtime datetime
 select @runtime = getdate()
 
-select @ret = [dbo].[ClearPhone]('89 031 448 046')
+select @ret = fn.[ClearPhone]('89 031 448 046')
 
 select
    @err = @@error

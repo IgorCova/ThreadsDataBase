@@ -50,7 +50,7 @@ begin
   --|| If in Extended Properties nothing is specified
   begin 
     
-    --|| Список входных параметров без описания
+    --|| List of input parameters without description
     select
          @Params =  (select '   ,' + c.Name + ' =  \n' + char(10) as 'data()' 
       from sys.syscolumns               as c

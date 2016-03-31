@@ -13,7 +13,7 @@ go
 /// View ExtendedProperty object in MS SQL Server
 ///</description>
 */
-alter procedure [dbo].[GetExtendedProperty]
+alter procedure dbo.GetExtendedProperty
 -- v1.0
   -- of(Object):   
    @ObjSysName     sysname
