@@ -19,6 +19,7 @@ create table dbo.Comm (
   ,name            varchar(256)
   ,adminCommID     bigint
   ,link            varchar(512)
+  ,groupID         bigint
   ,constraint Comm_pk primary key clustered (id)
 )
 go

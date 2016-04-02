@@ -13,7 +13,11 @@ go
 /// procedure for Save comm.
 ///</description>
 */
-alter procedure dbo.Comm_Save
+
+exec dbo.DropIfExists 'dbo.Comm_Save'
+go
+
+create procedure dbo.Comm_Save
    @id              bigint  = null out
   ,@ownerHubID      bigint
   ,@subjectCommID   bigint
@@ -21,6 +25,7 @@ alter procedure dbo.Comm_Save
   ,@name            varchar(256)
   ,@adminCommID     bigint
   ,@link            varchar(512)
+  ,@groupID         bigint
 as
 begin
 ------------------------------------------------
@@ -48,8 +53,9 @@ begin
       ,subjectCommID
       ,areaCommID
       ,name
-      ,adminCommID 
+      ,adminCommID
       ,link
+      ,groupID 
     ) values (
        @id
       ,@ownerHubID
@@ -58,6 +64,7 @@ begin
       ,@name
       ,@adminCommID
       ,@link
+      ,@groupID 
     )
   end
   else
@@ -65,9 +72,10 @@ begin
     update t set    
          t.subjectCommID = @subjectCommID
         ,t.link          = @link
+        ,t.groupID       = @groupID
         ,t.name          = @name
         ,t.adminCommID   = @adminCommID
-        ,t.areaCommID = @areaCommID
+        ,t.areaCommID    = @areaCommID
       from dbo.Comm as t
       where t.id = @id
         and t.ownerHubID = @ownerHubID
@@ -90,11 +98,6 @@ end
 go
 
 ----------------------------------------------
--- <NativeCheck>
-----------------------------------------------
-exec dbo.[NativeCheck] 'dbo.Comm_Save'
-go
-----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
@@ -105,11 +108,17 @@ exec dbo.FillExtendedProperty
        @adminCommID = admin comm id \n
       ,@areaCommID = area social network \n
       ,@link = link to community \n
+      ,@groupID = id group \n
       ,@name = name \n
       ,@ownerHubID = owner Hub id \n
       ,@subjectCommID = subject comm id \n'
 go
 
+----------------------------------------------
+-- <NativeCheck>
+----------------------------------------------
+exec dbo.NativeCheck 'dbo.Comm_Save'
+go
 /* Œ“À¿ƒ ¿:
 declare @ret int, @err int, @runtime datetime
 

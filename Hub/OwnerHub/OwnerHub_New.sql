@@ -10,11 +10,15 @@ go
 
 /*
 ///<description>
-///   procedure for read Admin of community.
+/// procedure for Save owner Hub.
 ///</description>
 */
-alter procedure dbo.AdminComm_ReadDict
-   @ownerHubID     bigint
+exec dbo.DropIfExists 'dbo.OwnerHub_New'
+go
+
+create procedure dbo.OwnerHub_New
+   @id             bigint  = null out
+  ,@phone          varchar(32)
 as
 begin
 ------------------------------------------------
@@ -27,48 +31,55 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
+  set @phone = fn.ClearPhone(@phone)
+  set @id = next value for seq.OwnerHub
 
-  select
-       t.id
-      ,t.firstName
-      ,t.lastName
-      ,t.phone
-      ,t.linkFB
-    from dbo.AdminComm as t       
-    where t.ownerHubId = @ownerHubID
-
+  insert into dbo.OwnerHub ( 
+     id
+    ,firstName
+    ,lastName
+    ,phone
+    ,linkFB 
+  ) values (
+     @id
+    ,''
+    ,''
+    ,@phone
+    ,'' 
+  )
+  
   -----------------------------------------------------------------
   -- End Point
   return (0)
 end
 go
-
-----------------------------------------------
--- <NativeCheck>
-----------------------------------------------
-exec dbo.[NativeCheck] 'dbo.AdminComm_ReadDict'
-go
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.AdminComm_ReadDict'
+   @ObjSysName  = 'dbo.OwnerHub_New'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for read Admin of community.'
+  ,@Description = 'procedure for Save owner Hub.'
   ,@Params = '
-     @ownerHubID = Owner Hub id \n'
+      @firstName = First Name \n
+     ,@lastName = Last Name \n
+     ,@linkFB = link to facebook \n
+     ,@phone = phone number \n'
 go
-
+----------------------------------------------
+-- <NativeCheck>
+----------------------------------------------
+exec dbo.[NativeCheck] 'dbo.OwnerHub_New'
+go
 /* Œ“À¿ƒ ¿:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.AdminComm_ReadDict 
-   @ownerHubID = 1  
+exec @ret = dbo.OwnerHub_New 
 
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.AdminComm_ReadDict to [public]
+grant execute on dbo.OwnerHub_New to [public]

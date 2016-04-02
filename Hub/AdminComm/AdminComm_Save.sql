@@ -72,6 +72,17 @@ begin
       where t.id = @id 
         and t.ownerHubID = @ownerHubID
   end
+
+  select
+       a.id
+      ,a.ownerHubId
+      ,a.firstName
+      ,a.lastName
+      ,a.phone
+      ,a.linkFB
+    from dbo.AdminComm as a       
+    where a.id = @id
+
   -----------------------------------------------------------------
   -- End Point
   return (0)

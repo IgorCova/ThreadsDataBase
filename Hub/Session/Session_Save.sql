@@ -58,12 +58,9 @@ begin
       return 0
     end
 
-    exec dbo.OwnerHub_Save
+    exec dbo.OwnerHub_New
        @id        = @ownerHubID out    
-      ,@firstName = ''   
-      ,@lastName  = ''   
-      ,@phone     = @phone   
-      ,@linkFB    = ''
+      ,@phone     = @phone
   end
 
   insert into dbo.Session ( 
@@ -79,9 +76,9 @@ begin
   )
 
   select
-       t.sessionID      as SessionID
-      ,@ownerHubID       as MemberID
-      ,@isNewMember     as IsNewMember
+       t.sessionID      as sessionID
+      ,@ownerHubID      as ownerHubID
+      ,@isNewMember     as isNewMember
     from dbo.Session  as t       
     where t.id = @id
   -----------------------------------------------------------------
