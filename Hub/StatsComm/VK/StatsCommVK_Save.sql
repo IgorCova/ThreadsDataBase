@@ -14,15 +14,18 @@ go
 -------------------------------------------------------------
 -- <PROC> dbo.StatsCommVK_Save
 -------------------------------------------------------------
-create procedure dbo.StatsCommVK_Save
-   @ownerHubID           bigint
-  ,@commID               bigint
+create procedure dbo.StatsCommVK_Save   
+   @commID               bigint
   ,@commViews            bigint
   ,@commVisitors         bigint
   ,@commReach            bigint
   ,@commReachSubscribers bigint
   ,@commSubscribed       bigint
   ,@commUnsubscribed     bigint
+  ,@commLikes            bigint
+  ,@commComments         bigint
+  ,@commReposts          bigint
+  ,@commPostCount        bigint
 as
 begin
 ------------------------------------------------
@@ -35,7 +38,16 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  declare @id bigint = next value for seq.StatsCommVK
+  declare 
+     @id         bigint
+    ,@ownerHubID bigint
+
+  set @id = next value for seq.StatsCommVK
+
+  select
+       @ownerHubID = c.ownerHubID
+    from dbo.Comm as c       
+    where c.id = @commID
 
   insert into dbo.StatsCommVK ( 
      id
@@ -47,7 +59,11 @@ begin
     ,commReachSubscribers
     ,commSubscribed
     ,commUnsubscribed
-    ,commID 
+    ,commID
+    ,commLikes
+    ,commComments
+    ,commReposts
+    ,commPostCount
   ) values (
      @id
     ,@ownerHubID
@@ -58,7 +74,11 @@ begin
     ,@commReachSubscribers
     ,@commSubscribed
     ,@commUnsubscribed
-    ,@commID 
+    ,@commID
+    ,@commLikes
+    ,@commComments
+    ,@commReposts
+    ,@commPostCount
   )
   -----------------------------------------------------------------
   -- End Point
@@ -81,7 +101,11 @@ exec dbo.FillExtendedProperty
      ,@commSubscribed = Subscribed \n
      ,@commUnsubscribed = Unsubscribed \n
      ,@commViews = Views \n
-     ,@commVisitors = Visitors \n '
+     ,@commVisitors = Visitors \n 
+     ,@commComments = Comments \n
+     ,@commLikes = Likes \n
+     ,@commReposts = Reposts \n
+     ,@commPostCount = Count posts \n'
 go
 ----------------------------------------------
 -- <NativeCheck>
@@ -94,8 +118,6 @@ declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
 exec @ret = dbo.StatsCommVK_Save 
-   @MemberID = 1
-  ,@EntryID = 410  
 
 select @err = @@error
 

@@ -23,6 +23,10 @@ create table dbo.StatsCommVK (
   ,commReachSubscribers bigint
   ,commSubscribed       bigint
   ,commUnsubscribed     bigint
+  ,commLikes            bigint
+  ,commComments         bigint
+  ,commReposts          bigint
+  ,commPostCount        bigint
   ,constraint StatsCommVK_pk primary key clustered (id)
 )
 go

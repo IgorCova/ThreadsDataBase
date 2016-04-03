@@ -34,6 +34,13 @@ exec dbo.AdminComm_Save
   @phone = '79253396965',
   @linkFB = 'https://www.facebook.com/profile.php?id=100009033714409'
 go
+exec dbo.AdminComm_Save
+  @id = null,
+  @ownerHubID = 1,
+  @firstName = 'Igor',
+  @lastName = 'Cova',
+  @phone = '79164913669',
+  @linkFB = 'https://www.facebook.com/emptyparam'
 */
 /*
 exec dbo.SessionReq_Save
@@ -98,6 +105,16 @@ exec dbo.Comm_Save
   @adminCommID = 1,
   @link = 'http://vk.com/majormafia'
 go
+exec dbo.Comm_Save
+  @id = null,
+  @ownerHubID = 1,
+  @subjectCommID = 4,
+  @areaCommID = 1,
+  @name = 'EAT SLEEP JDM',
+  @adminCommID = 2,
+  @link = 'http://vk.com/eatsleepjdm',
+  @groupID = 30857188
+ go
 */
 select * from dbo.SubjectComm
 select * from dbo.OwnerHub
