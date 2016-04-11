@@ -8,11 +8,6 @@ set transaction isolation level read uncommitted
 set xact_abort on
 go
 
-/*
-///<description>
-/// procedure for read owner Hub.
-///</description>
-*/
 alter procedure dbo.Comm_Read
    @id             bigint
   ,@ownerHubID     bigint
@@ -57,7 +52,7 @@ go
 exec dbo.FillExtendedProperty
    @ObjSysName  = 'dbo.Comm_Read'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for read owner Hub.'
+  ,@Description = 'procedure for read comm info.'
   ,@Params      = '@ownerHubID = owner Hub id \n'
 go
 

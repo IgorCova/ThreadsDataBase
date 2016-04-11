@@ -55,6 +55,12 @@ begin
        where t.id = @id
          and t.ownerHubID = @ownerHubID
    end
+
+  select
+       s.id
+      ,s.name
+    from dbo.SubjectComm as s       
+    where s.id = @id
   -----------------------------------------------------------------
   -- End Point
   return (0)

@@ -12,20 +12,28 @@ go
 /*
 exec dbo.SubjectComm_Save
   @id = null,
-  @ownerHubID = 1,
+  @ownerHubID = 3,
   @name = 'Entertainment'
 go
+
+exec dbo.SubjectComm_Save
+  @id = null,
+  @ownerHubID = 3,
+  @name = 'Mechanics'
+go
+
 */
 
 /*
 exec dbo.AdminComm_Save
   @id = null,
-  @ownerHubID = 1,
-  @firstName = 'Andrew',
-  @lastName = 'Dzhur',
-  @phone = '79264308272',
-  @linkFB = 'https://www.facebook.com/profile.php?id=100006125686790'
+  @ownerHubID = 3,
+  @firstName = 'Igor',
+  @lastName = 'Cova',
+  @phone = '79164913669',
+  @linkFB = 'https://www.facebook.com/emptyparam'
 go
+
 exec dbo.AdminComm_Save
   @id = null,
   @ownerHubID = 1,
@@ -34,6 +42,7 @@ exec dbo.AdminComm_Save
   @phone = '79253396965',
   @linkFB = 'https://www.facebook.com/profile.php?id=100009033714409'
 go
+
 exec dbo.AdminComm_Save
   @id = null,
   @ownerHubID = 1,
@@ -105,6 +114,7 @@ exec dbo.Comm_Save
   @adminCommID = 1,
   @link = 'http://vk.com/majormafia'
 go
+
 exec dbo.Comm_Save
   @id = null,
   @ownerHubID = 1,
@@ -115,9 +125,42 @@ exec dbo.Comm_Save
   @link = 'http://vk.com/eatsleepjdm',
   @groupID = 30857188
  go
+ 
+exec dbo.Comm_Save
+  @id = null,
+  @ownerHubID = 3,
+  @subjectCommID = 3,
+  @areaCommID = 1,
+  @name = 'MDK',
+  @adminCommID = 1,
+  @link = 'http://vk.com/mdk',
+  @groupID = 10639516
+go
+
+exec dbo.Comm_Save
+  @id = null,
+  @ownerHubID = 3,
+  @subjectCommID = 5,
+  @areaCommID = 1,
+  @name = 'MDK',
+  @adminCommID = 4,
+  @link = 'http://vk.com/thesmolny',
+  @groupID = 44781847
+go
+
+exec dbo.AdminComm_Save
+  @id = null,
+  @ownerHubID = 3,
+  @firstName = 'Antony',
+  @lastName = 'Bubas',
+  @phone = '79253396965',
+  @linkFB = 'https://www.facebook.com/profile.php?id=100009033714409'
+go
+
 */
 select * from dbo.SubjectComm
 select * from dbo.OwnerHub
 select * from dbo.AdminComm
 select * from dbo.AreaComm
 select * from dbo.Comm
+

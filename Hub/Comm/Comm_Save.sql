@@ -8,16 +8,7 @@ set transaction isolation level read uncommitted
 set xact_abort on
 go
 
-/*
-///<description>
-/// procedure for Save comm.
-///</description>
-*/
-
-exec dbo.DropIfExists 'dbo.Comm_Save'
-go
-
-create procedure dbo.Comm_Save
+alter procedure dbo.Comm_Save
    @id              bigint  = null out
   ,@ownerHubID      bigint
   ,@subjectCommID   bigint
@@ -119,7 +110,8 @@ go
 ----------------------------------------------
 exec dbo.NativeCheck 'dbo.Comm_Save'
 go
-/* Œ“À¿ƒ ¿:
+
+/* Debug:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
