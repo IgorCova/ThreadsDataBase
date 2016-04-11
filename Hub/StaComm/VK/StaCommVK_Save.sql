@@ -7,15 +7,16 @@ set numeric_roundabort off
 set transaction isolation level read uncommitted
 set xact_abort on
 go
-
-exec dbo.DropIfExists 'dbo.StatsCommVK_Save'
+/*
+exec dbo.DropIfExists 'dbo.StaCommVK_Save'
 go
-
+*/
 -------------------------------------------------------------
--- <PROC> dbo.StatsCommVK_Save
+-- <PROC> dbo.StaCommVK_Save
 -------------------------------------------------------------
-create procedure dbo.StatsCommVK_Save   
-   @commID               bigint
+alter procedure dbo.StaCommVK_Save
+   @groupID              bigint
+  ,@requestStartDate     datetime
   ,@commViews            bigint
   ,@commVisitors         bigint
   ,@commReach            bigint
@@ -39,34 +40,33 @@ begin
   set xact_abort on
   -----------------------------------------------------------------
   declare 
-     @id         bigint
-    ,@ownerHubID bigint
+     @id     bigint = next value for seq.StaCommVK
+    ,@commID bigint
 
-  set @id = next value for seq.StatsCommVK
-
-  select
-       @ownerHubID = c.ownerHubID
+  select top 1 
+       @commID = c.id
     from dbo.Comm as c       
-    where c.id = @commID
+    where c.groupID = @groupID
 
-  insert into dbo.StatsCommVK ( 
+  insert into dbo.StaCommVK ( 
      id
-    ,ownerHubID
-    ,requestDate
+    ,commID
+    ,requestStartDate
+    ,requestFinishDate
     ,commViews
     ,commVisitors
     ,commReach
     ,commReachSubscribers
     ,commSubscribed
     ,commUnsubscribed
-    ,commID
     ,commLikes
     ,commComments
     ,commReposts
-    ,commPostCount
+    ,commPostCount 
   ) values (
      @id
-    ,@ownerHubID
+    ,@commID
+    ,@requestStartDate
     ,getdate()
     ,@commViews
     ,@commVisitors
@@ -74,11 +74,10 @@ begin
     ,@commReachSubscribers
     ,@commSubscribed
     ,@commUnsubscribed
-    ,@commID
     ,@commLikes
     ,@commComments
     ,@commReposts
-    ,@commPostCount
+    ,@commPostCount 
   )
   -----------------------------------------------------------------
   -- End Point
@@ -90,12 +89,12 @@ go
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.StatsCommVK_Save'
+   @ObjSysName  = 'dbo.StaCommVK_Save'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for Save stats of community on VK.'
+  ,@Description = 'procedure for Save statistics of community on VKontakte.'
   ,@Params = '
-     ,@ownerHubID = owner Hub id \n
-     ,@commID = id comm \n
+      @requestStartDate = Start date of this request \n
+     ,@groupID = id group in VKontakte \n
      ,@commReach = Reach \n
      ,@commReachSubscribers = ReachSubscribers \n
      ,@commSubscribed = Subscribed \n
@@ -110,18 +109,18 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec dbo.NativeCheck 'dbo.StatsCommVK_Save'
+exec dbo.NativeCheck 'dbo.StaCommVK_Save'
 go
 
 /* Œ“À¿ƒ ¿:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.StatsCommVK_Save 
+exec @ret = dbo.StaCommVK_Save 
 
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.StatsCommVK_Save to [public]
+grant execute on dbo.StaCommVK_Save to [public]

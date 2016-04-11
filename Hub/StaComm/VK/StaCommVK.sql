@@ -9,13 +9,14 @@ set xact_abort on
 go
 
 ----------------------------------------------
--- <TABLE> dbo.StatsCommVK
+-- <TABLE> dbo.StaCommVK
 ----------------------------------------------
-create table dbo.StatsCommVK (
+create table dbo.StaCommVK (
    id                   bigint
-  ,ownerHubID           bigint
-  ,requestDate          datetime
   ,commID               bigint
+
+  ,requestStartDate     datetime
+  ,requestFinishDate    datetime      
 
   ,commViews            bigint
   ,commVisitors         bigint
@@ -27,21 +28,19 @@ create table dbo.StatsCommVK (
   ,commComments         bigint
   ,commReposts          bigint
   ,commPostCount        bigint
-  ,constraint StatsCommVK_pk primary key clustered (id)
+
+  ,constraint StaCommVK_pk primary key clustered (id)
 )
 go
 
-alter table dbo.StatsCommVK
-  add constraint StatsCommVK_fkOwnerHubID
-  foreign key (ownerHubID) references dbo.OwnerHub (id)
-go
-
-alter table dbo.StatsCommVK
-  add constraint StatsCommVK_fkCommID
-  foreign key (commID) references dbo.Comm (id)
-go
-
-create sequence seq.StatsCommVK as bigint
+create sequence seq.StaCommVK as bigint
   start with 1
   increment by 1 ;
 go
+
+alter table dbo.StaCommVK
+  add constraint StaCommVK_fkCommID
+  foreign key (commID) references dbo.Comm (id)
+go
+
+
