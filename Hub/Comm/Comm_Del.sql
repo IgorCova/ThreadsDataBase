@@ -8,18 +8,16 @@ set transaction isolation level read uncommitted
 set xact_abort on
 go
 
-/*
-///<description>
-///   procedure for del subject of community.
-///</description>
-*/
-alter procedure dbo.SubjectComm_Del
-   @id         bigint
-  ,@ownerHubID bigint 
+exec dbo.sp_object_create 'dbo.Comm_Del', 'P'
+go
+
+alter procedure dbo.Comm_Del
+   @id              bigint
+  ,@ownerHubID      bigint
 as
 begin
 ------------------------------------------------
--- v1.0: Created by Cova Igor 30.03.2016
+-- v1.0: Created by Cova Igor 13.04.2016
 ------------------------------------------------
   set nocount on
   set quoted_identifier, ansi_nulls, ansi_warnings, arithabort,
@@ -28,10 +26,12 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
+  
   delete  
-    from dbo.SubjectComm
+    from dbo.Comm
     where id = @id 
-      and ownerHubID = @ownerHubID 
+      and ownerHubID = @ownerHubID
+
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -39,33 +39,31 @@ end
 go
 
 ----------------------------------------------
--- <NativeCheck>
-----------------------------------------------
-exec dbo.[NativeCheck] 'dbo.SubjectComm_Del'
-go
-----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.SubjectComm_Del'
+   @ObjSysName  = 'dbo.Comm_Del'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for del subject of community.'
-  ,@Params = '
-      @id = id SubjectComm \n 
-     ,@ownerHubID = owner Hub id \n'
+  ,@Description = 'procedure for Save comm.'
+  ,@Params = '       
+      ,@ownerHubID = owner Hub id \n'
 go
 
-/* Œ“À¿ƒ ¿:
+----------------------------------------------
+-- <NativeCheck>
+----------------------------------------------
+exec dbo.NativeCheck 'dbo.Comm_Del'
+go
+
+/* Debug:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.SubjectComm_Del 
-   @MemberID = 1
-  ,@EntryID = 410  
+exec @ret = dbo.Comm_Del 
 
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.SubjectComm_Del to [public]
+grant execute on dbo.Comm_Del to [public]

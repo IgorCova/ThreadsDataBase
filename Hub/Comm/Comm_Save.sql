@@ -9,7 +9,7 @@ set xact_abort on
 go
 
 alter procedure dbo.Comm_Save
-   @id              bigint  = null out
+   @id              bigint
   ,@ownerHubID      bigint
   ,@subjectCommID   bigint
   ,@areaCommID      int
@@ -71,17 +71,6 @@ begin
       where t.id = @id
         and t.ownerHubID = @ownerHubID
   end
-
-  select top 1
-       t.id
-      ,t.ownerHubID
-      ,t.subjectCommID
-      ,t.areaCommID
-      ,t.name
-      ,t.adminCommID
-    from dbo.Comm as t       
-    where t.id = @id 
-      and t.ownerHubID = @ownerHubID
   -----------------------------------------------------------------
   -- End Point
   return (0)

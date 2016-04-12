@@ -8,11 +8,6 @@ set transaction isolation level read uncommitted
 set xact_abort on
 go
 
-/*
-///<description>
-///  Procedure for save ErrorLog's.
-///</description>
-*/
 alter procedure dbo.ErrorLog_Save
    @Session                         varchar(64)
   ,@FuncName                        sysname      = null

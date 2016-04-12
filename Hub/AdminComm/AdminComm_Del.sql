@@ -8,10 +8,10 @@ set transaction isolation level read uncommitted
 set xact_abort on
 go
 
-exec dbo.DropIfExists 'dbo.AdminComm_Del'
+exec dbo.sp_object_create 'dbo.AdminComm_Del', 'P'
 go
  
-create procedure dbo.AdminComm_Del
+alter procedure dbo.AdminComm_Del
    @id             bigint
   ,@ownerHubID     bigint
 as
@@ -59,11 +59,7 @@ exec dbo.FillExtendedProperty
    @ObjSysName  = 'dbo.AdminComm_Del'
   ,@Author      = 'Cova Igor'
   ,@Description = 'procedure for delete Admin of community.'
-  ,@Params = '
-     @firstName = Firstname \n
-    ,@lastName = Lastname \n
-    ,@linkFB = lint to facebook \n
-    ,@phone = phone number \n
+  ,@Params = '    
     ,@ownerHubID = Owner Hub id \n'
 go
 

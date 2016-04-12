@@ -12,7 +12,7 @@ go
 -- <TABLE> dbo.AdminComm
 ----------------------------------------------
 
-create table dbo.AdminComm (
+alter table dbo.AdminComm (
    id             bigint
   ,ownerHubId     bigint
   ,firstName      varchar(512)

@@ -59,7 +59,6 @@ begin
       ,@phone
       ,@linkFB 
     )
-
   end
   else
   begin
@@ -114,8 +113,12 @@ declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
 exec @ret = dbo.AdminComm_Save 
-   @MemberID = 1
-  ,@EntryID = 410  
+     @id         = 12
+    ,@ownerHubID = 3 
+    ,@firstName  = 'Gevorg'
+    ,@lastName   = 'Osipyan'
+    ,@linkFB     = 'https://www.facebook.com/1751641651'
+    ,@phone      = '77777777777'
 
 select @err = @@error
 

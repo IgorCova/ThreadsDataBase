@@ -8,11 +8,9 @@ set transaction isolation level read uncommitted
 set xact_abort on
 go
 
-/*
-///<description>
-/// procedure for read owner Hub.
-///</description>
-*/
+exec dbo.sp_object_create 'dbo.Comm_ReadDict', 'P'
+go
+
 alter procedure dbo.Comm_ReadDict
    @ownerHubID     bigint
 as
@@ -48,6 +46,9 @@ begin
       ,c.lastName       as adminCommID_lastName
       ,c.phone          as adminCommID_phone
       ,c.linkFB         as adminCommID_linkFB
+       
+      ,t.link           as link
+      ,t.groupID        as groupID
     from dbo.Comm        as t
     join dbo.OwnerHub    as h on h.id = t.ownerHubID
     join dbo.SubjectComm as s on s.id = t.subjectCommID 
