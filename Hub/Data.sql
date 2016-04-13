@@ -78,20 +78,36 @@ insert into dbo.AreaComm (
    id
   ,links
   ,name 
+  ,code
 ) values (
    next value for seq.AreaComm
   ,'vk.сom, vkontakte.com, vkontakte.ru'
   ,'ВКонтакте'
+  ,'vk'
+)
+
+insert into dbo.AreaComm ( 
+   id
+  ,links
+  ,name  
+  ,code
+) values (
+   next value for seq.AreaComm
+  ,'ok.com, ok.ru'
+  ,'Одноклассники' 
+  ,'ok'
 )
 
 insert into dbo.AreaComm ( 
    id
   ,links
   ,name 
+  ,code
 ) values (
    next value for seq.AreaComm
-  ,'ok.com, ok.ru'
-  ,'Одноклассники'
+  ,'fb.сom, facebook.com'
+  ,'Facebook'
+  ,'fb'
 )
 */
 /*

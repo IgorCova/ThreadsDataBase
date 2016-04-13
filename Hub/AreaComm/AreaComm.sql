@@ -15,6 +15,7 @@ create table dbo.AreaComm (
    id           int
   ,links        varchar(1024)
   ,name         varchar(256)
+  ,code         varchar(32)
   ,constraint AreaComm_pk primary key clustered (id)
 )
 go
@@ -22,4 +23,4 @@ go
 create sequence seq.AreaComm as int
     start with 1
     increment by 1 ;
-go
+go 

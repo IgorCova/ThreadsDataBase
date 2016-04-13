@@ -27,6 +27,7 @@ alter procedure dbo.StaCommVK_Save
   ,@commComments         bigint
   ,@commReposts          bigint
   ,@commPostCount        bigint
+  ,@commMembers          int
 as
 begin
 ------------------------------------------------
@@ -51,6 +52,7 @@ begin
   insert into dbo.StaCommVK ( 
      id
     ,commID
+    ,requestDate
     ,requestStartDate
     ,requestFinishDate
     ,commViews
@@ -63,10 +65,12 @@ begin
     ,commComments
     ,commReposts
     ,commPostCount 
+    ,commMembers
   ) values (
      @id
     ,@commID
     ,@requestStartDate
+    ,cast(getdate() as date)
     ,getdate()
     ,@commViews
     ,@commVisitors
@@ -77,7 +81,8 @@ begin
     ,@commLikes
     ,@commComments
     ,@commReposts
-    ,@commPostCount 
+    ,@commPostCount
+    ,@commMembers
   )
   -----------------------------------------------------------------
   -- End Point
@@ -104,7 +109,8 @@ exec dbo.FillExtendedProperty
      ,@commComments = Comments \n
      ,@commLikes = Likes \n
      ,@commReposts = Reposts \n
-     ,@commPostCount = Count posts \n'
+     ,@commPostCount = Count posts \n
+     ,@commMembers = count members \n'
 go
 ----------------------------------------------
 -- <NativeCheck>

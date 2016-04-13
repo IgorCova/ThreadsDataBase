@@ -15,6 +15,7 @@ create table dbo.StaCommVK (
    id                   bigint
   ,commID               bigint
 
+  ,requestDate          date
   ,requestStartDate     datetime
   ,requestFinishDate    datetime      
 
@@ -28,6 +29,7 @@ create table dbo.StaCommVK (
   ,commComments         bigint
   ,commReposts          bigint
   ,commPostCount        bigint
+  ,commMembers          int
 
   ,constraint StaCommVK_pk primary key clustered (id)
 )
