@@ -14,7 +14,7 @@ go
 ///</description>
 */
 alter procedure dbo.OwnerHub_Save
-   @id             bigint  = null out
+   @id             bigint
   ,@firstName      varchar(512) 
   ,@lastName       varchar(512)
   ,@phone          varchar(32)
@@ -67,15 +67,6 @@ begin
       from dbo.OwnerHub as t
       where t.id = @id
   end
-
-  select top 1
-       t.id
-      ,t.firstName
-      ,t.lastName
-      ,t.phone
-      ,t.linkFB
-    from dbo.OwnerHub as t
-    where t.id = @id
   -----------------------------------------------------------------
   -- End Point
   return (0)
