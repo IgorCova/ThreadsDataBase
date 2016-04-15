@@ -33,6 +33,7 @@ begin
       ,t.name
     from dbo.SubjectComm as t       
     where t.ownerHubID = @ownerHubID
+    order by t.name
   -----------------------------------------------------------------
   -- End Point
   return (0)

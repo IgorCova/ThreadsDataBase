@@ -36,6 +36,7 @@ begin
       ,t.linkFB
     from dbo.AdminComm as t       
     where t.ownerHubId = @ownerHubID
+    order by t.lastName
 
   -----------------------------------------------------------------
   -- End Point

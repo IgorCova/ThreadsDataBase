@@ -59,6 +59,7 @@ begin
 
     join dbo.AreaComm    as a on a.id = t.areaCommID
     where t.ownerHubID = @ownerHubID
+    order by t.name
   -----------------------------------------------------------------
   -- End Point
   return (0)
