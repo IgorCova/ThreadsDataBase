@@ -8,15 +8,15 @@ set transaction isolation level read uncommitted
 set xact_abort on
 go
 
-exec dbo.sp_object_create 'dbo.StaCommVK_ReportDay', 'P'
+exec dbo.sp_object_create 'dbo.StaCommVK_ReportWeek', 'P'
 go
 
-alter procedure dbo.StaCommVK_ReportDay
+alter procedure dbo.StaCommVK_ReportWeek
    @ownerHubID     bigint
 as
 begin
 ------------------------------------------------
--- v1.0: Created by Cova Igor 14.04.2016
+-- v1.0: Created by Cova Igor 16.04.2016
 ------------------------------------------------
   set nocount on
   set quoted_identifier, ansi_nulls, ansi_warnings, arithabort,
@@ -26,8 +26,8 @@ begin
   set xact_abort on
   ----------------------------------------------------------------
   declare 
-     @today     date = cast(getdate() as date)
-    ,@yesterday date = cast(dateadd(day, -1, getdate()) as date)
+     @today   date = cast(getdate() as date)
+    ,@weekday date = cast(dateadd(day, datepart(weekday, getdate()-1), getdate()) as date) -- date end of the previous week's 
 
   select
        comm_id             = t.id
@@ -103,7 +103,7 @@ begin
           ,max(s.commMembers) as commMembers
         from dbo.StaCommVK as s    
         where s.commID = t.id 
-          and @yesterday = s.requestDate
+          and s.requestDate = @weekday
     ) as c
 
     outer apply (
@@ -121,7 +121,7 @@ begin
           ,max(s.commMembers) as commMembers
         from dbo.StaCommVK as s    
         where s.commID = t.id 
-          and @today = s.requestDate
+          and s.requestDate = @today
     ) as s
     where t.ownerHubID = @ownerHubID
 -----------------------------------------------------------
@@ -133,16 +133,16 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec dbo.[NativeCheck] 'dbo.StaCommVK_ReportDay'
+exec dbo.[NativeCheck] 'dbo.StaCommVK_ReportWeek'
 go
 
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.StaCommVK_ReportDay'
+   @ObjSysName  = 'dbo.StaCommVK_ReportWeek'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for read report with day dynamic statistic on Vkontakte by owner Hub id..'
+  ,@Description = 'procedure for read report with week dynamic statistic on Vkontakte by owner Hub id.'
   ,@Params      = '@ownerHubID = owner Hub id \n'
 go
 
@@ -150,7 +150,7 @@ go
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.StaCommVK_ReportDay 
+exec @ret = dbo.StaCommVK_ReportWeek 
   @ownerHubId = 1
 
 select @err = @@error
@@ -158,4 +158,4 @@ select @err = @@error
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.StaCommVK_ReportDay to [public]
+grant execute on dbo.StaCommVK_ReportWeek to [public]
