@@ -69,8 +69,8 @@ begin
   ) values (
      @id
     ,@commID
-    ,@requestStartDate
-    ,cast(getdate() as date)
+    ,cast(getdate() as date) --requestDate
+    ,@requestStartDate --requestStartDate
     ,getdate()
     ,@commViews
     ,@commVisitors
