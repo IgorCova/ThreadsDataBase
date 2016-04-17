@@ -30,47 +30,90 @@ begin
   set xact_abort on
   -----------------------------------------------------------------
   set @name = fn.Trim(@name)
+  
+  ----------------------------------------
+  begin tran Comm_Save
+  ----------------------------------------
+    if not exists (
+        select * 
+          from dbo.Comm as s 
+          where s.id = @id)
+    begin
+      set @id = next value for seq.Comm
 
-  if not exists (
-      select * 
-        from dbo.Comm as s 
-        where s.id = @id)
-  begin
-    set @id = next value for seq.Comm
+      insert into dbo.Comm ( 
+         id
+        ,ownerHubID
+        ,subjectCommID
+        ,areaCommID
+        ,name
+        ,adminCommID
+        ,link
+        ,groupID 
+      ) values (
+         @id
+        ,@ownerHubID
+        ,@subjectCommID
+        ,@areaCommID
+        ,@name
+        ,@adminCommID
+        ,@link
+        ,@groupID 
+      )
 
-    insert into dbo.Comm ( 
-       id
-      ,ownerHubID
-      ,subjectCommID
-      ,areaCommID
-      ,name
-      ,adminCommID
-      ,link
-      ,groupID 
-    ) values (
-       @id
-      ,@ownerHubID
-      ,@subjectCommID
-      ,@areaCommID
-      ,@name
-      ,@adminCommID
-      ,@link
-      ,@groupID 
-    )
-  end
-  else
-  begin
-    update t set    
-         t.subjectCommID = @subjectCommID
-        ,t.link          = @link
-        ,t.groupID       = @groupID
-        ,t.name          = @name
-        ,t.adminCommID   = @adminCommID
-        ,t.areaCommID    = @areaCommID
-      from dbo.Comm as t
-      where t.id = @id
-        and t.ownerHubID = @ownerHubID
-  end
+      insert into dbo.StaCommVKDaily ( 
+         id
+        ,commID
+        ,dayDate
+        ,commViews
+        ,commVisitors
+        ,commReach
+        ,commReachSubscribers
+        ,commSubscribed
+        ,commUnsubscribed
+        ,commLikes
+        ,commComments
+        ,commReposts
+        ,commPostCount
+        ,commMembers
+        ,requestDate 
+      )
+      select
+           next value for seq.StaCommVKDaily
+          ,@id
+          ,s.dayDate
+          ,s.commViews
+          ,s.commVisitors
+          ,s.commReach
+          ,s.commReachSubscribers
+          ,s.commSubscribed
+          ,s.commUnsubscribed
+          ,s.commLikes
+          ,s.commComments
+          ,s.commReposts
+          ,s.commPostCount
+          ,s.commMembers
+          ,getdate()
+        from dbo.StaCommVKDaily  as s
+        join dbo.Comm            as c on c.id = s.commID       
+        where c.groupID = @groupID
+    end
+    else
+    begin
+      update t set
+           t.subjectCommID = @subjectCommID
+          ,t.link          = @link
+          ,t.groupID       = @groupID
+          ,t.name          = @name
+          ,t.adminCommID   = @adminCommID
+          ,t.areaCommID    = @areaCommID
+        from dbo.Comm as t
+        where t.id = @id
+          and t.ownerHubID = @ownerHubID
+    end
+  ----------------------------------------
+  commit tran Comm_Save
+  ----------------------------------------  
   -----------------------------------------------------------------
   -- End Point
   return (0)
