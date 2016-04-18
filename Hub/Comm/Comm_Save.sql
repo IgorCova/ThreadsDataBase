@@ -29,8 +29,10 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
+  exec dbo.Getter_Save @ownerHubID, 'Save', 'dbo.Comm_Save'
+  -----------------------------------------------------------------
   set @name = fn.Trim(@name)
-  
+  declare @true bit = cast(1 as bit)
   ----------------------------------------
   begin tran Comm_Save
   ----------------------------------------
@@ -49,7 +51,8 @@ begin
         ,name
         ,adminCommID
         ,link
-        ,groupID 
+        ,groupID
+        ,IsNew
       ) values (
          @id
         ,@ownerHubID
@@ -58,7 +61,8 @@ begin
         ,@name
         ,@adminCommID
         ,@link
-        ,@groupID 
+        ,@groupID
+        ,@true
       )
 
       insert into dbo.StaCommVKDaily ( 

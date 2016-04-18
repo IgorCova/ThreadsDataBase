@@ -29,6 +29,8 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
+  exec dbo.Getter_Save @ownerHubID, 'Save', 'dbo.SubjectComm_Save'
+  -----------------------------------------------------------------
   if not exists (
       select * 
         from dbo.SubjectComm as s 

@@ -31,11 +31,11 @@ begin
      ,@SessionID bigint
 
   select
-       @SessionID
+       @SessionID = @SessionID
     from dbo.Session as s       
     where s.SessionID = @Session
 
-  set @ID = next value for seq.Entry
+  set @ID = next value for seq.ErrorLog
   
   while @ErrorText like '%' + char(10)
   begin
@@ -90,7 +90,10 @@ declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
 exec @ret = dbo.ErrorLog_Save 
-   @debug_info      = 0xFF
+   @Session    = 'FAEB413F-7AA2-49C5-A18C-824E0A881A9B'
+  ,@FuncName   = 'Tester'
+  ,@Params     = 'id=1'
+  ,@ErrorText  = 'test errol log'
 
 select @err = @@error
 

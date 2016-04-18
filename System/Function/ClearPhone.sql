@@ -13,25 +13,33 @@ go
 /// returns clean phone with no characters .. or any other numerical value
 ///</description>
 */
-create function fn.[ClearPhone](@phone varchar(512))
+
+exec dbo.sp_object_create 'fn.ClearPhone', 'F'
+go
+
+alter function fn.ClearPhone(@phone varchar(512))
 returns varchar(512)
 as
 begin
   declare 
-    @ret      varchar(512)
-   ,@i        int
-   ,@r        varchar(1)
-    select @ret = @phone
+     @ret  varchar(512)
+    ,@i    int
+    ,@r    varchar(1)
 
-    select @i = patindex('%[^0-9]%', @ret)
-    while @i > 0
-    begin
-      select @r = substring(@ret, @i, 1)
-      select @ret = replace(@ret, @r, '')
-      select @i = patindex('%[^0-9]%', @ret) 
-    end 
-     
- return @ret
+  set @ret = @phone
+
+  set @i = patindex('%[^0-9]%', @ret)
+  while @i > 0
+  begin
+    select @r = substring(@ret, @i, 1)
+    select @ret = replace(@ret, @r, '')
+    select @i = patindex('%[^0-9]%', @ret) 
+  end
+
+  if @ret like '8%'
+    set @ret = '7' + right(@ret, len(@ret)-1)
+
+  return @ret
 end
 go
 

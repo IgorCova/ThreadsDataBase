@@ -20,6 +20,8 @@ create table dbo.Comm (
   ,adminCommID     bigint
   ,link            varchar(512)
   ,groupID         bigint
+  ,photoLink       varchar(512)
+  ,IsNew           bit
   ,constraint Comm_pk primary key clustered (id)
 )
 go
@@ -45,6 +47,6 @@ alter table dbo.Comm
 go
 
 create sequence seq.Comm as bigint
-    start with 1
-    increment by 1 ;
+  start with 1
+  increment by 1 ;
 go

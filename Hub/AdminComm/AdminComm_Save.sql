@@ -32,6 +32,8 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
+  exec dbo.Getter_Save @ownerHubID, 'Save', 'dbo.AdminComm_Save'
+  -----------------------------------------------------------------
   set @linkFB = fn.ClearLinkToFB(@linkFB)
   set @firstName = fn.Trim(@firstName)
   set @lastName = fn.Trim(@lastName)

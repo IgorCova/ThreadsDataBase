@@ -25,10 +25,13 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
+  exec dbo.Getter_Save @ownerHubID, 'ReadDict', 'dbo.Comm_ReadDict'
+  -----------------------------------------------------------------
 
   select
        t.id             as id
       ,t.name           as name
+      ,t.photoLink      as photoLink
 
       ,t.ownerHubID     as ownerHubID
       ,h.firstName      as ownerHubID_firstName
@@ -58,7 +61,7 @@ begin
                              and c.ownerHubId = t.ownerHubID
 
     join dbo.AreaComm    as a on a.id = t.areaCommID
-    where t.ownerHubID = @ownerHubID
+   -- where t.ownerHubID = @ownerHubID
     order by t.name
   -----------------------------------------------------------------
   -- End Point

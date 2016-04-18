@@ -28,6 +28,8 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
+  exec dbo.Getter_Save @ownerHubID, 'Del', 'dbo.SubjectComm_Del'
+  -----------------------------------------------------------------
   delete  
     from dbo.SubjectComm
     where id = @id 

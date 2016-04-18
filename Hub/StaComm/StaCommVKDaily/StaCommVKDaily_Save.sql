@@ -28,6 +28,7 @@ alter procedure dbo.StaCommVKDaily_Save
   ,@commReposts          bigint
   ,@commPostCount        bigint
   ,@commMembers          int
+  ,@commPhotoLink        varchar(512)
 as
 begin
 ------------------------------------------------
@@ -58,6 +59,7 @@ begin
         ,t.commPostCount        = @commPostCount
         ,t.commMembers          = @commMembers
         ,t.requestDate          = getdate()  
+        ,t.cntReq               = (t.cntReq + 1)
       from dbo.StaCommVKDaily as t
       join dbo.Comm as c on c.id = t.commID
       where c.groupID = @groupID 
@@ -79,6 +81,7 @@ begin
         ,commPostCount
         ,commMembers
         ,requestDate 
+        ,cntReq
       )
       select
            next value for seq.StaCommVKDaily
@@ -96,12 +99,17 @@ begin
           ,@commPostCount
           ,@commMembers
           ,getdate()
+          ,1
       from dbo.Comm as c
       where c.groupID = @groupID
         and not exists (
           select * from dbo.StaCommVKDaily as s
             where s.commID = c.id 
               and s.dayDate = @dayDate)
+   
+    update dbo.Comm set    
+         photoLink = @commPhotoLink
+      where groupID = @groupID
   ----------------------------------------
   commit tran StaCommVKDaily_Save
   ---------------------------------------- 
@@ -128,7 +136,8 @@ exec dbo.FillExtendedProperty
      ,@commLikes = Likes \n
      ,@commReposts = Reposts \n
      ,@commPostCount = Count posts \n
-     ,@commMembers = count members \n'
+     ,@commMembers = count members \n
+     ,@commPhotoLink = link to photo'
 go
 ----------------------------------------------
 -- <NativeCheck>

@@ -29,6 +29,7 @@ create table dbo.StaCommVKDaily (
   ,commPostCount        bigint
   ,commMembers          int
   ,requestDate          datetime
+  ,cntReq               int          
 
   ,constraint StaCommVKDaily_pk primary key nonclustered (id)
 )

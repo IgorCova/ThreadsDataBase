@@ -26,6 +26,8 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
+  exec dbo.Getter_Save @ownerHubID, 'Del', 'dbo.AdminComm_Del'
+  -----------------------------------------------------------------
   declare @comms varchar(256), @ErrMsg varchar(max)
   select
        @comms = concat(@comms + ' è ', c.name)

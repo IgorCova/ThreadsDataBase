@@ -23,6 +23,8 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
+  exec dbo.Getter_Save @ownerHubID, 'Read', 'dbo.Comm_Read'
+  -----------------------------------------------------------------
 
   select top 1
        t.id

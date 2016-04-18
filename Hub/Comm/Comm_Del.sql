@@ -26,11 +26,16 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  
+  exec dbo.Getter_Save @ownerHubID, 'Del', 'dbo.Comm_Del'
+  -----------------------------------------------------------------
+  delete 
+    from dbo.StaCommVKDaily
+    where commID = @id
+    
   delete  
     from dbo.Comm
     where id = @id 
-      and ownerHubID = @ownerHubID
+    --  and ownerHubID = @ownerHubID
 
   -----------------------------------------------------------------
   -- End Point
