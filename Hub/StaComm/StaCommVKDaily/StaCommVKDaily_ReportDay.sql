@@ -46,16 +46,17 @@ begin
      --------------------------------------------------------------------------------
      -- Periodically +
       ,subscribed                = isnull(s.commSubscribed, 0)
-      ,subscribedNew             = isnull(s.commSubscribed - c.commSubscribed, 0)
-      ,subscribedNewPercent      = isnull(cast( (cast(s.commSubscribed as numeric(16, 2)) / ( cast(nullif((c.commSubscribed), 0) as numeric(16, 2)))) * 100 as numeric(16, 2)), 0)
+      ,subscribedOld             = isnull(c.commSubscribed, 0)
+      ,subscribedNew             = isnull(s.commSubscribed, 0)
+      ,subscribedNewPercent      = isnull(cast( (cast(s.commSubscribed as numeric(16, 2)) * 100 / ( cast(nullif((c.commSubscribed), 0) as numeric(16, 2)))) as numeric(16, 2)), 0)
 
       ,unsubscribed              = isnull(s.commUnsubscribed, 0)
       ,unsubscribedNew           = isnull(s.commUnsubscribed - c.commUnsubscribed, 0)
-      ,unsubscribedNewPercent    = isnull(cast( cast(s.commUnsubscribed as numeric(16, 2)) / ( cast(nullif((c.commUnsubscribed), 0) as numeric(16, 2)) * 100 ) as numeric(16, 2)), 0)
+      ,unsubscribedNewPercent    = isnull(cast( cast(s.commUnsubscribed as numeric(16, 2))  * 100/ ( cast(nullif((c.commUnsubscribed), 0) as numeric(16, 2)) ) as numeric(16, 2)), 0)
 
       ,visitors                  = isnull(s.commVisitors, 0)
       ,visitorsNew               = isnull(s.commVisitors - c.commVisitors, 0)
-      ,visitorsNewPercent        = isnull(cast( (cast(s.commVisitors as numeric(16, 2)) / ( cast(nullif((c.commVisitors), 0) as numeric(16, 2)))) * 100 as numeric(16, 2)), 0)
+      ,visitorsNewPercent        = isnull(cast( (cast(s.commVisitors as numeric(16, 2))  * 100/ ( cast(nullif((c.commVisitors), 0) as numeric(16, 2)))) as numeric(16, 2)), 0)
 
       ,views                     = isnull(s.commViews, 0)
       ,viewsNew                  = isnull(s.commViews - c.commViews, 0)
@@ -66,32 +67,39 @@ begin
      --------------------------------------------------------------------------------
      -- Summary +
       ,members                   = isnull(s.commMembers, 0)
+      ,membersOld                = isnull(c.commMembers - r.commMembers, 0)
       ,membersNew                = isnull(s.commMembers - c.commMembers, 0)
       ,membersNewPercent         = isnull(cast( cast(c.commMembers - r.commMembers as numeric(16, 2)) / ( cast(nullif((s.commMembers - c.commMembers), 0) as numeric(16, 2))) * 100 as numeric(16, 2)), 0) 
 
       ,postCount                 = isnull(s.commPostCount - c.commPostCount, 0)
+      ,postCountOld              = isnull(c.commPostCount - r.commPostCount, 0)
       ,postCountNew              = isnull(s.commPostCount - c.commPostCount, 0)
-      ,postCountNewPercent       = isnull(cast( cast(c.commPostCount - r.commPostCount as numeric(16, 2)) / ( cast(nullif((s.commPostCount - c.commPostCount), 0) as numeric(16, 2))) * 100 as numeric(16, 2)), 0)
+      ,postCountNewPercent       = isnull(cast( cast(s.commPostCount - c.commPostCount as numeric(16, 2)) * 100 / ( cast(nullif((c.commPostCount - r.commPostCount), 0)  as numeric(16, 2))) as numeric(16, 2)), 0)
 
       ,likes                     = isnull(s.commLikes - c.commLikes , 0)
+      ,likesOld                  = isnull(c.commLikes - r.commLikes, 0)
       ,likesNew                  = isnull(s.commLikes - c.commLikes , 0)
-      ,likesNewPercent           = isnull(cast( cast(c.commLikes - r.commLikes as numeric(16, 2)) / (cast(nullif((s.commLikes - c.commLikes), 0) as numeric(16, 2))) * 100 as numeric(16, 2)), 0)
+      ,likesNewPercent           = isnull(cast( cast(s.commLikes - c.commLikes as numeric(16, 2)) * 100 / (cast(nullif((c.commLikes - r.commLikes), 0) as numeric(16, 2))) as numeric(16, 2)), 0)
 
       ,comments                  = isnull(s.commComments - c.commComments, 0)
+      ,commentsOld               = isnull(c.commComments - r.commComments, 0)
       ,commentsNew               = isnull(s.commComments - c.commComments, 0)
-      ,commentsNewPercent        = isnull(cast( cast(c.commComments - r.commComments as numeric(16, 2)) / ( cast(nullif((s.commComments - c.commComments), 0) as numeric(16, 2))) * 100 as numeric(16, 2)) , 0)
+      ,commentsNewPercent        = isnull(cast( cast(s.commComments - c.commComments as numeric(16, 2)) * 100 / ( cast(nullif((c.commComments - r.commComments), 0) as numeric(16, 2))) as numeric(16, 2)) , 0)
 
       ,reposts                   = isnull(s.commReposts - c.commReposts, 0)
+      ,repostsOld                = isnull(c.commReposts - r.commReposts, 0)
       ,repostsNew                = isnull(s.commReposts - c.commReposts, 0)
-      ,repostsNewPercent         = isnull(cast( cast(c.commReposts - r.commReposts as numeric(16, 2)) / ( cast(nullif((s.commReposts - c.commReposts), 0) as numeric(16, 2))) * 100 as numeric(16, 2)) , 0)
+      ,repostsNewPercent         = isnull(cast( cast(s.commReposts - c.commReposts as numeric(16, 2)) * 100 / ( cast(nullif((c.commReposts - r.commReposts), 0) as numeric(16, 2))) as numeric(16, 2)) , 0)
 
       ,reach                     = isnull(s.commReach - c.commReach, 0)
+      ,reachOld                  = isnull(c.commReach - r.commReach, 0)
       ,reachNew                  = isnull(s.commReach - c.commReach, 0)
-      ,reachNewPercent           = isnull(cast( cast(c.commReach - r.commReach as numeric(16, 2)) / (cast(nullif((s.commReach - c.commReach), 0) as numeric(16, 2))) * 100 as numeric(16, 2)), 0)
+      ,reachNewPercent           = isnull(cast( cast(s.commReach - c.commReach as numeric(16, 2)) * 100 / (cast(nullif((c.commReach - r.commReach), 0) as numeric(16, 2)))  as numeric(16, 2)), 0)
 
       ,reachSubscribers          = isnull(s.commReachSubscribers - c.commReachSubscribers, 0)
+      ,reachSubscribersOld       = isnull(c.commReachSubscribers - r.commReachSubscribers, 0)
       ,reachSubscribersNew       = isnull(s.commReachSubscribers - c.commReachSubscribers, 0)
-      ,reachSubscribersNewPercent= isnull(cast( cast(c.commReachSubscribers - r.commReachSubscribers as numeric(16,2)) / ( cast(nullif((s.commReachSubscribers - c.commReachSubscribers), 0) as numeric(16, 2))) * 100 as numeric(16, 2)), 0)
+      ,reachSubscribersNewPercent= isnull(cast( cast(c.commReachSubscribers - r.commReachSubscribers as numeric(16,2)) * 100 / ( cast(nullif((s.commReachSubscribers - c.commReachSubscribers), 0) as numeric(16, 2))) as numeric(16, 2)), 0)
      -- Summary +
      --------------------------------------------------------------------------------
     from dbo.Comm             as t
@@ -173,7 +181,7 @@ exec dbo.FillExtendedProperty
   ,@Params      = '@ownerHubID = owner Hub id \n'
 go
 
-/* Œ“À¿ƒ ¿:
+/* Œ“À¿ƒ ¿:*/
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
