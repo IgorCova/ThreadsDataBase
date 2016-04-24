@@ -13,6 +13,7 @@ go
 
 alter procedure dbo.StaCommVKDaily_Report
    @ownerHubID bigint = null
+  ,@isPast     bit    = null
 as
 begin
 ------------------------------------------------
@@ -27,6 +28,10 @@ begin
   ----------------------------------------------------------------
   exec dbo.Getter_Save @ownerHubID, 'GetReport', 'dbo.StaCommVKDaily_Report'
   -----------------------------------------------------------------
+  declare 
+     @startDate date = iif(@isPast = 1, cast(getdate()-1 as date),  cast(getdate() as date))
+    ,@endDate   date = iif(@isPast = 1, cast(getdate()-2 as date),  cast(getdate() -1 as date))
+
   select
        comm_id                   = t.id
       ,comm_name                 = t.name
@@ -125,7 +130,7 @@ begin
           ,s.requestDate           as requestDate
         from dbo.StaCommVKDaily as s
         where s.commID = t.id
-          and s.dayDate = cast(getdate() as date)
+          and s.dayDate = @startDate
     ) as s
 
     outer apply (
@@ -143,7 +148,7 @@ begin
           ,s.commMembers           as commMembers
         from dbo.StaCommVKDaily as s       
         where s.commID = t.id 
-          and s.dayDate = cast(getdate()-1 as date)
+          and s.dayDate = @endDate
     ) as v
 
     outer apply (
@@ -182,12 +187,13 @@ exec dbo.FillExtendedProperty
   ,@Params      = '@ownerHubID = owner Hub id \n'
 go
 
-/* Œ“À¿ƒ ¿:*/
+/* Œ“À¿ƒ ¿:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
 exec @ret = dbo.StaCommVKDaily_Report 
-  @ownerHubId = 1
+   @ownerHubId = 1
+  ,@isPast = 0
 
 select @err = @@error
 

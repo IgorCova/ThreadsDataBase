@@ -16,7 +16,7 @@ alter procedure dbo.Comm_ReadForSta
 as
 begin
 ------------------------------------------------
--- v1.0: Created by Cova Igor 11.04.2016
+-- v1.0: Created by Cova Igor 24.04.2016
 ------------------------------------------------
   set nocount on
   set quoted_identifier, ansi_nulls, ansi_warnings, arithabort,
@@ -39,7 +39,9 @@ begin
         from dbo.StaCommVKDaily as s    
         where s.commID = t.id 
     ) as s
-    where t.IsNew = @IsNewComm
+    where @IsNewComm = cast(0 as bit)
+       or (    t.IsNew = @IsNewComm
+           and @IsNewComm = cast(1 as bit))
   -----------------------------------------------------------------
   -- End Point
   return (0)
