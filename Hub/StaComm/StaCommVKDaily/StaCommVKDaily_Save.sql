@@ -109,6 +109,7 @@ begin
    
     update dbo.Comm set    
          photoLink = @commPhotoLink
+        ,IsNew = cast(0 as bit)
       where groupID = @groupID
   ----------------------------------------
   commit tran StaCommVKDaily_Save

@@ -120,9 +120,9 @@ begin
       ,commentsDif               = isnull(f.commComments, 0)
       ,commentsDifPercent        = cast(isnull(f.commComments * 100.00 / nullif(v.commComments, 0), 0) as int)
 
-      ,reposts                   = isnull(s.commComments, 0)
-      ,repostsNew                = isnull(s.commComments, 0)
-      ,repostsOld                = isnull(v.commReposts, 0)
+      ,reposts                   = isnull(s.commReposts, 0)
+      ,repostsNew                = isnull(s.commReposts - v.commReposts, 0)
+      ,repostsOld                = isnull(v.commReposts - p.commReposts, 0)
       ,repostsDif                = isnull(f.commReposts, 0)
       ,repostsDifPercent         = cast(isnull(f.commReposts * 100.00 / nullif(v.commReposts, 0), 0) as int)
       -- Wall +
