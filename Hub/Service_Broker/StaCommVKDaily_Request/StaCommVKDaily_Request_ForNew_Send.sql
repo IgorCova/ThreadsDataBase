@@ -6,12 +6,12 @@ set xact_abort on
 go
 
 ----------------------------------------------
--- <PROC> sb.StaCommVKDaily_Request_Send
+-- <PROC> sb.StaCommVKDaily_Request_ForNew_Send
 ----------------------------------------------
-exec dbo.sp_object_create 'sb.StaCommVKDaily_Request_Send', 'P'
+exec dbo.sp_object_create 'sb.StaCommVKDaily_Request_ForNew_Send', 'P'
 go
 
-alter procedure sb.StaCommVKDaily_Request_Send
+alter procedure sb.StaCommVKDaily_Request_ForNew_Send
 as
 begin
 ------------------------------------------------
@@ -26,7 +26,7 @@ begin
   declare @Handle uniqueidentifier
   declare @xml xml
 
-  set @xml = (select cast(0 as bit) as isNew for xml path)
+  set @xml = (select cast(1 as bit) as isNew for xml path)
 
   begin dialog conversation @Handle
 

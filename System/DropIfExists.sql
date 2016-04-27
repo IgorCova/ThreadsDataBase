@@ -37,7 +37,7 @@ begin
     from sys.objects as o       
     where o.[object_id] = object_id(@objName)
   
-  if @typeObj = 'P'
+  if @typeObj in ('P', 'PC')
   begin
     set @sql = 'drop procedure ' + @name
     execute sp_executesql @sql

@@ -33,18 +33,23 @@ begin
   set xact_abort on
   ------------------------------------
   -----------------------------------------------------------------
-  declare
-     @Handle uniqueidentifier
+  declare @Handle uniqueidentifier
+  declare @isNew bit
 
   waitfor (
     receive top(1)
          @Handle = [conversation_handle]
+        ,@isNew = cast(message_body as xml).value('*[1]/isNew [1]', 'bit')
       from dbo.que_StaCommVKDaily_Request
   ), timeout 30000
 
   if @Handle is not null
   begin
-    exec dbo.sp_ws_VKontakte_Sta
+
+    if @isNew = cast(1 as bit)
+      exec ws.VKontakte_Sta_ForNew
+    else 
+      exec ws.VKontakte_Sta
 
     end conversation @Handle with cleanup;
   end

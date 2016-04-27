@@ -101,6 +101,8 @@ begin
         from dbo.StaCommVKDaily  as s
         join dbo.Comm            as c on c.id = s.commID       
         where c.groupID = @groupID
+
+      exec sb.StaCommVKDaily_Request_ForNew_Send
     end
     else
     begin
