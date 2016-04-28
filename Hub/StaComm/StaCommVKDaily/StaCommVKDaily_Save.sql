@@ -28,7 +28,6 @@ alter procedure dbo.StaCommVKDaily_Save
   ,@commReposts          bigint
   ,@commPostCount        bigint
   ,@commMembers          int
-  ,@commPhotoLink        varchar(512)
 as
 begin
 ------------------------------------------------
@@ -106,11 +105,6 @@ begin
           select * from dbo.StaCommVKDaily as s
             where s.commID = c.id 
               and s.dayDate = @dayDate)
-   
-    update dbo.Comm set    
-         photoLink = @commPhotoLink
-        ,IsNew = cast(0 as bit)
-      where groupID = @groupID
   ----------------------------------------
   commit tran StaCommVKDaily_Save
   ---------------------------------------- 
@@ -137,8 +131,7 @@ exec dbo.FillExtendedProperty
      ,@commLikes = Likes \n
      ,@commReposts = Reposts \n
      ,@commPostCount = Count posts \n
-     ,@commMembers = count members \n
-     ,@commPhotoLink = link to photo'
+     ,@commMembers = count members \n'
 go
 ----------------------------------------------
 -- <NativeCheck>

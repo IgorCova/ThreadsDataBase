@@ -8,15 +8,18 @@ set transaction isolation level read uncommitted
 set xact_abort on
 go
 
-exec dbo.sp_object_create 'dbo.Comm_ReadForSta', 'P'
+exec dbo.sp_object_create 'Comm_Set', 'P'
 go
 
-alter procedure dbo.Comm_ReadForSta
-   @IsNewComm bit
+alter procedure dbo.Comm_Set
+   @link            varchar(512)
+  ,@groupID         bigint
+  ,@name            varchar(256)
+  ,@photoLink       varchar(512)
 as
 begin
 ------------------------------------------------
--- v1.0: Created by Cova Igor 24.04.2016
+-- v1.0: Created by Cova Igor 28.04.2016
 ------------------------------------------------
   set nocount on
   set quoted_identifier, ansi_nulls, ansi_warnings, arithabort,
@@ -25,24 +28,21 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  declare @action varchar(32) = iif(@IsNewComm = 0,'ReadForSta','ReadForNewSta')
+  exec dbo.Getter_Save 5, 'Comm_Set', 'dbo.Comm_Set'
   -----------------------------------------------------------------
-  exec dbo.Getter_Save 5, @action, 'dbo.Comm_ReadForSta'
-  -----------------------------------------------------------------
-
-  select distinct
-      t.groupID
-     ,t.link
-    from dbo.Comm        as t
-    outer apply (
-      select
-           max(s.commPostCount) as commPostCount
-        from dbo.StaCommVKDaily as s    
-        where s.commID = t.id 
-    ) as s
-    where @IsNewComm = cast(0 as bit)
-       or (    t.IsNew = @IsNewComm
-           and @IsNewComm = cast(1 as bit))
+  ----------------------------------------
+  begin tran Comm_Set
+  ----------------------------------------
+    update t set
+         t.groupID = @groupID
+        ,t.name = @name
+        ,t.photoLink = @photoLink
+        ,t.IsNew = cast(0 as bit)
+      from dbo.Comm as t
+      where t.link = @link
+  ----------------------------------------
+  commit tran Comm_Set
+  ----------------------------------------  
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -50,31 +50,35 @@ end
 go
 
 ----------------------------------------------
--- <NativeCheck>
-----------------------------------------------
-exec dbo.[NativeCheck] 'dbo.Comm_ReadForSta'
-go
-
-----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.Comm_ReadForSta'
+   @ObjSysName  = 'dbo.Comm_Set'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for read comms by sta at WCF-Service.'
-  ,@Params      = '@IsNewComm = owner Hub id \n'
+  ,@Description = 'procedure for Save comm.'
+  ,@Params = '
+       @link = link to community \n
+      ,@groupID = id group \n
+      ,@name = name \n
+      ,@photoLink = Photo link \n
+      '
 go
 
-/* Œ“À¿ƒ ¿:
+----------------------------------------------
+-- <NativeCheck>
+----------------------------------------------
+exec dbo.NativeCheck 'dbo.Comm_Set'
+go
+
+/* Debug:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.Comm_ReadForSta 
-  @IsNewComm = 0
+exec @ret = dbo.Comm_Set 
 
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.Comm_ReadForSta to [public]
+grant execute on dbo.Comm_Set to [public]

@@ -12,11 +12,9 @@ alter procedure dbo.Comm_Save
    @id              bigint
   ,@ownerHubID      bigint
   ,@subjectCommID   bigint
-  ,@areaCommID      int
   ,@name            varchar(256)
   ,@adminCommID     bigint
   ,@link            varchar(512)
-  ,@groupID         bigint
 as
 begin
 ------------------------------------------------
@@ -33,6 +31,8 @@ begin
   -----------------------------------------------------------------
   set @name = fn.Trim(@name)
   declare @true bit = cast(1 as bit)
+
+  set @link = fn.ClearLinkToVK(@link)
   ----------------------------------------
   begin tran Comm_Save
   ----------------------------------------
@@ -42,7 +42,7 @@ begin
           where s.id = @id)
     begin
       set @id = next value for seq.Comm
-
+      
       insert into dbo.Comm ( 
          id
         ,ownerHubID
@@ -57,50 +57,13 @@ begin
          @id
         ,@ownerHubID
         ,@subjectCommID
-        ,@areaCommID
+        ,1 -- vkontakte
         ,@name
         ,@adminCommID
         ,@link
-        ,@groupID
+        ,0
         ,@true
       )
-
-      insert into dbo.StaCommVKDaily ( 
-         id
-        ,commID
-        ,dayDate
-        ,commViews
-        ,commVisitors
-        ,commReach
-        ,commReachSubscribers
-        ,commSubscribed
-        ,commUnsubscribed
-        ,commLikes
-        ,commComments
-        ,commReposts
-        ,commPostCount
-        ,commMembers
-        ,requestDate 
-      )
-      select
-           next value for seq.StaCommVKDaily
-          ,@id
-          ,s.dayDate
-          ,s.commViews
-          ,s.commVisitors
-          ,s.commReach
-          ,s.commReachSubscribers
-          ,s.commSubscribed
-          ,s.commUnsubscribed
-          ,s.commLikes
-          ,s.commComments
-          ,s.commReposts
-          ,s.commPostCount
-          ,s.commMembers
-          ,getdate()
-        from dbo.StaCommVKDaily  as s
-        join dbo.Comm            as c on c.id = s.commID       
-        where c.groupID = @groupID
 
       exec sb.StaCommVKDaily_Request_ForNew_Send
     end
@@ -109,10 +72,8 @@ begin
       update t set
            t.subjectCommID = @subjectCommID
           ,t.link          = @link
-          ,t.groupID       = @groupID
           ,t.name          = @name
           ,t.adminCommID   = @adminCommID
-          ,t.areaCommID    = @areaCommID
         from dbo.Comm as t
         where t.id = @id
           and t.ownerHubID = @ownerHubID
@@ -134,10 +95,8 @@ exec dbo.FillExtendedProperty
   ,@Author      = 'Cova Igor'
   ,@Description = 'procedure for Save comm.'
   ,@Params = '
-       @adminCommID = admin comm id \n
-      ,@areaCommID = area social network \n
+       @adminCommID = admin comm id \n     
       ,@link = link to community \n
-      ,@groupID = id group \n
       ,@name = name \n
       ,@ownerHubID = owner Hub id \n
       ,@subjectCommID = subject comm id \n'
