@@ -31,6 +31,11 @@ begin
   set @ret = replace(@ret, 'http://vk.com/', '')  
   set @ret = replace(@ret, 'vk.com/', '')
 
+  if @ret like 'public%'    
+    set @ret = replace(@ret, 'public', '')
+  if @ret like 'club%'    
+    set @ret = replace(@ret, 'club', '')
+
  return @ret
 end
 go
@@ -39,8 +44,8 @@ go
 declare @ret varchar(32), @err int, @runtime datetime
 select @runtime = getdate()
 
-select @ret = fn.ClearLinkToVK('https://vk.com/runfoundation')
-
+select fn.ClearLinkToVK('https://vk.com/runfoundation')
+select fn.ClearLinkToVK('https://vk.com/public84032162')
 select
    @err = @@error
   ,@runtime = getdate()-@runtime
