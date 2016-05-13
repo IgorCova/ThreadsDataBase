@@ -31,6 +31,10 @@ begin
   delete 
     from dbo.StaCommVKDaily
     where commID = @id
+
+  delete 
+    from dbo.StaCommVKWeekly
+    where commID = @id
     
   delete  
     from dbo.Comm
