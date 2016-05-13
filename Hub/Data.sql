@@ -173,9 +173,17 @@ exec dbo.AdminComm_Save
   @linkFB = 'https://www.facebook.com/profile.php?id=100009033714409'
 go
 
+
+insert into dbo.TeamHub (id, name)
+select next value for seq.TeamHub, 'Tectonics' 
+
+insert into dbo.TeamHub (id, name)
+select next value for seq.TeamHub, 'NewMediaLub' 
+
 */
 select * from dbo.SubjectComm
 select * from dbo.OwnerHub
+select * from dbo.TeamHub
 select * from dbo.AdminComm
 select * from dbo.AreaComm
 select * from dbo.Comm
