@@ -34,6 +34,20 @@ begin
      @startDate date = dateadd(day, - @dw, cast(getdate() as date))
     ,@endDate   date = dateadd(day, - @dw, cast(getdate() -7 as date))
     ,@preDate   date = dateadd(day, - @dw, cast(getdate() -14 as date))
+    
+    ,@teamHubID bigint
+
+  select top 1 
+       @teamHubID = t.teamHubID
+    from dbo.OwnerHub as t       
+    where t.id = @ownerHubID
+  
+  declare @ownersTeam table (id bigint)
+  insert into @ownersTeam ( id )
+  select
+       t.id
+    from dbo.OwnerHub as t       
+    where t.TeamHubID = @teamHubID
 
   select
        comm_id                   = t.id
@@ -204,7 +218,8 @@ begin
           ,commPostCount        = cast((s.commPostCount        - v.commPostCount)        as int)
           
     ) as f
-    where t.ownerHubID = iif(@ownerHubID = 1, t.ownerHubID, @ownerHubID)
+    where (t.ownerHubID = iif(@ownerHubID = 1, t.ownerHubID, @ownerHubID))
+       or (t.ownerHubID in (select id from @ownersTeam))
     order by t.name asc
 -----------------------------------------------------------
   -- End Point
