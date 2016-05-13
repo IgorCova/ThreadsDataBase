@@ -40,12 +40,14 @@ begin
     ,lastName
     ,phone
     ,linkFB 
+    ,dateCreate
   ) values (
      @id
     ,''
     ,''
     ,@phone
     ,'' 
+    ,getdate()
   )
   
   -----------------------------------------------------------------

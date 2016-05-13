@@ -18,6 +18,8 @@ create table dbo.OwnerHub (
   ,lastName       varchar(512)
   ,phone          varchar(32)
   ,linkFB         varchar(512)
+  ,TeamHubID      bigint
+  ,dateCreate     datetime
   ,constraint ownerHub_pk primary key clustered (id)
 )
 go
@@ -27,6 +29,8 @@ create unique index OwnerHub_uixPhone
 go
 
 create sequence seq.OwnerHub as bigint
-    start with 1
-    increment by 1 ;
+  start with 1
+  increment by 1 ;
 go
+
+
