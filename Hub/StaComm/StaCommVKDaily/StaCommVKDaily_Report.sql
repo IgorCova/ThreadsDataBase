@@ -122,23 +122,23 @@ begin
 
       ---------------------------------------------------------------------------------------------------------------------------------------------------
       -- Wall +
-      ,likes                     = isnull(s.commLikes , 0)     
-      ,likesNew                  = isnull(s.commLikes - v.commLikes, 0)
-      ,likesOld                  = isnull(v.commLikes - p.commLikes, 0)
+      ,likes                     = isnull(st.commLikes , 0)     
+      ,likesNew                  = isnull(st.commLikes, 0)
+      ,likesOld                  = isnull(vt.commLikes, 0)
       ,likesDif                  = isnull(f.commLikes, 0)
-      ,likesDifPercent           = cast(isnull(f.commLikes * 100.00 / nullif(v.commLikes, 0), 0) as int)
+      ,likesDifPercent           = cast(isnull(f.commLikes * 100.00 / nullif(vt.commLikes, 0), 0) as int)
 
-      ,comments                  = isnull(s.commComments, 0)
-      ,commentsNew               = isnull(s.commComments - v.commComments, 0)
-      ,commentsOld               = isnull(v.commComments - p.commComments, 0)
+      ,comments                  = isnull(st.commComments, 0)
+      ,commentsNew               = isnull(st.commComments, 0)
+      ,commentsOld               = isnull(vt.commComments, 0)
       ,commentsDif               = isnull(f.commComments, 0)
-      ,commentsDifPercent        = cast(isnull(f.commComments * 100.00 / nullif(v.commComments, 0), 0) as int)
+      ,commentsDifPercent        = cast(isnull(f.commComments * 100.00 / nullif(vt.commComments, 0), 0) as int)
 
-      ,reposts                   = isnull(s.commReposts, 0)
-      ,repostsNew                = isnull(s.commReposts - v.commReposts, 0)
-      ,repostsOld                = isnull(v.commReposts - p.commReposts, 0)
-      ,repostsDif                = isnull(f.commReposts, 0)
-      ,repostsDifPercent         = cast(isnull(f.commReposts * 100.00 / nullif(v.commReposts, 0), 0) as int)
+      ,reposts                   = isnull(st.commShare, 0)
+      ,repostsNew                = isnull(st.commShare, 0)
+      ,repostsOld                = isnull(vt.commShare, 0)
+      ,repostsDif                = isnull(f.commShare, 0)
+      ,repostsDifPercent         = cast(isnull(f.commShare * 100.00 / nullif(vt.commShare, 0), 0) as int)
       -- Wall +
       ---------------------------------------------------------------------------------------------------------------------------------------------------      
     from dbo.Comm             as t
@@ -146,11 +146,28 @@ begin
     left join dbo.SubjectComm as b on b.id = t.subjectCommID
     left join dbo.AdminComm   as d on d.id = t.adminCommID
     outer apply (
-      select
-           s.commLikes             as commLikes
-          ,s.commComments          as commComments
-          ,s.commReposts           as commReposts
-          ,s.commSubscribed        as commSubscribed
+      select top 1 
+           st.commLikes
+          ,st.commComments
+          ,st.commShare
+        from dbo.StaCommVKGraph as st 
+        where st.dayDate = @startDate
+          and st.groupID = t.groupID
+    ) as st
+
+    outer apply (
+      select top 1 
+           st.commLikes
+          ,st.commComments
+          ,st.commShare
+        from dbo.StaCommVKGraph as st 
+        where st.dayDate = @endDate
+          and st.groupID = t.groupID
+    ) as vt
+
+    outer apply (
+      select          
+           s.commSubscribed        as commSubscribed
           ,s.commUnsubscribed      as commUnsubscribed
           ,s.commViews             as commViews
           ,s.commVisitors          as commVisitors
@@ -165,11 +182,8 @@ begin
     ) as s
 
     outer apply (
-      select
-           s.commLikes             as commLikes
-          ,s.commComments          as commComments
-          ,s.commReposts           as commReposts
-          ,s.commSubscribed        as commSubscribed
+      select          
+           s.commSubscribed        as commSubscribed
           ,s.commUnsubscribed      as commUnsubscribed
           ,s.commViews             as commViews
           ,s.commVisitors          as commVisitors
@@ -177,17 +191,15 @@ begin
           ,s.commReachSubscribers  as commReachSubscribers
           ,s.commPostCount         as commPostCount
           ,s.commMembers           as commMembers
-        from dbo.StaCommVKDaily as s       
+          ,s.requestDate           as requestDate
+        from dbo.StaCommVKDaily as s      
         where s.commID = t.id 
           and s.dayDate = @endDate
     ) as v
 
     outer apply (
-      select
-           s.commLikes             as commLikes
-          ,s.commComments          as commComments
-          ,s.commReposts           as commReposts
-          ,s.commSubscribed        as commSubscribed
+      select          
+           s.commSubscribed        as commSubscribed
           ,s.commUnsubscribed      as commUnsubscribed
           ,s.commViews             as commViews
           ,s.commVisitors          as commVisitors
@@ -195,16 +207,18 @@ begin
           ,s.commReachSubscribers  as commReachSubscribers
           ,s.commPostCount         as commPostCount
           ,s.commMembers           as commMembers
-        from dbo.StaCommVKDaily as s       
+          ,s.requestDate           as requestDate
+        from dbo.StaCommVKDaily as s      
         where s.commID = t.id 
           and s.dayDate = @preDate
     ) as p
-
+    
     outer apply (
       select
-           commLikes            = cast((s.commLikes    - v.commLikes   ) - (v.commLikes    - p.commLikes   ) as int) 
-          ,commComments         = cast((s.commComments - v.commComments) - (v.commComments - p.commComments) as int)
-          ,commReposts          = cast((s.commReposts  - v.commReposts ) - (v.commReposts  - p.commReposts ) as int)
+           commLikes            = cast((st.commLikes    - vt.commLikes   ) as int) 
+          ,commComments         = cast((st.commComments - vt.commComments) as int)
+          ,commShare            = cast((st.commShare    - vt.commShare   ) as int)
+
           ,commMembers          = cast((s.commMembers  - v.commMembers ) - (v.commMembers  - p.commMembers ) as int)
 
           ,commSubscribed       = cast((s.commSubscribed       - v.commSubscribed)       as int)
@@ -241,7 +255,7 @@ exec dbo.FillExtendedProperty
                    @isPast = for past period \n'
 go
 
-/* Œ“À¿ƒ ¿:
+/* Œ“À¿ƒ ¿:*/
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()

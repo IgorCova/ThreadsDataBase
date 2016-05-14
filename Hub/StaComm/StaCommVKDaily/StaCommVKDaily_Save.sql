@@ -23,9 +23,6 @@ alter procedure dbo.StaCommVKDaily_Save
   ,@commReachSubscribers bigint
   ,@commSubscribed       bigint
   ,@commUnsubscribed     bigint
-  ,@commLikes            bigint
-  ,@commComments         bigint
-  ,@commReposts          bigint
   ,@commPostCount        bigint
   ,@commMembers          int
 as
@@ -51,10 +48,7 @@ begin
         ,t.commReach            = @commReach
         ,t.commReachSubscribers = @commReachSubscribers
         ,t.commSubscribed       = @commSubscribed
-        ,t.commUnsubscribed     = @commUnsubscribed
-        ,t.commLikes            = @commLikes
-        ,t.commComments         = @commComments
-        ,t.commReposts          = @commReposts
+        ,t.commUnsubscribed     = @commUnsubscribed      
         ,t.commPostCount        = @commPostCount
         ,t.commMembers          = @commMembers
         ,t.requestDate          = getdate()  
@@ -74,9 +68,6 @@ begin
         ,commReachSubscribers
         ,commSubscribed
         ,commUnsubscribed
-        ,commLikes
-        ,commComments
-        ,commReposts
         ,commPostCount
         ,commMembers
         ,requestDate 
@@ -92,9 +83,6 @@ begin
           ,@commReachSubscribers
           ,@commSubscribed
           ,@commUnsubscribed
-          ,@commLikes
-          ,@commComments
-          ,@commReposts
           ,@commPostCount
           ,@commMembers
           ,getdate()
@@ -127,9 +115,6 @@ exec dbo.FillExtendedProperty
      ,@commUnsubscribed = Unsubscribed \n
      ,@commViews = Views \n
      ,@commVisitors = Visitors \n 
-     ,@commComments = Comments \n
-     ,@commLikes = Likes \n
-     ,@commReposts = Reposts \n
      ,@commPostCount = Count posts \n
      ,@commMembers = count members \n'
 go

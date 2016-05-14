@@ -1,0 +1,39 @@
+Software:
+VS 2015 Enterprise
+MS SQL Server 2012
+
+Host:
+Адрес: http://95.84.164.113
+
+Домены:
+http://commhub.org
+http://major-comm.com
+http://tectonics-comm.com
+ 
+Database:
+Проект Threads в базе данных: Threads 
+Проект CommHub в базе данных: Hub 
+
+База данных находится по адресу: 95.84.164.113
+
+Запросы с сервиса CommHub в базу происходят по логину hubber
+С паролем = 12345678
+Роль: public
+
+Запросы с сервиса Threads в базу происходят по логину member
+С паролем = 12345678
+Роль: public
+
+Адрес сервиса Comm для приложения: 95.84.164.113/ThreadsService.svc
+
+Адрес сервиса CommHub для приложения: 95.84.164.113/CommHubService.svc
+
+Адрес сервиса CommSta статистики: 95.84.164.113/CommStaService.svc
+
+CLR в базе данных: 
+	ws.VKontakte_Sta
+	ws.VKontakte_Sta_ByDate		
+	ws.VKontakte_Sta_ForNew
+
+
+

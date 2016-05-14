@@ -9,13 +9,13 @@ set xact_abort on
 go
 
 ----------------------------------------------
--- <TABLE> dbo.StaCommVKWeekly
+-- <TABLE> dbo.StaCommVKDaily
 ----------------------------------------------
-create table dbo.StaCommVKWeekly (
+create table dbo.StaCommVKDaily (
    id                   bigint
   ,commID               bigint
 
-  ,weekDate             date -- Date From of week
+  ,dayDate              date
 
   ,commViews            bigint
   ,commVisitors         bigint
@@ -23,25 +23,28 @@ create table dbo.StaCommVKWeekly (
   ,commReachSubscribers bigint
   ,commSubscribed       bigint
   ,commUnsubscribed     bigint
+  ,commLikes            bigint
+  ,commComments         bigint
+  ,commReposts          bigint
   ,commPostCount        bigint
   ,commMembers          int
   ,requestDate          datetime
   ,cntReq               int          
 
-  ,constraint StaCommVKWeekly_pk primary key nonclustered (id)
+  ,constraint StaCommVKDaily_pk primary key nonclustered (id)
 )
 go
 
-create sequence seq.StaCommVKWeekly as bigint
+create sequence seq.StaCommVKDaily as bigint
   start with 1
   increment by 1 ;
 go
 
-alter table dbo.StaCommVKWeekly
-  add constraint StaCommVKWeekly_fkCommID
+alter table dbo.StaCommVKDaily
+  add constraint StaCommVKDaily_fkCommID
   foreign key (commID) references dbo.Comm (id)
 go
 
-create clustered index StaCommVKWeekly_dayDate 
-  on dbo.StaCommVKWeekly (weekDate, commID)
+create clustered index StaCommVKDaily_dayDate 
+  on dbo.StaCommVKDaily (dayDate, commID)
 go

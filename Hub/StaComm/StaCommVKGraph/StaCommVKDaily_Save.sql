@@ -8,27 +8,30 @@ set transaction isolation level read uncommitted
 set xact_abort on
 go
 
-exec dbo.sp_object_create 'dbo.StaCommVKWeekly_Save', 'P'
+exec dbo.sp_object_create 'dbo.StaCommVKDaily_Save', 'P'
 go
 
 -------------------------------------------------------------
--- <PROC> dbo.StaCommVKWeekly_Save
+-- <PROC> dbo.StaCommVKDaily_Save
 -------------------------------------------------------------
-alter procedure dbo.StaCommVKWeekly_Save
+alter procedure dbo.StaCommVKDaily_Save
    @groupID              bigint
-  ,@weekDate             datetime
+  ,@dayDate              datetime
   ,@commViews            bigint
   ,@commVisitors         bigint
   ,@commReach            bigint
   ,@commReachSubscribers bigint
   ,@commSubscribed       bigint
   ,@commUnsubscribed     bigint
+  ,@commLikes            bigint
+  ,@commComments         bigint
+  ,@commReposts          bigint
   ,@commPostCount        bigint
   ,@commMembers          int
 as
 begin
 ------------------------------------------------
--- v1.0: Created by Cova Igor 30.04.2016
+-- v1.0: Created by Cova Igor 16.04.2016
 ------------------------------------------------
   set nocount on
   set quoted_identifier, ansi_nulls, ansi_warnings, arithabort,
@@ -37,10 +40,10 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  set @weekDate = cast(@weekDate as date)
+  set @dayDate = cast(@dayDate as date)
 
   ----------------------------------------
-  begin tran StaCommVKWeekly_Save
+  begin tran StaCommVKDaily_Save
   ----------------------------------------
     update t set    
          t.commViews            = @commViews
@@ -49,40 +52,49 @@ begin
         ,t.commReachSubscribers = @commReachSubscribers
         ,t.commSubscribed       = @commSubscribed
         ,t.commUnsubscribed     = @commUnsubscribed
+        ,t.commLikes            = @commLikes
+        ,t.commComments         = @commComments
+        ,t.commReposts          = @commReposts
         ,t.commPostCount        = @commPostCount
         ,t.commMembers          = @commMembers
         ,t.requestDate          = getdate()  
         ,t.cntReq               = (t.cntReq + 1)
-      from dbo.StaCommVKWeekly as t
+      from dbo.StaCommVKDaily as t
       join dbo.Comm as c on c.id = t.commID
       where c.groupID = @groupID 
-        and t.weekDate = @weekDate
+        and t.dayDate = @dayDate
 
-      insert into dbo.StaCommVKWeekly ( 
+      insert into dbo.StaCommVKDaily ( 
          id
         ,commID
-        ,weekDate
+        ,dayDate
         ,commViews
         ,commVisitors
         ,commReach
         ,commReachSubscribers
         ,commSubscribed
         ,commUnsubscribed
+        ,commLikes
+        ,commComments
+        ,commReposts
         ,commPostCount
         ,commMembers
         ,requestDate 
         ,cntReq
       )
       select
-           next value for seq.StaCommVKWeekly
+           next value for seq.StaCommVKDaily
           ,c.id
-          ,@weekDate
+          ,@dayDate
           ,@commViews
           ,@commVisitors
           ,@commReach
           ,@commReachSubscribers
           ,@commSubscribed
           ,@commUnsubscribed
+          ,@commLikes
+          ,@commComments
+          ,@commReposts
           ,@commPostCount
           ,@commMembers
           ,getdate()
@@ -90,11 +102,11 @@ begin
       from dbo.Comm as c
       where c.groupID = @groupID
         and not exists (
-          select * from dbo.StaCommVKWeekly as s
+          select * from dbo.StaCommVKDaily as s
             where s.commID = c.id 
-              and s.weekDate = @weekDate)
+              and s.dayDate = @dayDate)
   ----------------------------------------
-  commit tran StaCommVKWeekly_Save
+  commit tran StaCommVKDaily_Save
   ---------------------------------------- 
   -----------------------------------------------------------------
 end
@@ -103,11 +115,11 @@ go
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.StaCommVKWeekly_Save'
+   @ObjSysName  = 'dbo.StaCommVKDaily_Save'
   ,@Author      = 'Cova Igor'
   ,@Description = 'procedure for Save statistics of community on VKontakte.'
   ,@Params = '
-     ,@weekDate = weekly report date from \n
+     ,@dayDate = daily report \n
      ,@groupID = id group in VKontakte \n
      ,@commReach = Reach \n
      ,@commReachSubscribers = ReachSubscribers \n
@@ -115,24 +127,27 @@ exec dbo.FillExtendedProperty
      ,@commUnsubscribed = Unsubscribed \n
      ,@commViews = Views \n
      ,@commVisitors = Visitors \n 
+     ,@commComments = Comments \n
+     ,@commLikes = Likes \n
+     ,@commReposts = Reposts \n
      ,@commPostCount = Count posts \n
      ,@commMembers = count members \n'
 go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec dbo.NativeCheck 'dbo.StaCommVKWeekly_Save'
+exec dbo.NativeCheck 'dbo.StaCommVKDaily_Save'
 go
 
 /* Œ“À¿ƒ ¿:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.StaCommVKWeekly_Save 
+exec @ret = dbo.StaCommVKDaily_Save 
 
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.StaCommVKWeekly_Save to [public]
+grant execute on dbo.StaCommVKDaily_Save to [public]

@@ -23,9 +23,7 @@ create table dbo.StaCommVKDaily (
   ,commReachSubscribers bigint
   ,commSubscribed       bigint
   ,commUnsubscribed     bigint
-  ,commLikes            bigint
-  ,commComments         bigint
-  ,commReposts          bigint
+ 
   ,commPostCount        bigint
   ,commMembers          int
   ,requestDate          datetime

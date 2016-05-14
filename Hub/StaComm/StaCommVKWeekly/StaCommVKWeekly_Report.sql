@@ -124,23 +124,23 @@ begin
 
       ---------------------------------------------------------------------------------------------------------------------------------------------------
       -- Wall +
-      ,likes                     = isnull(s.commLikes , 0)     
-      ,likesNew                  = isnull(s.commLikes - v.commLikes, 0)
-      ,likesOld                  = isnull(v.commLikes - p.commLikes, 0)
+      ,likes                     = isnull(st.commLikes , 0)     
+      ,likesNew                  = isnull(st.commLikes, 0)
+      ,likesOld                  = isnull(vt.commLikes, 0)
       ,likesDif                  = isnull(f.commLikes, 0)
-      ,likesDifPercent           = cast(isnull(f.commLikes * 100.00 / nullif(v.commLikes, 0), 0) as int)
+      ,likesDifPercent           = cast(isnull(f.commLikes * 100.00 / nullif(vt.commLikes, 0), 0) as int)
 
-      ,comments                  = isnull(s.commComments, 0)
-      ,commentsNew               = isnull(s.commComments - v.commComments, 0)
-      ,commentsOld               = isnull(v.commComments - p.commComments, 0)
+      ,comments                  = isnull(st.commComments, 0)
+      ,commentsNew               = isnull(st.commComments, 0)
+      ,commentsOld               = isnull(vt.commComments, 0)
       ,commentsDif               = isnull(f.commComments, 0)
-      ,commentsDifPercent        = cast(isnull(f.commComments * 100.00 / nullif(v.commComments, 0), 0) as int)
+      ,commentsDifPercent        = cast(isnull(f.commComments * 100.00 / nullif(vt.commComments, 0), 0) as int)
 
-      ,reposts                   = isnull(s.commReposts, 0)
-      ,repostsNew                = isnull(s.commReposts - v.commReposts, 0)
-      ,repostsOld                = isnull(v.commReposts - p.commReposts, 0)
-      ,repostsDif                = isnull(f.commReposts, 0)
-      ,repostsDifPercent         = cast(isnull(f.commReposts * 100.00 / nullif(v.commReposts, 0), 0) as int)
+      ,reposts                   = isnull(st.commShare, 0)
+      ,repostsNew                = isnull(st.commShare, 0)
+      ,repostsOld                = isnull(vt.commShare, 0)
+      ,repostsDif                = isnull(f.commShare, 0)
+      ,repostsDifPercent         = cast(isnull(f.commShare * 100.00 / nullif(vt.commShare, 0), 0) as int)
       -- Wall +
       ---------------------------------------------------------------------------------------------------------------------------------------------------      
     from dbo.Comm             as t
@@ -149,10 +149,7 @@ begin
     left join dbo.AdminComm   as d on d.id = t.adminCommID
     outer apply (
       select
-           s.commLikes             as commLikes
-          ,s.commComments          as commComments
-          ,s.commReposts           as commReposts
-          ,s.commSubscribed        as commSubscribed
+           s.commSubscribed        as commSubscribed
           ,s.commUnsubscribed      as commUnsubscribed
           ,s.commViews             as commViews
           ,s.commVisitors          as commVisitors
@@ -168,10 +165,7 @@ begin
 
     outer apply (
       select
-           s.commLikes             as commLikes
-          ,s.commComments          as commComments
-          ,s.commReposts           as commReposts
-          ,s.commSubscribed        as commSubscribed
+           s.commSubscribed        as commSubscribed
           ,s.commUnsubscribed      as commUnsubscribed
           ,s.commViews             as commViews
           ,s.commVisitors          as commVisitors
@@ -186,10 +180,27 @@ begin
 
     outer apply (
       select
-           s.commLikes             as commLikes
-          ,s.commComments          as commComments
-          ,s.commReposts           as commReposts
-          ,s.commSubscribed        as commSubscribed
+           sum(s.commLikes)            as commLikes
+          ,sum(s.commComments)         as commComments
+          ,sum(s.commShare)            as commShare          
+        from dbo.StaCommVKGraph as s
+        where s.groupID = t.groupID
+          and s.dayDate between @startDate and dateadd(week, 1, @startDate)
+    ) as st
+
+    outer apply (
+      select
+           sum(s.commLikes)            as commLikes
+          ,sum(s.commComments)         as commComments
+          ,sum(s.commShare)            as commShare          
+        from dbo.StaCommVKGraph as s
+        where s.groupID = t.groupID
+          and s.dayDate between @endDate and dateadd(week, 1, @endDate)
+    ) as vt
+
+    outer apply (
+      select
+           s.commSubscribed        as commSubscribed
           ,s.commUnsubscribed      as commUnsubscribed
           ,s.commViews             as commViews
           ,s.commVisitors          as commVisitors
@@ -204,11 +215,11 @@ begin
 
     outer apply (
       select
-           commLikes            = cast((s.commLikes    - v.commLikes   ) - (v.commLikes    - p.commLikes   ) as int) 
-          ,commComments         = cast((s.commComments - v.commComments) - (v.commComments - p.commComments) as int)
-          ,commReposts          = cast((s.commReposts  - v.commReposts ) - (v.commReposts  - p.commReposts ) as int)
-          ,commMembers          = cast((s.commMembers  - v.commMembers ) - (v.commMembers  - p.commMembers ) as int)
+           commLikes            = cast((st.commLikes    - vt.commLikes   )  as int) 
+          ,commComments         = cast((st.commComments - vt.commComments)  as int)
+          ,commShare            = cast((st.commShare  - vt.commShare )  as int)
 
+          ,commMembers          = cast((s.commMembers  - v.commMembers ) - (v.commMembers  - p.commMembers ) as int)
           ,commSubscribed       = cast((s.commSubscribed       - v.commSubscribed)       as int)
           ,commUnsubscribed     = cast((s.commUnsubscribed     - v.commUnsubscribed)     as int)
           ,commViews            = cast((s.commViews            - v.commViews)            as int)
