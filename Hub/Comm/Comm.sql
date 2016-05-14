@@ -21,9 +21,15 @@ create table dbo.Comm (
   ,link            varchar(512)
   ,groupID         bigint
   ,photoLink       varchar(512)
+  ,photoLinkBig    varchar(512)
   ,IsNew           bit
   ,constraint Comm_pk primary key clustered (id)
 )
+go
+
+create sequence seq.Comm as bigint
+  start with 1
+  increment by 1 ;
 go
 
 alter table dbo.Comm
@@ -44,9 +50,4 @@ go
 alter table dbo.Comm
   add constraint Comm_fkAdminCommID
   foreign key (adminCommID) references dbo.AdminComm (id)
-go
-
-create sequence seq.Comm as bigint
-  start with 1
-  increment by 1 ;
 go

@@ -32,6 +32,7 @@ begin
        t.id             as id
       ,t.name           as name
       ,t.photoLink      as photoLink
+      ,t.photoLinkBig   as photoLinkBig
 
       ,t.ownerHubID     as ownerHubID
       ,h.firstName      as ownerHubID_firstName

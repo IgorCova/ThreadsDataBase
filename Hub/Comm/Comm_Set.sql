@@ -16,6 +16,7 @@ alter procedure dbo.Comm_Set
   ,@groupID         bigint
   ,@name            varchar(256)
   ,@photoLink       varchar(512)
+  ,@photoLinkBig    varchar(512)
 as
 begin
 ------------------------------------------------
@@ -37,6 +38,7 @@ begin
          t.groupID = @groupID
         ,t.name = @name
         ,t.photoLink = @photoLink
+        ,t.photoLinkBig = @photoLinkBig
         ,t.IsNew = cast(0 as bit)
       from dbo.Comm as t
       where t.link = @link
@@ -60,7 +62,8 @@ exec dbo.FillExtendedProperty
        @link = link to community \n
       ,@groupID = id group \n
       ,@name = name \n
-      ,@photoLink = Photo link \n
+      ,@photoLink = Photo link \n      
+      ,@photoLinkBig = big photo link \n
       '
 go
 
