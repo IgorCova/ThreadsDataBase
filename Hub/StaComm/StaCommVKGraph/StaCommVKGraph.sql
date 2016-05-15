@@ -29,6 +29,9 @@ create table dbo.StaCommVKGraph (
   ,commVideoComments      bigint
   ,commDiscussionComments bigint
   ,commMarketComments     bigint
+  ,requestDate            datetime
+  ,cntReq                 int          
+
   ,constraint StaCommVKGraph_pk primary key nonclustered (id)
 )
 go

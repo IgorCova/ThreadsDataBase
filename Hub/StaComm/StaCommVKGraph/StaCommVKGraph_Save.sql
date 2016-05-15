@@ -113,7 +113,9 @@ begin
         ,t.commPhotos             = g.commPhotos
         ,t.commPhotoComments      = g.commPhotoComments
         ,t.commVideoComments      = g.commVideoComments
-        ,t.commDiscussionComments = g.commDiscussionComments  
+        ,t.commDiscussionComments = g.commDiscussionComments
+        ,t.requestDate            = getdate()
+        ,t.cntReq                 = t.cntReq + 1
       from dbo.StaCommVKGraph as t
       join @graph             as g on g.dayDate = t.dayDate
       where (   t.dayDate = cast(getdate() as date) 
@@ -133,6 +135,8 @@ begin
       ,commVideoComments
       ,commDiscussionComments
       ,commMarketComments 
+      ,requestDate
+      ,cntReq
     )
     select
          next value for seq.StaCommVKGraph
@@ -147,13 +151,13 @@ begin
         ,t.commVideoComments
         ,t.commDiscussionComments
         ,t.commMarketComments
+        ,getdate()
+        ,1
       from @graph as t
       where not exists (select * 
                           from dbo.StaCommVKGraph as s 
                           where s.dayDate = t.dayDate 
-                            and s.groupID = @groupID) 
-    
-   
+                            and s.groupID = @groupID)
   ----------------------------------------
   commit tran StaCommVKGraph_Save
   ---------------------------------------- 
