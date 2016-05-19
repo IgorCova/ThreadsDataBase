@@ -1,3 +1,6 @@
+use Hub
+
+go
 set nocount on
 set quoted_identifier, ansi_nulls, ansi_warnings, arithabort, concat_null_yields_null, ansi_padding on
 set numeric_roundabort off
@@ -6,40 +9,33 @@ set xact_abort on
 go
 
 -----------------------------------------------------------------------------
--- <FUNC> [dbo].[ClearPhone]
+-- <FUNC> dbo.ClearLinkToOK
 -----------------------------------------------------------------------------
 /* 
 ///<description>
-/// returns clean phone with no characters .. or any other numerical value
+/// returns clean Link To OK 
 ///</description>
 */
-
-exec dbo.sp_object_create 'fn.ClearPhone', 'F'
+exec sp.object_create 'ClearLinkToOK', 'FN'
 go
 
-alter function fn.ClearPhone(@phone varchar(512))
+alter function fn.ClearLinkToOK(@link varchar(512))
 returns varchar(512)
 as
 begin
   declare 
-     @ret  varchar(512)
-    ,@i    int
-    ,@r    varchar(1)
+    @ret varchar(512) = @link 
 
-  set @ret = @phone
+  set @ret = replace(@ret, 'https://', '')
+  set @ret = replace(@ret, 'http://', '')
+  
+  set @ret = replace(@ret, 'www.odnoklassniki.ru/group/', '')
+  set @ret = replace(@ret, 'odnoklassniki.ru/group/', '') 
 
-  set @i = patindex('%[^0-9]%', @ret)
-  while @i > 0
-  begin
-    select @r = substring(@ret, @i, 1)
-    select @ret = replace(@ret, @r, '')
-    select @i = patindex('%[^0-9]%', @ret) 
-  end
+  set @ret = replace(@ret, 'www.ok.ru/group/', '')
+  set @ret = replace(@ret, 'ok.ru/group/', '')  
 
-  if @ret like '8%'
-    set @ret = '7' + right(@ret, len(@ret)-1)
-
-  return @ret
+ return @ret
 end
 go
 
@@ -47,8 +43,8 @@ go
 declare @ret varchar(32), @err int, @runtime datetime
 select @runtime = getdate()
 
-select fn.[ClearPhone]('8965353334')
-
+select fn.ClearLinkToOK('https://vk.com/runfoundation')
+select fn.ClearLinkToOK('https://vk.com/public84032162')
 select
    @err = @@error
   ,@runtime = getdate()-@runtime

@@ -62,7 +62,7 @@ begin
                              and c.ownerHubId = t.ownerHubID
 
     join dbo.AreaComm    as a on a.id = t.areaCommID
-   -- where t.ownerHubID = @ownerHubID
+    where t.ownerHubID = @ownerHubID
     order by t.name
   -----------------------------------------------------------------
   -- End Point
@@ -91,7 +91,7 @@ declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
 exec @ret = dbo.Comm_ReadDict 
-  @ownerHubId = 3
+  @ownerHubId = 64
 
 select @err = @@error
 

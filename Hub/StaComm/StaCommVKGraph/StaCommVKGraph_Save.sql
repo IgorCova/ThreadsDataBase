@@ -118,8 +118,7 @@ begin
         ,t.cntReq                 = t.cntReq + 1
       from dbo.StaCommVKGraph as t
       join @graph             as g on g.dayDate = t.dayDate
-      where (   t.dayDate = cast(getdate() as date) 
-             or t.dayDate = cast(getdate()-1 as date))
+      where t.dayDate = cast(getdate() as date)
         and t.groupID = @groupID
     
     insert into dbo.StaCommVKGraph ( 

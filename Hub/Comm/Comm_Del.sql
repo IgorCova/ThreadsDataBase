@@ -39,7 +39,7 @@ begin
   delete  
     from dbo.Comm
     where id = @id 
-    --  and ownerHubID = @ownerHubID
+      and ownerHubID = @ownerHubID
 
   -----------------------------------------------------------------
   -- End Point

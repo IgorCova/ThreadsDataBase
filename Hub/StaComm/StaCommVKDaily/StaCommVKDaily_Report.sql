@@ -255,12 +255,12 @@ exec dbo.FillExtendedProperty
                    @isPast = for past period \n'
 go
 
-/* ÎÒËÀÄÊÀ:*/
+/* ÎÒËÀÄÊÀ:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
 exec @ret = dbo.StaCommVKDaily_Report 
-   @ownerHubId = 1
+   @ownerHubId = 70
   ,@isPast = 0
 
 select @err = @@error

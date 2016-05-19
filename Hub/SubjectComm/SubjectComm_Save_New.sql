@@ -8,16 +8,21 @@ set transaction isolation level read uncommitted
 set xact_abort on
 go
 
-exec dbo.sp_object_create 'dbo.Comm_ReadForSta', 'P'
+exec dbo.sp_object_create 'SubjectComm_Save_New', 'P'
 go
-
-alter procedure dbo.Comm_ReadForSta
-   @IsNewComm bit
-  ,@areaCode  varchar(2) = null
+/*
+///<description>
+///   procedure for Save subject of community.
+///</description>
+*/
+alter procedure dbo.SubjectComm_Save_New
+   @id         bigint = null
+  ,@ownerHubID bigint 
+  ,@name       varchar(256)
 as
 begin
 ------------------------------------------------
--- v1.0: Created by Cova Igor 24.04.2016
+-- v1.0: Created by Cova Igor 30.03.2016
 ------------------------------------------------
   set nocount on
   set quoted_identifier, ansi_nulls, ansi_warnings, arithabort,
@@ -26,25 +31,18 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  declare @action varchar(32) = iif(@IsNewComm = 0,'ReadForSta','ReadForNewSta')
+  exec dbo.Getter_Save @ownerHubID, 'Save', 'dbo.SubjectComm_Save_New'
   -----------------------------------------------------------------
-  exec dbo.Getter_Save 5, @action, 'dbo.Comm_ReadForSta'
-  -----------------------------------------------------------------
-  declare @areaID int = 1
 
-  if @areaCode is not null
-    select top 1 @areaID = c.id
-      from dbo.AreaComm as c
-      where c.code = @areaCode
-
-  select distinct
-      t.groupID
-     ,t.link
-    from dbo.Comm as t
-    where t.areaCommID = @areaID
-      and @IsNewComm = cast(0 as bit)
-       or (    t.IsNew = @IsNewComm
-           and @IsNewComm = cast(1 as bit))
+  insert into dbo.SubjectComm ( 
+     id
+    ,ownerHubID
+    ,name 
+  ) values (
+     @id
+    ,@ownerHubID
+    ,@name 
+  )
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -54,30 +52,32 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec dbo.[NativeCheck] 'dbo.Comm_ReadForSta'
+exec dbo.[NativeCheck] 'dbo.SubjectComm_Save_New'
 go
-
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.Comm_ReadForSta'
+   @ObjSysName  = 'dbo.SubjectComm_Save_New'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for read comms by sta at WCF-Service.'
-  ,@Params      = '@IsNewComm = owner Hub id \n
-                   @areaCode = Area Code - Social Network shortname \n'
+  ,@Description = 'procedure for Save subject of community.'
+  ,@Params = '
+      @id = id SubjectComm \n 
+     ,@name = name \n
+     ,@ownerHubID = owner Hub id \n'
 go
 
 /* Œ“À¿ƒ ¿:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.Comm_ReadForSta 
-  @IsNewComm = 0
+exec @ret = dbo.SubjectComm_Save_New 
+   @MemberID = 1
+  ,@EntryID = 410  
 
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.Comm_ReadForSta to [public]
+grant execute on dbo.SubjectComm_Save_New to [public]

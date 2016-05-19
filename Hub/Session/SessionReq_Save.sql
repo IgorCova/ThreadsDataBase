@@ -37,7 +37,7 @@ begin
   select
        @OwnerHubID = m.id
     from dbo.OwnerHub as m       
-    where m.Phone = @Phone  
+    where m.Phone = fn.ClearPhone(@phone)  
 
   insert into dbo.SessionReq ( 
      id
@@ -47,7 +47,7 @@ begin
   ) values (
      @id
     ,@dID
-    ,@phone
+    ,fn.ClearPhone(@phone)
     ,getdate() 
   )
 

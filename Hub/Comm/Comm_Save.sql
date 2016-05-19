@@ -15,6 +15,7 @@ alter procedure dbo.Comm_Save
   ,@name            varchar(256)
   ,@adminCommID     bigint
   ,@link            varchar(512)
+  ,@areaCommID      int
 as
 begin
 ------------------------------------------------
@@ -31,8 +32,12 @@ begin
   -----------------------------------------------------------------
   set @name = fn.Trim(@name)
   declare @true bit = cast(1 as bit)
+  
+  if @areaCommID = 1 -- vk
+    set @link = fn.ClearLinkToVK(@link)
+  else if @areaCommID = 2 -- ok
+    set @link = fn.ClearLinkToOK(@link)
 
-  set @link = fn.ClearLinkToVK(@link)
   ----------------------------------------
   begin tran Comm_Save
   ----------------------------------------
@@ -57,7 +62,7 @@ begin
          @id
         ,@ownerHubID
         ,@subjectCommID
-        ,1 -- vkontakte
+        ,@areaCommID
         ,@name
         ,@adminCommID
         ,@link
@@ -99,7 +104,8 @@ exec dbo.FillExtendedProperty
       ,@link = link to community \n
       ,@name = name \n
       ,@ownerHubID = owner Hub id \n
-      ,@subjectCommID = subject comm id \n'
+      ,@subjectCommID = subject comm id \n
+      ,@areaCommID = area id \n'
 go
 
 ----------------------------------------------

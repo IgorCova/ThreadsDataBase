@@ -29,15 +29,13 @@ begin
   set xact_abort on
   -----------------------------------------------------------------
   declare 
-     @id          bigint
-    ,@sessionID   uniqueidentifier
-    ,@ownerHubID  bigint
-    ,@phone       varchar(32)
-    ,@about       varchar(max)
-    ,@isNewMember bit = cast(0 as bit)
-
-  set @sessionID = newid()
-  set @ID = next value for seq.Session
+     @id            bigint = next value for seq.Session
+    ,@sessionID     uniqueidentifier = newid()
+    ,@ownerHubID    bigint 
+    ,@adminCommId   bigint
+    ,@subjectCommId bigint
+    ,@phone         varchar(32)
+    ,@isNewMember   bit = cast(0 as bit)
 
   select top 1
        @ownerHubID = m.id
@@ -48,19 +46,9 @@ begin
       and t.dID = @dID
 
   if @ownerHubID is null
-  begin
-    set @About = 'Joined on ' + convert(varchar, getdate(), 106)
+  begin  
+    set @ownerHubID  = next value for seq.OwnerHub
     set @isNewMember = cast(1 as bit)
-
-    if @Phone is null
-    begin
-      raiserror (15600,-1,-1, 'Session_Save: no Phone')
-      return 0
-    end
-
-    exec dbo.OwnerHub_New
-       @id        = @ownerHubID out    
-      ,@phone     = @phone
   end
 
   insert into dbo.Session ( 
@@ -76,11 +64,9 @@ begin
   )
 
   select
-       t.sessionID      as sessionID
+       @sessionID       as sessionID
       ,@ownerHubID      as ownerHubID
       ,@isNewMember     as isNewMember
-    from dbo.Session  as t       
-    where t.id = @id
   -----------------------------------------------------------------
   -- End Point
   return (0)
