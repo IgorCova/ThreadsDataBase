@@ -30,10 +30,14 @@ begin
   set @ret = replace(@ret, 'http://', '')
   
   set @ret = replace(@ret, 'www.odnoklassniki.ru/group/', '')
-  set @ret = replace(@ret, 'odnoklassniki.ru/group/', '') 
-
+  set @ret = replace(@ret, 'odnoklassniki.ru/group/', '')  
   set @ret = replace(@ret, 'www.ok.ru/group/', '')
-  set @ret = replace(@ret, 'ok.ru/group/', '')  
+  set @ret = replace(@ret, 'ok.ru/group/', '')
+
+  set @ret = replace(@ret, 'www.odnoklassniki.ru/', '')
+  set @ret = replace(@ret, 'odnoklassniki.ru/', '')  
+  set @ret = replace(@ret, 'www.ok.ru/', '')
+  set @ret = replace(@ret, 'ok.ru/', '')
 
  return @ret
 end
