@@ -23,6 +23,7 @@ create table dbo.Comm (
   ,photoLink       varchar(512)
   ,photoLinkBig    varchar(512)
   ,IsNew           bit
+  ,lastUpdate      datetime
   ,constraint Comm_pk primary key clustered (id)
 )
 go

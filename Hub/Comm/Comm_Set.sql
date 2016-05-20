@@ -17,6 +17,7 @@ alter procedure dbo.Comm_Set
   ,@name            varchar(256)
   ,@photoLink       varchar(512)
   ,@photoLinkBig    varchar(512)
+  ,@areaCommCode    varchar(32)
 as
 begin
 ------------------------------------------------
@@ -31,6 +32,12 @@ begin
   -----------------------------------------------------------------
   exec dbo.Getter_Save 5, 'Comm_Set', 'dbo.Comm_Set'
   -----------------------------------------------------------------
+  declare @areaCommID int = 1
+
+  select
+       @areaCommID = c.id
+    from dbo.AreaComm as c       
+    where c.code = @areaCommCode
   ----------------------------------------
   begin tran Comm_Set
   ----------------------------------------
@@ -40,8 +47,10 @@ begin
         ,t.photoLink = @photoLink
         ,t.photoLinkBig = @photoLinkBig
         ,t.IsNew = cast(0 as bit)
+        ,t.lastUpdate = getdate()
       from dbo.Comm as t
       where t.link = @link
+        and t.areaCommID = @areaCommID
   ----------------------------------------
   commit tran Comm_Set
   ----------------------------------------  
@@ -64,6 +73,7 @@ exec dbo.FillExtendedProperty
       ,@name = name \n
       ,@photoLink = Photo link \n      
       ,@photoLinkBig = big photo link \n
+      ,@areaCommCode = area code (Social Network shortname) \n
       '
 go
 
