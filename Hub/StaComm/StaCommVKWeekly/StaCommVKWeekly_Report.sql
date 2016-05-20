@@ -53,6 +53,7 @@ begin
        comm_id                   = t.id
       ,comm_name                 = t.name
       ,comm_photoLink            = isnull(t.photoLink , '')
+      ,comm_photoLinkBig         = isnull(t.photoLinkBig , '')
       ,comm_groupID              = t.groupID
  
       ,subjectComm_name          = b.name
