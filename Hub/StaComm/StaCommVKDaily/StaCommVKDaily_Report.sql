@@ -41,11 +41,13 @@ begin
     where t.id = @ownerHubID
   
   declare @ownersTeam table (id bigint)
+  insert into @ownersTeam ( id ) values (@ownerHubID)
   insert into @ownersTeam ( id )
   select
        t.id
     from dbo.OwnerHub as t       
     where t.TeamHubID = @teamHubID
+     and t.id <> @ownerHubID
 
   select
        comm_id                   = t.id
@@ -231,8 +233,8 @@ begin
           ,commPostCount        = cast((s.commPostCount        - v.commPostCount)        as int)
           
     ) as f
-    where (t.ownerHubID = iif(@ownerHubID = 1, t.ownerHubID, @ownerHubID))
-       or (t.ownerHubID in (select id from @ownersTeam))
+    where --(t.ownerHubID = iif(@ownerHubID = 1, t.ownerHubID, @ownerHubID)) or
+       (t.ownerHubID in (select id from @ownersTeam))
     order by t.name asc
 -----------------------------------------------------------
   -- End Point
