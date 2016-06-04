@@ -5,15 +5,15 @@ set transaction isolation level read uncommitted
 set xact_abort on
 go
 ----------------------------------------------
--- <Func> [fn].[ConvertToDateTime]
+-- <Func> [fn].[ConvertToDateTimeMS]
 -------------------------------------------
 /*
 ///<description>
-/// The function return datetime from unixtime seconds
+/// The function return datetime from unixtime milliseconds
 ///</description>
 */
 
-alter function fn.ConvertToDateTime(@unixtime bigint)
+alter function fn.ConvertToDateTimeMS(@unixtime bigint)
   returns datetime
 as
 begin
@@ -26,10 +26,7 @@ begin
 
   set @LocalTimeOffset = datediff(second, getdate(), getutcdate())
   set @AdjustedLocalDatetime = @unixtime - @LocalTimeOffset
-  return ( select
-                dateadd( second
-                 ,@AdjustedLocalDatetime
-                 ,cast('1970-01-01 00:00:00' as datetime)))
+  return ( select dateadd(ms, @AdjustedLocalDatetime%(3600*24*1000), dateadd(day, @AdjustedLocalDatetime/(3600*24*1000), cast('1970-01-01 00:00:00.0' as datetime))))
 end
 go 
-grant execute on fn.ConvertToDateTime to [public]
+grant execute on fn.ConvertToDateTimeMS to [public]
