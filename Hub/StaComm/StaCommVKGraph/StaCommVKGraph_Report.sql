@@ -25,29 +25,44 @@ begin
   set numeric_roundabort off
   set transaction isolation level read uncommitted
   set xact_abort on
+  set datefirst 1
   ----------------------------------------------------------------
   exec dbo.Getter_Save @ownerHubID, 'GetReport', 'dbo.StaCommVKGraph_Report'
   -----------------------------------------------------------------
-  declare @groupID   bigint
-  declare @endDate   date = cast(getdate() + 1 as date)
-  declare @startDate date = dateadd(month,-1, cast(getdate()-1 as date))
+  declare @dw         int = datepart(dw, getdate()-1) 
+  declare @startDate  date = dateadd(day, - @dw, cast(getdate() as date))
+  declare @endDate    date = dateadd(day, - @dw, cast(getdate()-7 as date))
+  declare @finishDate date = dateadd(day, 6, @startDate)
+  declare @groupID    bigint
 
   select top 1
        @groupID = groupId
     from dbo.Comm as c       
     where c.id = @commID  
-
+  
+  ;with dates(DayD) as (
+  select 
+       @endDate as DayD
+  union all 
+  select 
+       dateadd(day, 1, DayD) 
+    from dates as c
+    where c.DayD < @finishDate
+  )
   select
-       isnull(t.commLikes, 0)    as commLikes
-      ,isnull(t.commComments, 0) as commComments
-      ,isnull(t.commShare, 0)    as commShare
-      ,isnull(t.commRemoved, 0)  as commRemoved
-      ,t.dayDate                 as dayDate
-    from dbo.StaCommVKGraph as t       
-    where t.groupID = @groupID
-      and t.dayDate > @startDate
-      and t.dayDate < @endDate
-    order by t.dayDate asc
+       isnull(t.commLikes, 0)       as commLikes
+      ,isnull(t.commComments, 0)    as commComments
+      ,isnull(t.commShare, 0)       as commShare
+      ,isnull(t.commRemoved, 0)     as commRemoved
+      ,isnull(t.commMembers, 0)     as commMembers
+      ,isnull(t.commMembersLost, 0) as commMembersLost
+      ,d.DayD                    as dayDate
+      ,iif(t.dayDate < @startDate, cast(1 as bit), cast(0 as bit)) as isLast
+      ,iif(t.dayDate is null, cast(1 as bit), cast(0 as bit)) as isFuture
+      ,T.cntReq
+    from dates as d
+    left join dbo.StaCommVKGraph as t on t.dayDate = d.DayD  and t.groupID = @groupID 
+    order by d.DayD asc
 -----------------------------------------------------------
   -- End Point
 end
@@ -75,7 +90,7 @@ declare @ret int, @err int, @runtime datetime
 --select * from dbo.Comm
 select @runtime = getdate()
 exec @ret = dbo.StaCommVKGraph_Report 
-   @ownerHubId = 3
+   @ownerHubId = 1
   ,@commID = 119
 
 select @err = @@error

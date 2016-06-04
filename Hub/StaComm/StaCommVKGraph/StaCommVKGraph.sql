@@ -29,6 +29,11 @@ create table dbo.StaCommVKGraph (
   ,commVideoComments      bigint
   ,commDiscussionComments bigint
   ,commMarketComments     bigint
+
+  -- Members
+  ,commMembers            bigint
+  ,commMembersLost        bigint
+
   ,requestDate            datetime
   ,cntReq                 int          
 

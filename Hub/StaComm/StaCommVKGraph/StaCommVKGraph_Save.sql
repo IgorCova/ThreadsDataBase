@@ -18,6 +18,7 @@ alter procedure dbo.StaCommVKGraph_Save
    @groupID        bigint
   ,@feedback_graph varchar(max)
   ,@activity_graph varchar(max)
+  ,@members_graph  varchar(max) 
 as
 begin
 ------------------------------------------------
@@ -32,6 +33,7 @@ begin
   -----------------------------------------------------------------
   declare @feedback xml = fn.ClearXML(@feedback_graph)
   declare @activity xml = fn.ClearXML(@activity_graph)
+  declare @members  xml = fn.ClearXML(@members_graph)
 
   declare @graph table (
      dayDate                date
@@ -45,13 +47,28 @@ begin
     ,commPhotoComments      bigint null
     ,commVideoComments      bigint null
     ,commDiscussionComments bigint null
-    ,commMarketComments     bigint null)
-
-  insert into @graph (dayDate, commLikes)
+    ,commMarketComments     bigint null
+    ,commMembers            bigint null
+    ,commMembersLost        bigint null)
+  
+  insert into @graph (dayDate)
   select
-       dayDate   = cast(fn.ConvertToDateTime(c.value('d[1]', 'bigint')) as date)
-      ,commLikes = c.value('d[2]', 'bigint') 
+       dayDate = cast(fn.ConvertToDateTime(c.value('d[1]', 'bigint')) as date)     
     from @feedback.nodes('/root/root/d') g(c)
+  union  
+  select
+       dayDate = cast(fn.ConvertToDateTime(c.value('d[1]', 'bigint')) as date)     
+    from @activity.nodes('/root/root/d') g(c)
+  union  
+  select
+       dayDate = cast(fn.ConvertToDateTime(c.value('d[1]', 'bigint')) as date)     
+    from @members.nodes('/root/root/root/d') g(c)
+
+ -- feedback
+  update t set 
+       t.commLikes = c.value('d[2]', 'bigint')
+    from @graph as t
+    join @feedback.nodes('/root/root/d') g(c) on cast(fn.ConvertToDateTime(c.value('d[1]', 'bigint')) as date) = t.dayDate
     where c.value('../name[1]', 'varchar(256)') = 'Like'
 
   update t set 
@@ -72,6 +89,7 @@ begin
     join @feedback.nodes('/root/root/d') g(c) on cast(fn.ConvertToDateTime(c.value('d[1]', 'bigint')) as date) = t.dayDate
     where c.value('../name[1]', 'varchar(256)') = 'Removed from their news feed'
 
+  -- activity
   update t set 
        t.commPhotos = c.value('d[2]', 'bigint')
     from @graph as t
@@ -102,6 +120,19 @@ begin
     join @activity.nodes('/root/root/d') g(c) on cast(fn.ConvertToDateTime(c.value('d[1]', 'bigint')) as date) = t.dayDate
     where c.value('../name[1]', 'varchar(256)') = 'Market comments'
 
+  -- members
+  update t set 
+       t.commMembers = c.value('d[2]', 'bigint')
+    from @graph as t
+    join @members.nodes('/root/root/root/d') g(c) on cast(fn.ConvertToDateTime(c.value('d[1]', 'bigint')) as date) = t.dayDate
+    where c.value('../name[1]', 'varchar(256)') = 'New members'
+
+  update t set 
+       t.commMembersLost = c.value('d[2]', 'bigint')
+    from @graph as t
+    join @members.nodes('/root/root/root/d') g(c) on cast(fn.ConvertToDateTime(c.value('d[1]', 'bigint')) as date) = t.dayDate
+    where c.value('../name[1]', 'varchar(256)') = 'Members lost'
+
   ----------------------------------------
   begin tran StaCommVKGraph_Save
   ----------------------------------------
@@ -114,13 +145,15 @@ begin
         ,t.commPhotoComments      = g.commPhotoComments
         ,t.commVideoComments      = g.commVideoComments
         ,t.commDiscussionComments = g.commDiscussionComments
+        ,t.commMembers            = g.commMembers
+        ,t.commMembersLost        = g.commMembersLost
         ,t.requestDate            = getdate()
         ,t.cntReq                 = t.cntReq + 1
       from dbo.StaCommVKGraph as t
       join @graph             as g on g.dayDate = t.dayDate
-      where t.dayDate = cast(getdate() as date)
-        and t.groupID = @groupID
-    
+      where t.groupID = @groupID
+        and t.dayDate = cast(getdate() as date)
+
     insert into dbo.StaCommVKGraph ( 
        id
       ,groupID
@@ -133,7 +166,9 @@ begin
       ,commPhotoComments
       ,commVideoComments
       ,commDiscussionComments
-      ,commMarketComments 
+      ,commMarketComments
+      ,commMembers
+      ,commMembersLost
       ,requestDate
       ,cntReq
     )
@@ -150,13 +185,17 @@ begin
         ,t.commVideoComments
         ,t.commDiscussionComments
         ,t.commMarketComments
+        ,t.commMembers
+        ,t.commMembersLost
         ,getdate()
         ,1
       from @graph as t
-      where not exists (select * 
+      where t.dayDate is not null 
+        and not exists (select * 
                           from dbo.StaCommVKGraph as s 
                           where s.dayDate = t.dayDate 
                             and s.groupID = @groupID)
+
   ----------------------------------------
   commit tran StaCommVKGraph_Save
   ---------------------------------------- 
@@ -173,7 +212,9 @@ exec dbo.FillExtendedProperty
   ,@Params = '
     @groupID = group id \n
    ,@activity_graph = activity graph \n
-   ,@feedback_graph = feedback graph \n'
+   ,@feedback_graph = feedback graph \n
+   ,@members_graph  = members graph \n 
+   '
 go
 ----------------------------------------------
 -- <NativeCheck>
