@@ -30,10 +30,11 @@ begin
   -----------------------------------------------------------------
   exec dbo.Getter_Save 5, @action, 'dbo.Comm_ReadForSta'
   -----------------------------------------------------------------
-  declare @areaID int = 1
+  declare @areaID int
+  set @IsNewComm = isnull(@IsNewComm, cast(0 as bit))
 
   if @areaCode is not null
-    select top 1 @areaID = c.id
+    select @areaID = c.id
       from dbo.AreaComm as c
       where c.code = @areaCode
 
@@ -42,9 +43,7 @@ begin
      ,t.link
     from dbo.Comm as t
     where t.areaCommID = @areaID
-      and @IsNewComm = cast(0 as bit)
-       or (    t.IsNew = @IsNewComm
-           and @IsNewComm = cast(1 as bit))
+      and isnull(t.IsNew, cast(0 as bit)) = @IsNewComm
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -74,6 +73,7 @@ declare @ret int, @err int, @runtime datetime
 select @runtime = getdate()
 exec @ret = dbo.Comm_ReadForSta 
   @IsNewComm = 0
+ ,@areaCode = 'vk'
 
 select @err = @@error
 
