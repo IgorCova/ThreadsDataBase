@@ -24,6 +24,7 @@ create table dbo.Comm (
   ,photoLinkBig    varchar(512)
   ,IsNew           bit
   ,lastUpdate      datetime
+  ,members_count   int
   ,constraint Comm_pk primary key clustered (id)
 )
 go
