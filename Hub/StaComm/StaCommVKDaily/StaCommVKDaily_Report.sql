@@ -65,7 +65,7 @@ begin
 
       ---------------------------------------------------------------------------------------------------------------------------------------------------
       -- Periodically +
-      
+
       ,increaseNew               = isnull(s.commSubscribed - s.commUnsubscribed, 0)
       ,increaseDifPercent        = cast(isnull(isnull(s.commSubscribed - s.commUnsubscribed, 0) * 100.00 / nullif(isnull(v.commSubscribed - v.commUnsubscribed, 0), 0), 0) as int) 
 
@@ -116,10 +116,10 @@ begin
       ---------------------------------------------------------------------------------------------------------------------------------------------------
       -- Summary +
       ,members                   = isnull(s.commMembers, 0)
-      ,membersNew                = isnull(s.commMembers - v.commMembers, 0)
-      ,membersOld                = isnull(v.commMembers - p.commMembers, 0)
+      ,membersNew                = isnull(st.commMembers, 0)
+      ,membersOld                = isnull(vt.commMembers, 0)
       ,membersDif                = isnull(f.commMembers, 0)
-      ,membersDifPercent         = cast(isnull(f.commMembers * 100.00 / nullif(v.commMembers, 0), 0) as int)
+      ,membersDifPercent         = cast(isnull(f.commMembers * 100.00 / nullif(vt.commMembers, 0), 0) as int)
       -- Summary -
       ---------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -153,6 +153,8 @@ begin
            st.commLikes
           ,st.commComments
           ,st.commShare
+          ,cast(st.commMembers as int) as commMembers
+          ,cast(st.commMembersLost as int) as commMembersLost
         from dbo.StaCommVKGraph as st 
         where st.dayDate = @startDate
           and st.groupID = t.groupID
@@ -163,6 +165,8 @@ begin
            st.commLikes
           ,st.commComments
           ,st.commShare
+          ,cast(st.commMembers as int) as commMembers
+          ,cast(st.commMembersLost as int) as commMembersLost
         from dbo.StaCommVKGraph as st 
         where st.dayDate = @endDate
           and st.groupID = t.groupID
@@ -222,7 +226,7 @@ begin
           ,commComments         = cast((st.commComments - vt.commComments) as int)
           ,commShare            = cast((st.commShare    - vt.commShare   ) as int)
 
-          ,commMembers          = cast((s.commMembers  - v.commMembers ) - (v.commMembers  - p.commMembers ) as int)
+          ,commMembers          = cast((st.commMembers  - vt.commMembers ) as int)
 
           ,commSubscribed       = cast((s.commSubscribed       - v.commSubscribed)       as int)
           ,commUnsubscribed     = cast((s.commUnsubscribed     - v.commUnsubscribed)     as int)
@@ -235,6 +239,7 @@ begin
     ) as f
     where --(t.ownerHubID = iif(@ownerHubID = 1, t.ownerHubID, @ownerHubID)) or
        (t.ownerHubID in (select id from @ownersTeam))
+      and t.areaCommID = 1 -- VK only
     order by t.name asc
 -----------------------------------------------------------
   -- End Point
@@ -263,7 +268,7 @@ declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
 exec @ret = dbo.StaCommVKDaily_Report 
-   @ownerHubId = 70
+   @ownerHubId = 1
   ,@isPast = 0
 
 select @err = @@error
