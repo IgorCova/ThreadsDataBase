@@ -16,13 +16,13 @@ go
 // If it is not formatted, return the input string
 ///</description>
 */
-create function fn.[FormatPhone](@phone varchar(256))
-returns varchar(256)
+alter function fn.FormatPhone(@phone varchar(32))
+returns varchar(32)
 as
 begin
-  declare @ret varchar(256) 
+  declare @ret varchar(32) 
 
-  set @ret = dbo.ClearPhone(ltrim(rtrim(@phone)))
+  set @ret = fn.ClearPhone(ltrim(rtrim(@phone)))
 
   if @ret like '89%'
     or @ret like '79%'

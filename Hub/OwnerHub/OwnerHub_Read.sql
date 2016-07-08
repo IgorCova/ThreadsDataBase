@@ -32,7 +32,7 @@ begin
        t.id
       ,t.firstName
       ,t.lastName
-      ,t.phone
+      ,fn.FormatPhone(t.phone) as phone
       ,t.linkFB
     from dbo.OwnerHub as t
     where t.id = @id

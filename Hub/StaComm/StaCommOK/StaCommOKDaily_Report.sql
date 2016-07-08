@@ -28,6 +28,7 @@ begin
   ----------------------------------------------------------------
   exec dbo.Getter_Save @ownerHubID, 'GetReport', 'dbo.StaCommOKDaily_Report'
   -----------------------------------------------------------------
+  set @ownerHubID = iif(@ownerHubID in (1,2,80), 3, @ownerHubID)
   declare 
      @startDate date = iif(@isPast = 1, cast(getdate()-1 as date),  cast(getdate() as date))
     ,@endDate   date = iif(@isPast = 1, cast(getdate()-2 as date),  cast(getdate() -1 as date))
@@ -66,7 +67,9 @@ begin
       ---------------------------------------------------------------------------------------------------------------------------------------------------
       -- Periodically +
 
-      ,increaseNew               = isnull(rs.commNew_members - rs.commLeft_members, 0)
+      ,increase                  = isnull(rs.commNew_members - rs.commLeft_members, 0)
+      ,increaseNew               = isnull(rs.commNew_members, 0)
+      ,increaseOld               = isnull(rs.commLeft_members, 0)
       ,increaseDifPercent        = cast(isnull(isnull(rs.commNew_members - rs.commLeft_members, 0) * 100.00 / nullif(isnull(re.commNew_members - re.commLeft_members, 0), 0), 0) as int) 
 
       ,reachNew                  = isnull(s.commReach, 0)
@@ -78,19 +81,13 @@ begin
       -- Periodically +
       ---------------------------------------------------------------------------------------------------------------------------------------------------
 
-      ---------------------------------------------------------------------------------------------------------------------------------------------------
-      -- Summary +
-      ,members                   = coalesce(rs.commMembers_count, t.members_count, 0)
-
-      -- Summary -
-      ---------------------------------------------------------------------------------------------------------------------------------------------------
+      ,members                   = coalesce(cast(re.commMembers_count as int), t.members_count, 0)
 
       ---------------------------------------------------------------------------------------------------------------------------------------------------
       -- Wall +
   
       ,likesNew                  = isnull(s.commLikes, 0)
       ,likesDifPercent           = cast(isnull(f.commLikes * 100.00 / nullif(v.commLikes, 0), 0) as int)
-
 
       ,commentsNew               = isnull(s.commComments, 0)
       ,commentsDifPercent        = cast(isnull(f.commComments * 100.00 / nullif(v.commComments, 0), 0) as int)
@@ -188,35 +185,12 @@ begin
     ) as p
     
     outer apply (
-      select
-           r.commReach
-          ,r.commReach_own
-          ,r.commReach_earned
-          ,r.commReach_mob
-          ,r.commReach_web
-          ,r.commReach_mobweb
-          ,r.commEngagement
-          ,r.commFeedback
-          ,r.commMembers_count
-          ,r.commNew_members
-          ,r.commNew_members_target
-          ,r.commLeft_members
-          ,r.commMembers_diff
-          ,r.commRenderings
-          ,r.commPage_visits
-          ,r.commContent_opens
-          ,r.commLikes
-          ,r.commComments
-          ,r.commReshares
-          ,r.commVotes
-          ,r.commLink_clicks
-          ,r.commVideo_plays
-          ,r.commMusic_plays
-          ,r.commTopic_opens
-          ,r.commPhoto_opens
-          ,r.commNegatives
-          ,r.commHides_from_feed
-          ,r.commComplaints
+      select          
+           r.commMembers_count
+          ,isnull(r.commNew_members,0)        as commNew_members
+          ,isnull(r.commNew_members_target,0) as commNew_members_target
+          ,isnull(r.commLeft_members,0)       as commLeft_members
+          ,isnull(r.commMembers_diff    ,0)   as commMembers_diff     
         from dbo.StaCommOKTrends as r 
         where r.groupID = t.groupID
           and r.dayDate = @startDate
@@ -224,34 +198,11 @@ begin
     
     outer apply (
       select
-           r.commReach
-          ,r.commReach_own
-          ,r.commReach_earned
-          ,r.commReach_mob
-          ,r.commReach_web
-          ,r.commReach_mobweb
-          ,r.commEngagement
-          ,r.commFeedback
-          ,r.commMembers_count
-          ,r.commNew_members
-          ,r.commNew_members_target
-          ,r.commLeft_members
-          ,r.commMembers_diff
-          ,r.commRenderings
-          ,r.commPage_visits
-          ,r.commContent_opens
-          ,r.commLikes
-          ,r.commComments
-          ,r.commReshares
-          ,r.commVotes
-          ,r.commLink_clicks
-          ,r.commVideo_plays
-          ,r.commMusic_plays
-          ,r.commTopic_opens
-          ,r.commPhoto_opens
-          ,r.commNegatives
-          ,r.commHides_from_feed
-          ,r.commComplaints
+           r.commMembers_count
+          ,isnull(r.commNew_members,0)        as commNew_members
+          ,isnull(r.commNew_members_target,0) as commNew_members_target
+          ,isnull(r.commLeft_members,0)       as commLeft_members
+          ,isnull(r.commMembers_diff    ,0)   as commMembers_diff        
         from dbo.StaCommOKTrends as r 
         where r.groupID = t.groupID
           and r.dayDate = @endDate

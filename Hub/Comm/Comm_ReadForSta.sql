@@ -42,8 +42,12 @@ begin
       t.groupID
      ,t.link
     from dbo.Comm as t
+  
     where t.areaCommID = @areaID
+      and not exists(select * from dbo.GroupAccess as g where g.groupID = t.groupID and t.areaCommID = 1)
       and isnull(t.IsNew, cast(0 as bit)) = @IsNewComm
+     -- and t.ownerHubID = 3
+     -- and not exists (select * from dbo.SexComm as sc where sc.groupID = t.groupID and sc.lastUpdate > '20160617')
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -73,7 +77,7 @@ declare @ret int, @err int, @runtime datetime
 select @runtime = getdate()
 exec @ret = dbo.Comm_ReadForSta 
   @IsNewComm = 0
- ,@areaCode = 'vk'
+ ,@areaCode = 'ok'
 
 select @err = @@error
 

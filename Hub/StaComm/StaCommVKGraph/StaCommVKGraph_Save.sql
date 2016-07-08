@@ -19,6 +19,7 @@ alter procedure dbo.StaCommVKGraph_Save
   ,@feedback_graph varchar(max)
   ,@activity_graph varchar(max)
   ,@members_graph  varchar(max) 
+  ,@sex_graph      varchar(max) 
 as
 begin
 ------------------------------------------------
@@ -34,7 +35,8 @@ begin
   declare @feedback xml = fn.ClearXML(@feedback_graph)
   declare @activity xml = fn.ClearXML(@activity_graph)
   declare @members  xml = fn.ClearXML(@members_graph)
-
+  declare @sex      xml = fn.ClearXML(@sex_graph)
+  
   declare @graph table (
      dayDate                date
       -- Feedback
@@ -152,7 +154,8 @@ begin
       from dbo.StaCommVKGraph as t
       join @graph             as g on g.dayDate = t.dayDate
       where t.groupID = @groupID
-        and t.dayDate = cast(getdate() as date)
+        and (   t.dayDate = cast(getdate() as date)
+             or t.dayDate = dateadd(day,-1, cast(getdate() as date)))
 
     insert into dbo.StaCommVKGraph ( 
        id

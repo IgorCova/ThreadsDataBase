@@ -8,16 +8,15 @@ set transaction isolation level read uncommitted
 set xact_abort on
 go
 
-exec dbo.sp_object_create 'dbo.Comm_Del', 'P'
+exec dbo.sp_object_create 'dbo.ProjectHub_ReadDict', 'P'
 go
 
-alter procedure dbo.Comm_Del
-   @id              bigint
-  ,@ownerHubID      bigint
+alter procedure dbo.ProjectHub_ReadDict
+   @ownerHubID bigint
 as
 begin
 ------------------------------------------------
--- v1.0: Created by Cova Igor 13.04.2016
+-- v1.0: Created by Cova Igor 05.07.2016
 ------------------------------------------------
   set nocount on
   set quoted_identifier, ansi_nulls, ansi_warnings, arithabort,
@@ -26,21 +25,14 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  exec dbo.Getter_Save @ownerHubID, 'Del', 'dbo.Comm_Del'
+  exec dbo.Getter_Save @ownerHubID, 'Save', 'dbo.ProjectHub_ReadDict'
   -----------------------------------------------------------------
-  delete 
-    from dbo.StaCommVKDaily
-    where commID = @id
-
-  delete 
-    from dbo.StaCommVKWeekly
-    where commID = @id
-
-  delete  
-    from dbo.Comm
-    where id = @id 
-      and ownerHubID = iif(@ownerHubID = 1, ownerHubID, @ownerHubID)
-
+  select
+       t.id
+      ,t.name
+    from dbo.ProjectHub as t       
+    where t.ownerHubID = @ownerHubID       
+    order by t.name asc
   -----------------------------------------------------------------
   -- End Point
   return (0)
@@ -48,31 +40,32 @@ end
 go
 
 ----------------------------------------------
+-- <NativeCheck>
+----------------------------------------------
+exec dbo.[NativeCheck] 'dbo.ProjectHub_ReadDict'
+go
+
+----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.Comm_Del'
+   @ObjSysName  = 'dbo.ProjectHub_ReadDict'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for Save comm.'
-  ,@Params = '       
-      ,@ownerHubID = owner Hub id \n'
+  ,@Description = ''
+  ,@Params      = '@ownerHubID = owner hub ID \n'
 go
 
-----------------------------------------------
--- <NativeCheck>
-----------------------------------------------
-exec dbo.NativeCheck 'dbo.Comm_Del'
-go
-
-/* Debug:
+/* DEBUG:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.Comm_Del 
+exec @ret = dbo.ProjectHub_ReadDict
 
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.Comm_Del to [public]
+grant execute on dbo.ProjectHub_ReadDict to [public]
+
+ 

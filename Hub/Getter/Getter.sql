@@ -15,6 +15,9 @@ create table dbo.Getter (
    id              bigint
   ,ownerHubID      bigint
 
+  ,gsOSVersion     varchar(256)
+  ,gsDevice        varchar(256)
+  ,gsVersion       varchar(8)   
   ,gsAction        varchar(256)
   ,gsProcedure     sysname
   ,gsDate          datetime

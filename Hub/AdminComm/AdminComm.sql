@@ -19,6 +19,8 @@ alter table dbo.AdminComm (
   ,lastName       varchar(512)
   ,phone          varchar(32)
   ,linkFB         varchar(512)
+  ,lastUpdate     datetime
+  ,dateCreate     datetime  
   ,constraint adminComm_pk primary key clustered (id)
 )
 go
@@ -33,6 +35,6 @@ alter table dbo.AdminComm
 go
 
 create sequence seq.AdminComm as bigint
-    start with 1
-    increment by 1 ;
+  start with 1
+  increment by 1 ;
 go

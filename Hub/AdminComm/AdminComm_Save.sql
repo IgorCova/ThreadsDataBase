@@ -52,14 +52,18 @@ begin
       ,firstName
       ,lastName
       ,phone
-      ,linkFB 
+      ,linkFB
+      ,lastUpdate
+      ,dateCreate 
     ) values (
        @id
       ,@ownerHubID
       ,@firstName
       ,@lastName
       ,@phone
-      ,@linkFB 
+      ,@linkFB
+      ,getdate()
+      ,getdate() 
     )
   end
   else
@@ -69,6 +73,7 @@ begin
         ,t.lastName      = @lastName
         ,t.phone         = @phone
         ,t.linkFB        = @linkFB  
+        ,t.lastUpdate    = getdate()
       from dbo.AdminComm as t
       where t.id = @id 
         and t.ownerHubID = @ownerHubID

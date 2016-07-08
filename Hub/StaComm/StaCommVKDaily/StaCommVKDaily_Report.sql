@@ -28,6 +28,7 @@ begin
   ----------------------------------------------------------------
   exec dbo.Getter_Save @ownerHubID, 'GetReport', 'dbo.StaCommVKDaily_Report'
   -----------------------------------------------------------------
+  set @ownerHubID = iif(@ownerHubID in (1,2,80) , 3, @ownerHubID)
   declare 
      @startDate date = iif(@isPast = 1, cast(getdate()-1 as date),  cast(getdate() as date))
     ,@endDate   date = iif(@isPast = 1, cast(getdate()-2 as date),  cast(getdate() -1 as date))
@@ -65,8 +66,9 @@ begin
 
       ---------------------------------------------------------------------------------------------------------------------------------------------------
       -- Periodically +
-
-      ,increaseNew               = isnull(s.commSubscribed - s.commUnsubscribed, 0)
+      ,increase                  = isnull(s.commSubscribed - s.commUnsubscribed, 0)
+      ,increaseNew               = isnull(s.commSubscribed, 0)
+      ,increaseOld               = isnull(s.commUnsubscribed, 0)
       ,increaseDifPercent        = cast(isnull(isnull(s.commSubscribed - s.commUnsubscribed, 0) * 100.00 / nullif(isnull(v.commSubscribed - v.commUnsubscribed, 0), 0), 0) as int) 
 
       ,subscribed                = isnull(0, 0)     
@@ -237,8 +239,8 @@ begin
           ,commPostCount        = cast((s.commPostCount        - v.commPostCount)        as int)
           
     ) as f
-    where --(t.ownerHubID = iif(@ownerHubID = 1, t.ownerHubID, @ownerHubID)) or
-       (t.ownerHubID in (select id from @ownersTeam))
+    where ((t.ownerHubID = iif(@ownerHubID = 1, t.ownerHubID, @ownerHubID)) or
+       (t.ownerHubID in (select id from @ownersTeam)))
       and t.areaCommID = 1 -- VK only
     order by t.name asc
 -----------------------------------------------------------
@@ -279,4 +281,4 @@ go
 grant execute on dbo.StaCommVKDaily_Report to [public]
 /*
 select * from dbo.StaCommVKDaily as scv
-order by scv.commID, dayDate desc*/
+order by scv.commID, dayDate desc*/--select * from dbo.OwnerHub as oh

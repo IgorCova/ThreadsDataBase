@@ -33,7 +33,9 @@ begin
        g.gsAction
       ,g.gsProcedure
       ,h.OwnerHub
+      ,o.ID
       ,count(*) as counts
+      ,max(g.gsDate) as lastDate
     from dbo.Getter as g   
     join dbo.OwnerHub as o on o.id = g.ownerHubID  
     left join dbo.TeamHub as t on t.id = o.TeamHubID  
@@ -45,8 +47,9 @@ begin
       g.gsAction
      ,g.gsProcedure
      ,h.OwnerHub
-   order by 3, 4 desc ,1
-
+     ,o.ID
+   order by 6 desc, 3, 5 desc ,1
+  
   -----------------------------------------------------------------
   -- End Point
   return (0)

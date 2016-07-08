@@ -29,11 +29,12 @@ begin
   ----------------------------------------------------------------
   exec dbo.Getter_Save @ownerHubID, 'GetReport', 'dbo.StaCommVKWeekly_Report'
   -----------------------------------------------------------------
-  declare @dw int = datepart(dw, getdate()-1) 
+  set @ownerHubID = iif(@ownerHubID in (1,2,80) , 3, @ownerHubID)
   declare 
-     @startDate date = dateadd(day, - @dw, cast(getdate() as date))
-    ,@endDate   date = dateadd(day, - @dw, cast(getdate() -7 as date))
-    ,@preDate   date = dateadd(day, - @dw, cast(getdate() -14 as date))
+     @startDate date = cast(getdate() + 1 as date)
+    ,@endDate   date = dateadd(week, -1, cast(getdate() as date))
+    ,@preDate   date = dateadd(week, -2, cast(getdate() as date))   
+    ,@perDate   date = dateadd(week, -4, cast(getdate() as date))
     
     ,@teamHubID bigint
 
@@ -67,9 +68,16 @@ begin
 
       ---------------------------------------------------------------------------------------------------------------------------------------------------
       -- Periodically +
+/*      
+      ,increase                  = isnull(s.commSubscribed - s.commUnsubscribed, 0)
+      ,increaseNew               = isnull(s.commSubscribed, 0)
+      ,increaseOld               = isnull(s.commUnsubscribed, 0)
+      ,increaseDifPercent        = cast(isnull(isnull(s.commSubscribed - s.commUnsubscribed, 0) * 100.00 / nullif(isnull(v.commSubscribed - v.commUnsubscribed, 0), 0), 0) as int) */
       
-      ,increaseNew               = isnull(s.commSubscribed - s.commUnsubscribed, 0)
-      ,increaseDifPercent        = cast(isnull(isnull(s.commSubscribed - s.commUnsubscribed, 0) * 100.00 / nullif(isnull(v.commSubscribed - v.commUnsubscribed, 0), 0), 0) as int) 
+      ,increase                  = isnull(st.commMembers - st.commMembersLost, 0)
+      ,increaseNew               = isnull(st.commMembers, 0)
+      ,increaseOld               = isnull(st.commMembersLost, 0)
+      ,increaseDifPercent        = cast(isnull(isnull(st.commMembers - st.commMembersLost, 0) * 100.00 / nullif(isnull(vt.commMembers - vt.commMembersLost, 0), 0), 0) as int) 
 
       ,subscribed                = isnull(0, 0)     
       ,subscribedNew             = isnull(s.commSubscribed, 0)
@@ -117,7 +125,7 @@ begin
 
       ---------------------------------------------------------------------------------------------------------------------------------------------------
       -- Summary +
-      ,members                   = isnull(s.commMembers, 0)
+      ,members                   = isnull(sm.commMembers, 0)
       ,membersNew                = isnull(s.commMembers - v.commMembers, 0)
       ,membersOld                = isnull(v.commMembers - p.commMembers, 0)
       ,membersDif                = isnull(f.commMembers, 0)
@@ -147,73 +155,93 @@ begin
       -- Wall +
       ---------------------------------------------------------------------------------------------------------------------------------------------------      
     from dbo.Comm             as t
+    join @ownersTeam          as w on w.id = t.ownerHubID
     left join dbo.AreaComm    as a on a.id = t.areaCommID
     left join dbo.SubjectComm as b on b.id = t.subjectCommID
     left join dbo.AdminComm   as d on d.id = t.adminCommID
     outer apply (
-      select
-           s.commSubscribed        as commSubscribed
-          ,s.commUnsubscribed      as commUnsubscribed
-          ,s.commViews             as commViews
-          ,s.commVisitors          as commVisitors
-          ,s.commReach             as commReach
-          ,s.commReachSubscribers  as commReachSubscribers
-          ,s.commPostCount         as commPostCount
-          ,s.commMembers           as commMembers
-          ,s.requestDate           as requestDate
-        from dbo.StaCommVKWeekly as s
+      select         
+           s.commMembers         
+        from dbo.StaCommVKDaily as s
         where s.commID = t.id
-          and s.weekDate = @startDate
+          and s.dayDate = cast(getdate() as date)
+    ) as sm
+
+    outer apply (
+      select
+           sum(s.commSubscribed)        as commSubscribed
+          ,sum(s.commUnsubscribed)      as commUnsubscribed
+          ,sum(s.commViews)             as commViews
+          ,sum(s.commVisitors)          as commVisitors
+          ,sum(s.commReach)             as commReach
+          ,sum(s.commReachSubscribers)  as commReachSubscribers
+          ,sum(s.commPostCount)         as commPostCount
+          ,sum(s.commMembers)           as commMembers
+          ,max(s.requestDate)           as requestDate
+        from dbo.StaCommVKDaily as s
+        where s.commID = t.id
+          and s.dayDate > @endDate 
+          and s.dayDate < @startDate
     ) as s
 
     outer apply (
       select
-           s.commSubscribed        as commSubscribed
-          ,s.commUnsubscribed      as commUnsubscribed
-          ,s.commViews             as commViews
-          ,s.commVisitors          as commVisitors
-          ,s.commReach             as commReach
-          ,s.commReachSubscribers  as commReachSubscribers
-          ,s.commPostCount         as commPostCount
-          ,s.commMembers           as commMembers
-        from dbo.StaCommVKWeekly as s       
-        where s.commID = t.id 
-          and s.weekDate = @endDate
+           sum(s.commSubscribed)        as commSubscribed
+          ,sum(s.commUnsubscribed)      as commUnsubscribed
+          ,sum(s.commViews)             as commViews
+          ,sum(s.commVisitors)          as commVisitors
+          ,sum(s.commReach)             as commReach
+          ,sum(s.commReachSubscribers)  as commReachSubscribers
+          ,sum(s.commPostCount)         as commPostCount
+          ,sum(s.commMembers)           as commMembers
+          ,max(s.requestDate)           as requestDate
+        from dbo.StaCommVKDaily as s
+        where s.commID = t.id
+          and s.dayDate > @preDate
+          and s.dayDate < @endDate
     ) as v
 
     outer apply (
       select
            sum(s.commLikes)            as commLikes
           ,sum(s.commComments)         as commComments
-          ,sum(s.commShare)            as commShare          
+          ,sum(s.commShare)            as commShare      
+          ,sum(s.commMembers)          as commMembers
+          ,sum(s.commMembersLost)      as commMembersLost    
         from dbo.StaCommVKGraph as s
         where s.groupID = t.groupID
-          and s.dayDate between @startDate and dateadd(week, 1, @startDate)
+          and s.dayDate > @endDate 
+          and s.dayDate < @startDate
     ) as st
 
     outer apply (
       select
            sum(s.commLikes)            as commLikes
           ,sum(s.commComments)         as commComments
-          ,sum(s.commShare)            as commShare          
+          ,sum(s.commShare)            as commShare   
+          ,sum(s.commMembers)          as commMembers
+          ,sum(s.commMembersLost)      as commMembersLost
         from dbo.StaCommVKGraph as s
         where s.groupID = t.groupID
-          and s.dayDate between @endDate and dateadd(week, 1, @endDate)
+          and s.dayDate > @preDate
+          and s.dayDate < @endDate
     ) as vt
 
     outer apply (
       select
-           s.commSubscribed        as commSubscribed
-          ,s.commUnsubscribed      as commUnsubscribed
-          ,s.commViews             as commViews
-          ,s.commVisitors          as commVisitors
-          ,s.commReach             as commReach
-          ,s.commReachSubscribers  as commReachSubscribers
-          ,s.commPostCount         as commPostCount
-          ,s.commMembers           as commMembers
-        from dbo.StaCommVKWeekly as s       
-        where s.commID = t.id 
-          and s.weekDate = @preDate
+           sum(s.commSubscribed)        as commSubscribed
+          ,sum(s.commUnsubscribed)      as commUnsubscribed
+          ,sum(s.commViews)             as commViews
+          ,sum(s.commVisitors)          as commVisitors
+          ,sum(s.commReach)             as commReach
+          ,sum(s.commReachSubscribers)  as commReachSubscribers
+          ,sum(s.commPostCount)         as commPostCount
+          ,sum(s.commMembers)           as commMembers
+          ,max(s.requestDate)           as requestDate
+        from dbo.StaCommVKDaily as s
+        where s.commID = t.id
+          and s.dayDate > @perDate
+          and s.dayDate < @preDate
     ) as p
 
     outer apply (
@@ -230,10 +258,8 @@ begin
           ,commReach            = cast((s.commReach            - v.commReach)            as int)
           ,commReachSubscribers = cast((s.commReachSubscribers - v.commReachSubscribers) as int)
           ,commPostCount        = cast((s.commPostCount        - v.commPostCount)        as int)
-          
     ) as f
-    where --(t.ownerHubID = iif(@ownerHubID = 1, t.ownerHubID, @ownerHubID)) or
-      (t.ownerHubID in (select id from @ownersTeam))
+    where t.areaCommID = 1
     order by t.name asc
 -----------------------------------------------------------
   -- End Point

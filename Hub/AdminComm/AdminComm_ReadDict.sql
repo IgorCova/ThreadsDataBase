@@ -34,7 +34,7 @@ begin
        t.id
       ,t.firstName
       ,t.lastName
-      ,t.phone
+      ,cast(fn.FormatPhone(t.phone) as varchar(32)) as phone
       ,t.linkFB
     from dbo.AdminComm as t       
     where t.ownerHubId = @ownerHubID

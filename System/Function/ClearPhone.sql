@@ -17,12 +17,12 @@ go
 exec dbo.sp_object_create 'fn.ClearPhone', 'F'
 go
 
-alter function fn.ClearPhone(@phone varchar(512))
-returns varchar(512)
+alter function fn.ClearPhone(@phone varchar(32))
+returns varchar(256)
 as
 begin
   declare 
-     @ret  varchar(512)
+     @ret  varchar(32)
     ,@i    int
     ,@r    varchar(1)
 

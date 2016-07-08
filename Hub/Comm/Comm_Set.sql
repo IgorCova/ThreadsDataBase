@@ -19,6 +19,7 @@ alter procedure dbo.Comm_Set
   ,@photoLinkBig    varchar(512)
   ,@areaCommCode    varchar(32)
   ,@members_count   int
+  ,@screenName      varchar(512)
 as
 begin
 ------------------------------------------------
@@ -50,6 +51,7 @@ begin
         ,t.IsNew = cast(0 as bit)
         ,t.lastUpdate = getdate()
         ,t.members_count = @members_count
+        ,t.link = @screenName
       from dbo.Comm as t
       where t.link = @link
         and t.areaCommID = @areaCommID

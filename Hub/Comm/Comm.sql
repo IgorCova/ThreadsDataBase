@@ -15,6 +15,7 @@ create table dbo.Comm (
    id              bigint
   ,ownerHubID      bigint
   ,subjectCommID   bigint
+  ,projectHubID    bigint
   ,areaCommID      int
   ,name            varchar(256)
   ,adminCommID     bigint
@@ -25,6 +26,8 @@ create table dbo.Comm (
   ,IsNew           bit
   ,lastUpdate      datetime
   ,members_count   int
+
+  ,createDate      datetime
   ,constraint Comm_pk primary key clustered (id)
 )
 go
@@ -52,4 +55,9 @@ go
 alter table dbo.Comm
   add constraint Comm_fkAdminCommID
   foreign key (adminCommID) references dbo.AdminComm (id)
+go
+
+alter table dbo.Comm
+  add constraint Comm_fkProjectHubID
+  foreign key (projectHubID) references dbo.ProjectHub(id)
 go

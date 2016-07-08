@@ -8,16 +8,16 @@ set transaction isolation level read uncommitted
 set xact_abort on
 go
 
-exec dbo.sp_object_create 'dbo.Comm_Del', 'P'
+exec dbo.sp_object_create 'Exception_Report', 'P'
 go
 
-alter procedure dbo.Comm_Del
-   @id              bigint
-  ,@ownerHubID      bigint
+alter procedure dbo.Exception_Report
+   @dateFrom   datetime = null
+  ,@dateTo     datetime = null
 as
 begin
 ------------------------------------------------
--- v1.0: Created by Cova Igor 13.04.2016
+-- v1.0: Created by Cova Igor 16.04.2016
 ------------------------------------------------
   set nocount on
   set quoted_identifier, ansi_nulls, ansi_warnings, arithabort,
@@ -26,53 +26,51 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  exec dbo.Getter_Save @ownerHubID, 'Del', 'dbo.Comm_Del'
-  -----------------------------------------------------------------
-  delete 
-    from dbo.StaCommVKDaily
-    where commID = @id
+  set @dateFrom = isnull(@dateFrom, dateadd(minute, -60,getdate()) )
+  set @dateTo = isnull(@dateTo, getdate()+1)
 
-  delete 
-    from dbo.StaCommVKWeekly
-    where commID = @id
-
-  delete  
-    from dbo.Comm
-    where id = @id 
-      and ownerHubID = iif(@ownerHubID = 1, ownerHubID, @ownerHubID)
-
+  select
+       t.methodName
+      ,t.exMessage 
+      ,t.note    
+      ,count(t.exDate) as countExcept 
+      ,max(t.exDate)   as lastDate
+    from dbo.Exception as t       
+    where t.exDate between @dateFrom and @dateTo
+    group by t.methodName, t.exMessage,t.note
   -----------------------------------------------------------------
   -- End Point
   return (0)
 end
 go
-
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.Comm_Del'
+   @ObjSysName  = 'dbo.Exception_Report'
   ,@Author      = 'Cova Igor'
-  ,@Description = 'procedure for Save comm.'
-  ,@Params = '       
-      ,@ownerHubID = owner Hub id \n'
+  ,@Description = 'procedure for report Exceptions'
+  ,@Params      = '
+    ,@dateFrom = action date from \n
+    ,@dateTo = action date to \n
+    '
 go
 
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec dbo.NativeCheck 'dbo.Comm_Del'
+exec dbo.NativeCheck 'dbo.Exception_Report'
 go
 
 /* Debug:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.Comm_Del 
+exec @ret = dbo.Exception_Report 
 
 select @err = @@error
 
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.Comm_Del to [public]
+--grant execute on dbo.Exception_Report to [public]

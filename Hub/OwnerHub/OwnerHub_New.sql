@@ -26,10 +26,46 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   -----------------------------------------------------------------
-  declare @adminCommId   bigint = next value for seq.AdminComm
-  declare @subjectCommId bigint = next value for seq.SubjectComm
+  declare @adminCommID   bigint = next value for seq.AdminComm
+  declare @subjectCommID bigint = next value for seq.SubjectComm
+  declare @teamHubID     int
 
   set @phone = fn.ClearPhone(@phone)
+
+  if exists (select * from dbo.AdminComm as s where s.phone = @phone)
+  begin
+    select top 1 
+         @teamHubID = h.TeamHubID
+      from dbo.AdminComm as s
+      join dbo.OwnerHub  as h on h.id = s.ownerHubId       
+      where  s.phone = @phone
+  end
+
+  if @teamHubID is null
+    set @teamHubID = next value for seq.TeamHub
+
+  -----------------------------------------
+  -- adding default project for the community
+  exec dbo.ProjectHub_Save 
+     @id         = null
+    ,@ownerHubID = @id
+    ,@name       = 'Main'
+  -----------------------------------------
+
+  -----------------------------------------
+  -- adding default Admin for the community
+  exec dbo.AdminComm_New
+     @ownerHubID = @id
+    ,@phone = @phone
+  -----------------------------------------
+
+  -----------------------------------------
+  -- adding default Subject for the community
+  exec dbo.SubjectComm_Save_New
+     @id         = null
+    ,@ownerHubID = @id   
+    ,@name       = 'Main'    
+  -----------------------------------------
 
   insert into dbo.OwnerHub ( 
      id
@@ -38,6 +74,7 @@ begin
     ,phone
     ,linkFB 
     ,dateCreate
+    ,TeamHubID
   ) values (
      @id
     ,''
@@ -45,6 +82,7 @@ begin
     ,@phone
     ,'' 
     ,getdate()
+    ,@teamHubID
   )
 
   -----------------------------------------------------------------

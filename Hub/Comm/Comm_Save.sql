@@ -58,6 +58,7 @@ begin
         ,link
         ,groupID
         ,IsNew
+        ,createDate
       ) values (
          @id
         ,@ownerHubID
@@ -68,9 +69,13 @@ begin
         ,@link
         ,0
         ,@true
+        ,getdate()
       )
 
-      exec sb.StaCommVKDaily_Request_ForNew_Send
+      if @areaCommID = 1 -- vk
+        exec sb.StaCommVKDaily_Request_ForNew_Send      
+      else if @areaCommID = 2 -- ok
+        exec sb.StaCommOKDaily_Request_ForNew_Send
     end
     else
     begin
