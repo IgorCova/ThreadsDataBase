@@ -35,6 +35,8 @@ begin
       ,h.OwnerHub
       ,o.ID
       ,count(*) as counts
+      
+      ,min(g.gsDate) as firstDate
       ,max(g.gsDate) as lastDate
     from dbo.Getter as g   
     join dbo.OwnerHub as o on o.id = g.ownerHubID  
@@ -48,7 +50,7 @@ begin
      ,g.gsProcedure
      ,h.OwnerHub
      ,o.ID
-   order by 6 desc, 3, 5 desc ,1
+   order by 4 desc, 5 desc, 7 desc
   
   -----------------------------------------------------------------
   -- End Point
