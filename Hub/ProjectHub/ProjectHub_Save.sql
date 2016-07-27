@@ -74,7 +74,7 @@ go
 exec dbo.FillExtendedProperty
    @ObjSysName  = 'dbo.ProjectHub_Save'
   ,@Author      = 'Cova Igor'
-  ,@Description = ''
+  ,@Description = 'proc for save Projects Hub'
   ,@Params      = '@ownerHubID = owner hub ID  \n
                   ,@name = name \n'
 go
