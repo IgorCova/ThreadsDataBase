@@ -27,6 +27,21 @@ begin
   -----------------------------------------------------------------
   exec dbo.Getter_Save @ownerHubID, 'ReadDict', 'dbo.Comm_ReadDict'
   -----------------------------------------------------------------
+  declare @teamHubID bigint
+
+  select top 1 
+       @teamHubID = t.teamHubID
+    from dbo.OwnerHub as t       
+    where t.id = @ownerHubID
+  
+  declare @ownersTeam table (id bigint)
+  insert into @ownersTeam ( id ) values (@ownerHubID)
+  insert into @ownersTeam ( id )
+  select
+       t.id
+    from dbo.OwnerHub as t       
+    where t.TeamHubID = @teamHubID
+     and t.id <> @ownerHubID
 
   select
        t.id             as id
@@ -53,7 +68,11 @@ begin
        
       ,t.link           as link
       ,t.groupID        as groupID
+
+      ,isnull(p.id, 0)  as projectHub_id
+      ,isnull(p.name, '') as projectHub_name
     from dbo.Comm        as t
+    join @ownersTeam     as o on o.id = t.ownerHubID
     join dbo.OwnerHub    as h on h.id = t.ownerHubID
     join dbo.SubjectComm as s on s.id = t.subjectCommID 
                              and s.ownerHubId = t.ownerHubID
@@ -61,8 +80,10 @@ begin
     join dbo.AdminComm   as c on c.id = t.adminCommID 
                              and c.ownerHubId = t.ownerHubID
 
+    left join dbo.ProjectHub as p on p.id = t.projectHubID 
+
     join dbo.AreaComm    as a on a.id = t.areaCommID
-    where t.ownerHubID = @ownerHubID
+   -- where t.ownerHubID = @ownerHubID
     order by t.name
   -----------------------------------------------------------------
   -- End Point
@@ -91,7 +112,7 @@ declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
 exec @ret = dbo.Comm_ReadDict 
-  @ownerHubId = 64
+  @ownerHubId = 2
 
 select @err = @@error
 

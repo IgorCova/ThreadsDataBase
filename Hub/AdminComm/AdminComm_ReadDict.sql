@@ -29,6 +29,21 @@ begin
   -----------------------------------------------------------------
   exec dbo.Getter_Save @ownerHubID, 'ReadDict', 'dbo.AdminComm_ReadDict'
   -----------------------------------------------------------------
+  declare @teamHubID bigint
+
+  select top 1 
+       @teamHubID = t.teamHubID
+    from dbo.OwnerHub as t       
+    where t.id = @ownerHubID
+  
+  declare @ownersTeam table (id bigint)
+  insert into @ownersTeam ( id ) values (@ownerHubID)
+  insert into @ownersTeam ( id )
+  select
+       t.id
+    from dbo.OwnerHub as t       
+    where t.TeamHubID = @teamHubID
+     and t.id <> @ownerHubID
 
   select
        t.id
@@ -36,8 +51,8 @@ begin
       ,t.lastName
       ,cast(fn.FormatPhone(t.phone) as varchar(32)) as phone
       ,t.linkFB
-    from dbo.AdminComm as t       
-    where t.ownerHubId = @ownerHubID
+    from dbo.AdminComm as t
+    join @ownersTeam   as o on o.id = t.ownerHubID  
     order by t.lastName
 
   -----------------------------------------------------------------
@@ -67,7 +82,7 @@ declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
 exec @ret = dbo.AdminComm_ReadDict 
-   @ownerHubID = 1  
+   @ownerHubID = 63
 
 select @err = @@error
 

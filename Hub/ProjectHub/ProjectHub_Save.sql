@@ -29,6 +29,8 @@ begin
   -----------------------------------------------------------------
   exec dbo.Getter_Save @ownerHubID, 'Save', 'dbo.ProjectHub_Save'
   -----------------------------------------------------------------
+  set @id = nullif(@id, 0)
+
   if @id is null
   begin
     set @id = next value for seq.ProjectHub

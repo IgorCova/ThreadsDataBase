@@ -16,6 +16,7 @@ alter procedure dbo.Comm_Save
   ,@adminCommID     bigint
   ,@link            varchar(512)
   ,@areaCommID      int
+  ,@projectHub_id   bigint
 as
 begin
 ------------------------------------------------
@@ -38,6 +39,8 @@ begin
   else if @areaCommID = 2 -- ok
     set @link = fn.ClearLinkToOK(@link)
 
+  set @projectHub_id = nullif(@projectHub_id, 0)
+
   ----------------------------------------
   begin tran Comm_Save
   ----------------------------------------
@@ -59,6 +62,7 @@ begin
         ,groupID
         ,IsNew
         ,createDate
+        ,projectHubID
       ) values (
          @id
         ,@ownerHubID
@@ -70,6 +74,7 @@ begin
         ,0
         ,@true
         ,getdate()
+        ,@projectHub_id
       )
 
       if @areaCommID = 1 -- vk
@@ -82,11 +87,12 @@ begin
       update t set
            t.subjectCommID = @subjectCommID
           ,t.link          = @link
-          ,t.name          = @name
+          ,t.name          = isnull(@name, name)
           ,t.adminCommID   = @adminCommID
+          ,projectHubID    = @projectHub_id
         from dbo.Comm as t
         where t.id = @id
-          and t.ownerHubID = @ownerHubID
+         -- and t.ownerHubID = @ownerHubID
     end
   ----------------------------------------
   commit tran Comm_Save
@@ -110,7 +116,8 @@ exec dbo.FillExtendedProperty
       ,@name = name \n
       ,@ownerHubID = owner Hub id \n
       ,@subjectCommID = subject comm id \n
-      ,@areaCommID = area id \n'
+      ,@areaCommID = area id \n
+      ,@projectHub_id = project id\n'
 go
 
 ----------------------------------------------

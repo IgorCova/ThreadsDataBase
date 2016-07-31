@@ -29,12 +29,29 @@ begin
   -----------------------------------------------------------------
   exec dbo.Getter_Save @ownerHubID, 'ReadDict', 'dbo.SubjectComm_ReadDict'
   -----------------------------------------------------------------
+   declare @teamHubID bigint
+
+  select top 1 
+       @teamHubID = t.teamHubID
+    from dbo.OwnerHub as t       
+    where t.id = @ownerHubID
+  
+  declare @ownersTeam table (id bigint)
+  insert into @ownersTeam ( id ) values (@ownerHubID)
+  insert into @ownersTeam ( id )
+  select
+       t.id
+    from dbo.OwnerHub as t       
+    where t.TeamHubID = @teamHubID
+     and t.id <> @ownerHubID
+
   select
        t.id
       ,t.ownerHubID
       ,t.name
-    from dbo.SubjectComm as t       
-    where t.ownerHubID = @ownerHubID
+    from dbo.SubjectComm as t    
+    join @ownersTeam     as o on o.id = t.ownerHubID    
+   -- where t.ownerHubID = @ownerHubID
     order by t.name
   -----------------------------------------------------------------
   -- End Point
@@ -63,7 +80,7 @@ declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
 exec @ret = dbo.SubjectComm_ReadDict 
-   @ownerHubID = 1
+   @ownerHubID = 63
 
 select @err = @@error
 

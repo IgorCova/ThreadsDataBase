@@ -51,7 +51,7 @@ go
 exec dbo.FillExtendedProperty
    @ObjSysName  = 'dbo.ProjectHub_ReadDict'
   ,@Author      = 'Cova Igor'
-  ,@Description = ''
+  ,@Description = 'Read dict of ProjectHub'
   ,@Params      = '@ownerHubID = owner hub ID \n'
 go
 
@@ -60,7 +60,7 @@ declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
 exec @ret = dbo.ProjectHub_ReadDict
-  @ownerHubID = 3
+  @ownerHubID = 2
 
 select @err = @@error
 

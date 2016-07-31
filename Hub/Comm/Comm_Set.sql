@@ -44,12 +44,12 @@ begin
   begin tran Comm_Set
   ----------------------------------------
     update t set
-         t.groupID = @groupID
-        ,t.name = @name
-        ,t.photoLink = @photoLink
-        ,t.photoLinkBig = @photoLinkBig
-        ,t.IsNew = cast(0 as bit)
-        ,t.lastUpdate = getdate()
+         t.groupID      = @groupID
+        ,t.name         = isnull(nullif(@name, ''), t.name) 
+        ,t.photoLink    = isnull(nullif(@photoLink, ''), @photoLink) 
+        ,t.photoLinkBig = isnull(nullif(@photoLinkBig, ''), @photoLinkBig) 
+        ,t.IsNew        = cast(0 as bit)
+        ,t.lastUpdate   = getdate()
         ,t.members_count = @members_count
         ,t.link = @screenName
       from dbo.Comm as t
@@ -78,6 +78,8 @@ exec dbo.FillExtendedProperty
       ,@photoLink = Photo link \n      
       ,@photoLinkBig = big photo link \n
       ,@areaCommCode = area code (Social Network shortname) \n
+      ,@members_count = members count \n
+      ,@screenName = screen Name \n
       '
 go
 
