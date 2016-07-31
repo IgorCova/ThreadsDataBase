@@ -260,6 +260,7 @@ begin
           ,commPostCount        = cast((s.commPostCount        - v.commPostCount)        as int)
     ) as f
     where t.areaCommID = 1
+      and t.groupID <> 0
     order by t.name asc
 -----------------------------------------------------------
   -- End Point

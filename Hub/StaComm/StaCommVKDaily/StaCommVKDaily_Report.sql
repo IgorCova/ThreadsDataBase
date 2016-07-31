@@ -51,7 +51,9 @@ begin
      and t.id <> @ownerHubID
 
   select
-       comm_id                   = t.id
+       projectHub_id             = t.projectHubID
+      ,projectHub_name           = r.name
+      ,comm_id                   = t.id
       ,comm_name                 = t.name
       ,comm_photoLink            = isnull(t.photoLink , '')
       ,comm_photoLinkBig          = isnull(t.photoLinkBig , '')
@@ -150,6 +152,7 @@ begin
     left join dbo.AreaComm    as a on a.id = t.areaCommID
     left join dbo.SubjectComm as b on b.id = t.subjectCommID
     left join dbo.AdminComm   as d on d.id = t.adminCommID
+    left join dbo.ProjectHub  as r on r.id = t.projectHubID
     outer apply (
       select top 1 
            st.commLikes
@@ -242,6 +245,7 @@ begin
     where ((t.ownerHubID = iif(@ownerHubID = 1, t.ownerHubID, @ownerHubID)) or
        (t.ownerHubID in (select id from @ownersTeam)))
       and t.areaCommID = 1 -- VK only
+      and t.groupID <> 0
     order by t.name asc
 -----------------------------------------------------------
   -- End Point

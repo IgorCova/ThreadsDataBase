@@ -100,6 +100,7 @@ begin
     left join dbo.AreaComm    as a on a.id = t.areaCommID
     left join dbo.SubjectComm as b on b.id = t.subjectCommID
     left join dbo.AdminComm   as d on d.id = t.adminCommID
+    join @ownersTeam          as o on o.id = t.ownerHubID
     outer apply (
       select
            s.commRenderings
@@ -215,19 +216,12 @@ begin
           ,commReshares         = cast((s.commReshares    - v.commReshares   ) as int)
 
           ,commMembers          = cast((rs.commMembers_count  - re.commMembers_count ) as int)
-
-    /*      ,commSubscribed       = cast((s.commSubscribed       - v.commSubscribed)       as int)
-          ,commUnsubscribed     = cast((s.commUnsubscribed     - v.commUnsubscribed)     as int)
-          ,commViews            = cast((s.commViews            - v.commViews)            as int)
-          ,commVisitors         = cast((s.commVisitors         - v.commVisitors)         as int)*/
           ,commReach            = cast((s.commReach            - v.commReach)            as int)
-        --  ,commReachSubscribers = cast((s.commReach_own - v.commReachSubscribers) as int)
           ,commPostCount        = cast((s.commPostCount        - v.commPostCount)        as int)
           
     ) as f
-    where --(t.ownerHubID = iif(@ownerHubID = 1, t.ownerHubID, @ownerHubID)) or
-       (t.ownerHubID in (select id from @ownersTeam))
-      and t.areaCommID = 2 -- OK only
+    where t.areaCommID = 2 -- OK only
+      and t.groupID <> 0
     order by t.name asc
 -----------------------------------------------------------
   -- End Point

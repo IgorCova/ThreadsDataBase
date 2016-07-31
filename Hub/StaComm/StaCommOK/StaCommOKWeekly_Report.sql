@@ -30,8 +30,9 @@ begin
   set @ownerHubID = iif(@ownerHubID in (1,2,80), 3, @ownerHubID)
   declare 
      @startDate date = cast(getdate() + 1 as date)
-    ,@endDate   date = cast(getdate() -6 as date)
-    ,@preDate   date = cast(getdate() -13 as date)
+    ,@endDate   date = dateadd(week, -1, cast(getdate() as date))
+    ,@preDate   date = dateadd(week, -2, cast(getdate() as date))   
+    ,@perDate   date = dateadd(week, -4, cast(getdate() as date))
 
     ,@teamHubID bigint
 
@@ -159,6 +160,7 @@ begin
     ) as f
 
     where t.areaCommID = 2 -- OK only
+      and t.groupID <> 0
     order by t.name asc
 -----------------------------------------------------------
   -- End Point

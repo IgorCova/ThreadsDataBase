@@ -8,16 +8,15 @@ set transaction isolation level read uncommitted
 set xact_abort on
 go
 
-exec dbo.sp_object_create 'dbo.StaCommDaily_Report', 'P'
+exec dbo.sp_object_create 'dbo.StaCommWeekly_Report', 'P'
 go
 
-alter procedure dbo.StaCommDaily_Report
+alter procedure dbo.StaCommWeekly_Report
    @ownerHubID bigint = null
-  ,@isPast     bit    = null
 as
 begin
 ------------------------------------------------
--- v1.0: Created by Cova Igor 24.04.2016
+-- v1.0: Created by Cova Igor 31.07.2016
 ------------------------------------------------
   set nocount on
   set quoted_identifier, ansi_nulls, ansi_warnings, arithabort,
@@ -26,13 +25,14 @@ begin
   set transaction isolation level read uncommitted
   set xact_abort on
   ----------------------------------------------------------------
-  exec dbo.Getter_Save @ownerHubID, 'GetReport', 'dbo.StaCommDaily_Report'
+  exec dbo.Getter_Save @ownerHubID, 'GetReport', 'dbo.StaCommWeekly_Report'
   -----------------------------------------------------------------
-  --set @ownerHubID = iif(@ownerHubID in (1,80) , 3, @ownerHubID)
+ -- set @ownerHubID = iif(@ownerHubID in (1,80) , 3, @ownerHubID)
   declare 
-     @startDate date = iif(@isPast = 1, cast(getdate()-1 as date),  cast(getdate() as date))
-    ,@endDate   date = iif(@isPast = 1, cast(getdate()-2 as date),  cast(getdate() -1 as date))
-    ,@preDate   date = iif(@isPast = 1, cast(getdate()-3 as date),  cast(getdate() -2 as date))
+     @startDate date = cast(getdate() + 1 as date)
+    ,@endDate   date = dateadd(week, -1, cast(getdate() as date))
+    ,@preDate   date = dateadd(week, -2, cast(getdate() as date))   
+    ,@perDate   date = dateadd(week, -4, cast(getdate() as date))
     
     ,@teamHubID bigint
 
@@ -136,90 +136,28 @@ begin
 
       ,adminComm_fullName        = concat(d.firstName + ' ', d.lastName)
       ,adminComm_linkFB          = d.linkFB
-     -- ,lastRequestDate           = s.requestDate
 
-      ---------------------------------------------------------------------------------------------------------------------------------------------------
-      -- Periodically +
       ,increase                  = isnull(s.commSubscribed - s.commUnsubscribed, 0)
       ,increaseNew               = isnull(s.commSubscribed, 0)
       ,increaseOld               = isnull(s.commUnsubscribed, 0)
       ,increaseDifPercent        = cast(isnull(isnull(s.commSubscribed - s.commUnsubscribed, 0) * 100.00 / nullif(isnull(v.commSubscribed - v.commUnsubscribed, 0), 0), 0) as int) 
 
-     /* ,subscribed                = isnull(0, 0)     
-      ,subscribedNew             = isnull(s.commSubscribed, 0)
-      ,subscribedOld             = isnull(v.commSubscribed, 0)
-      ,subscribedDif             = isnull(f.commSubscribed, 0)
-      ,subscribedDifPercent      = cast(isnull(f.commSubscribed * 100.00 / nullif(v.commSubscribed, 0), 0) as int)
-
-      ,unsubscribed              = isnull(0, 0)
-      ,unsubscribedNew           = isnull(s.commUnsubscribed, 0)
-      ,unsubscribedOld           = isnull(v.commUnsubscribed, 0)
-      ,unsubscribedDif           = isnull(f.commUnsubscribed, 0)
-      ,unsubscribedDifPercent    = cast(isnull(f.commUnsubscribed * 100.00 / nullif(v.commUnsubscribed, 0), 0) as int)
-
-      ,visitors                  = isnull(0, 0)
-      ,visitorsNew               = isnull(s.commVisitors, 0)
-      ,visitorsOld               = isnull(v.commVisitors, 0)
-      ,visitorsDif               = isnull(f.commVisitors, 0)
-      ,visitorsDifPercent        = cast(isnull(f.commVisitors * 100.00 / nullif(v.commVisitors, 0), 0) as int)
-
-      ,views                     = isnull(0, 0)
-      ,viewsNew                  = isnull(s.commViews, 0)
-      ,viewsOld                  = isnull(v.commViews, 0)
-      ,viewsDif                  = isnull(f.commViews, 0)
-      ,viewsDifPercent           = cast(isnull(f.commViews * 100.00 / nullif(v.commViews, 0), 0) as int)*/
-
-    --  ,reach                     = isnull(0, 0)
       ,reachNew                  = isnull(s.commReach, 0)
-    --  ,reachOld                  = isnull(v.commReach, 0)
-    --  ,reachDif                  = isnull(f.commReach, 0)
       ,reachDifPercent           = cast(isnull(f.commReach * 100.00 / nullif(v.commReach, 0), 0) as int)
 
-      /*,reachSubscribers          = isnull(0, 0)
-      ,reachSubscribersNew       = isnull(s.commReachSubscribers, 0)
-      ,reachSubscribersOld       = isnull(v.commReachSubscribers, 0)
-      ,reachSubscribersDif       = isnull(f.commReachSubscribers, 0)
-      ,reachSubscribersDifPercent= cast(isnull(f.commReachSubscribers * 100.00 / nullif(v.commReachSubscribers, 0), 0) as int)*/
-
-   --   ,postCount                 = isnull(0, 0)
       ,postCountNew              = isnull(s.commPostCount, 0)
-   --   ,postCountOld              = isnull(v.commPostCount, 0)
-    --  ,postCountDif              = isnull(f.commPostCount, 0)
       ,postCountDifPercent       = cast(isnull(f.commPostCount * 100.00 / nullif(v.commPostCount, 0), 0) as int)
-      -- Periodically +
-      ---------------------------------------------------------------------------------------------------------------------------------------------------
 
-      ---------------------------------------------------------------------------------------------------------------------------------------------------
-      -- Summary +
       ,members                   = isnull(s.commMembers, 0)
-     /* ,membersNew                = isnull(st.commMembers, 0)
-      ,membersOld                = isnull(vt.commMembers, 0)
-      ,membersDif                = isnull(f.commMembers, 0)
-      ,membersDifPercent         = cast(isnull(f.commMembers * 100.00 / nullif(vt.commMembers, 0), 0) as int)*/
-      -- Summary -
-      ---------------------------------------------------------------------------------------------------------------------------------------------------
 
-      ---------------------------------------------------------------------------------------------------------------------------------------------------
-      -- Wall +
-      --,likes                     = isnull(st.commLikes , 0)     
       ,likesNew                  = isnull(st.commLikes, 0)
-     -- ,likesOld                  = isnull(vt.commLikes, 0)
-     -- ,likesDif                  = isnull(f.commLikes, 0)
       ,likesDifPercent           = cast(isnull(f.commLikes * 100.00 / nullif(vt.commLikes, 0), 0) as int)
 
-     -- ,comments                  = isnull(st.commComments, 0)
       ,commentsNew               = isnull(st.commComments, 0)
-     -- ,commentsOld               = isnull(vt.commComments, 0)
-     -- ,commentsDif               = isnull(f.commComments, 0)
       ,commentsDifPercent        = cast(isnull(f.commComments * 100.00 / nullif(vt.commComments, 0), 0) as int)
 
-     -- ,reposts                   = isnull(st.commShare, 0)
       ,repostsNew                = isnull(st.commShare, 0)
-     -- ,repostsOld                = isnull(vt.commShare, 0)
-     -- ,repostsDif                = isnull(f.commShare, 0)
-      ,repostsDifPercent         = cast(isnull(f.commShare * 100.00 / nullif(vt.commShare, 0), 0) as int)
-      -- Wall +
-      ---------------------------------------------------------------------------------------------------------------------------------------------------      
+      ,repostsDifPercent         = cast(isnull(f.commShare * 100.00 / nullif(vt.commShare, 0), 0) as int)     
     from dbo.Comm             as t
     join @ownersTeam          as o on o.id = t.ownerHubID
     left join dbo.AreaComm    as a on a.id = t.areaCommID
@@ -227,85 +165,97 @@ begin
     left join dbo.AdminComm   as d on d.id = t.adminCommID
     join dbo.ProjectHub  as r on r.id = t.projectHubID
     outer apply (
-      select top 1 
-           st.commLikes
-          ,st.commComments
-          ,st.commShare
-          ,cast(st.commMembers as int) as commMembers
-          ,cast(st.commMembersLost as int) as commMembersLost
-        from dbo.StaCommVKGraph as st 
-        where st.dayDate = @startDate
-          and st.groupID = t.groupID
-    ) as st
-
-    outer apply (
-      select top 1 
-           st.commLikes
-          ,st.commComments
-          ,st.commShare
-          ,cast(st.commMembers as int) as commMembers
-          ,cast(st.commMembersLost as int) as commMembersLost
-        from dbo.StaCommVKGraph as st 
-        where st.dayDate = @endDate
-          and st.groupID = t.groupID
-    ) as vt
-
-    outer apply (
-      select          
-           s.commSubscribed        as commSubscribed
-          ,s.commUnsubscribed      as commUnsubscribed
-          ,s.commViews             as commViews
-          ,s.commVisitors          as commVisitors
-          ,s.commReach             as commReach
-          ,s.commReachSubscribers  as commReachSubscribers
-          ,s.commPostCount         as commPostCount
-          ,s.commMembers           as commMembers
-          ,s.requestDate           as requestDate
+      select         
+           s.commMembers         
         from dbo.StaCommVKDaily as s
         where s.commID = t.id
-          and s.dayDate = @startDate
+          and s.dayDate = cast(getdate() as date)
+    ) as sm
+
+    outer apply (
+      select
+           sum(s.commSubscribed)        as commSubscribed
+          ,sum(s.commUnsubscribed)      as commUnsubscribed
+          ,sum(s.commViews)             as commViews
+          ,sum(s.commVisitors)          as commVisitors
+          ,sum(s.commReach)             as commReach
+          ,sum(s.commReachSubscribers)  as commReachSubscribers
+          ,sum(s.commPostCount)         as commPostCount
+          ,sum(s.commMembers)           as commMembers
+          ,max(s.requestDate)           as requestDate
+        from dbo.StaCommVKDaily as s
+        where s.commID = t.id
+          and s.dayDate > @endDate 
+          and s.dayDate < @startDate
     ) as s
 
     outer apply (
-      select          
-           s.commSubscribed        as commSubscribed
-          ,s.commUnsubscribed      as commUnsubscribed
-          ,s.commViews             as commViews
-          ,s.commVisitors          as commVisitors
-          ,s.commReach             as commReach
-          ,s.commReachSubscribers  as commReachSubscribers
-          ,s.commPostCount         as commPostCount
-          ,s.commMembers           as commMembers
-          ,s.requestDate           as requestDate
-        from dbo.StaCommVKDaily as s      
-        where s.commID = t.id 
-          and s.dayDate = @endDate
+      select
+           sum(s.commSubscribed)        as commSubscribed
+          ,sum(s.commUnsubscribed)      as commUnsubscribed
+          ,sum(s.commViews)             as commViews
+          ,sum(s.commVisitors)          as commVisitors
+          ,sum(s.commReach)             as commReach
+          ,sum(s.commReachSubscribers)  as commReachSubscribers
+          ,sum(s.commPostCount)         as commPostCount
+          ,sum(s.commMembers)           as commMembers
+          ,max(s.requestDate)           as requestDate
+        from dbo.StaCommVKDaily as s
+        where s.commID = t.id
+          and s.dayDate > @preDate
+          and s.dayDate < @endDate
     ) as v
 
     outer apply (
-      select          
-           s.commSubscribed        as commSubscribed
-          ,s.commUnsubscribed      as commUnsubscribed
-          ,s.commViews             as commViews
-          ,s.commVisitors          as commVisitors
-          ,s.commReach             as commReach
-          ,s.commReachSubscribers  as commReachSubscribers
-          ,s.commPostCount         as commPostCount
-          ,s.commMembers           as commMembers
-          ,s.requestDate           as requestDate
-        from dbo.StaCommVKDaily as s      
-        where s.commID = t.id 
-          and s.dayDate = @preDate
-    ) as p
-    
+      select
+           sum(s.commLikes)            as commLikes
+          ,sum(s.commComments)         as commComments
+          ,sum(s.commShare)            as commShare      
+          ,sum(s.commMembers)          as commMembers
+          ,sum(s.commMembersLost)      as commMembersLost    
+        from dbo.StaCommVKGraph as s
+        where s.groupID = t.groupID
+          and s.dayDate > @endDate 
+          and s.dayDate < @startDate
+    ) as st
+
     outer apply (
       select
-           commLikes            = cast((st.commLikes    - vt.commLikes   ) as int) 
-          ,commComments         = cast((st.commComments - vt.commComments) as int)
-          ,commShare            = cast((st.commShare    - vt.commShare   ) as int)
+           sum(s.commLikes)            as commLikes
+          ,sum(s.commComments)         as commComments
+          ,sum(s.commShare)            as commShare   
+          ,sum(s.commMembers)          as commMembers
+          ,sum(s.commMembersLost)      as commMembersLost
+        from dbo.StaCommVKGraph as s
+        where s.groupID = t.groupID
+          and s.dayDate > @preDate
+          and s.dayDate < @endDate
+    ) as vt
 
-          ,commMembers          = cast((st.commMembers  - vt.commMembers ) as int)
+    outer apply (
+      select
+           sum(s.commSubscribed)        as commSubscribed
+          ,sum(s.commUnsubscribed)      as commUnsubscribed
+          ,sum(s.commViews)             as commViews
+          ,sum(s.commVisitors)          as commVisitors
+          ,sum(s.commReach)             as commReach
+          ,sum(s.commReachSubscribers)  as commReachSubscribers
+          ,sum(s.commPostCount)         as commPostCount
+          ,sum(s.commMembers)           as commMembers
+          ,max(s.requestDate)           as requestDate
+        from dbo.StaCommVKDaily as s
+        where s.commID = t.id
+          and s.dayDate > @perDate
+          and s.dayDate < @preDate
+    ) as p
 
+    outer apply (
+      select
+           commLikes            = cast((st.commLikes    - vt.commLikes   )  as int) 
+          ,commComments         = cast((st.commComments - vt.commComments)  as int)
+          ,commShare            = cast((st.commShare  - vt.commShare )  as int)
+
+          ,commMembers          = cast((s.commMembers  - v.commMembers ) - (v.commMembers  - p.commMembers ) as int)
           ,commSubscribed       = cast((s.commSubscribed       - v.commSubscribed)       as int)
           ,commUnsubscribed     = cast((s.commUnsubscribed     - v.commUnsubscribed)     as int)
           ,commViews            = cast((s.commViews            - v.commViews)            as int)
@@ -313,9 +263,8 @@ begin
           ,commReach            = cast((s.commReach            - v.commReach)            as int)
           ,commReachSubscribers = cast((s.commReachSubscribers - v.commReachSubscribers) as int)
           ,commPostCount        = cast((s.commPostCount        - v.commPostCount)        as int)
-          
     ) as f
-    where t.areaCommID = 1 -- VK only
+    where t.areaCommID = 1
       and t.groupID <> 0
 
   insert into @Results ( 
@@ -366,10 +315,6 @@ begin
 
       ,adminComm_fullName        = concat(d.firstName + ' ', d.lastName)
       ,adminComm_linkFB          = d.linkFB
-    --  ,lastRequestDate           = s.requestDate
-
-      ---------------------------------------------------------------------------------------------------------------------------------------------------
-      -- Periodically +
 
       ,increase                  = isnull(rs.commNew_members - rs.commLeft_members, 0)
       ,increaseNew               = isnull(rs.commNew_members, 0)
@@ -382,14 +327,8 @@ begin
       ,postCountNew              = isnull(s.commPostCount, 0)
       ,postCountDifPercent       = cast(isnull(f.commPostCount * 100.00 / nullif(v.commPostCount, 0), 0) as int)
 
-      -- Periodically +
-      ---------------------------------------------------------------------------------------------------------------------------------------------------
-
       ,members                   = coalesce(cast(re.commMembers_count as int), t.members_count, 0)
 
-      ---------------------------------------------------------------------------------------------------------------------------------------------------
-      -- Wall +
-  
       ,likesNew                  = isnull(s.commLikes, 0)
       ,likesDifPercent           = cast(isnull(f.commLikes * 100.00 / nullif(v.commLikes, 0), 0) as int)
 
@@ -397,137 +336,78 @@ begin
       ,commentsDifPercent        = cast(isnull(f.commComments * 100.00 / nullif(v.commComments, 0), 0) as int)
 
       ,repostsNew                = isnull(s.commReshares, 0)
-      ,repostsDifPercent         = cast(isnull(f.commReshares * 100.00 / nullif(v.commReshares, 0), 0) as int)
-      -- Wall +
-      ---------------------------------------------------------------------------------------------------------------------------------------------------      
+      ,repostsDifPercent         = cast(isnull(f.commReshares * 100.00 / nullif(v.commReshares, 0), 0) as int)   
     from dbo.Comm             as t
     join @ownersTeam          as o on o.id = t.ownerHubID
     left join dbo.AreaComm    as a on a.id = t.areaCommID
     left join dbo.SubjectComm as b on b.id = t.subjectCommID
     left join dbo.AdminComm   as d on d.id = t.adminCommID
     join dbo.ProjectHub  as r on r.id = t.projectHubID
-    outer apply (
+     outer apply (
       select
-           s.commRenderings
-          ,s.commRenderings_own
-          ,s.commRenderings_earned
-          ,s.commContent_opens
-          ,s.commReach
-          ,s.commReach_own
-          ,s.commReach_earned
-          ,s.commEngagement
-          ,s.commFeedback
-          ,s.commFeedback_total
-          ,s.commPostCount
-          ,s.commLikes
-          ,s.commComments
-          ,s.commReshares
-          ,s.commVideo_plays
-          ,s.commMusic_plays
-          ,s.commLink_clicks
-          ,s.commNegatives
-          ,s.commHides_from_feed
-          ,s.commComplaints
-          ,s.requestDate          as requestDate
-        from dbo.StaCommOKTopics  as s
+           sum(s.commReach)     as commReach           
+          ,sum(s.commPostCount) as commPostCount
+          ,sum(s.commLikes)     as commLikes
+          ,sum(s.commComments)  as commComments
+          ,sum(s.commReshares)  as commReshares      
+          ,max(s.requestDate)   as requestDate
+        from dbo.StaCommOKTopics as s
         where s.groupID = t.groupID
-          and s.dayDate = @startDate
+          and s.dayDate > @endDate 
+          and s.dayDate < @startDate
     ) as s
 
     outer apply (
-      select          
-           s.commRenderings
-          ,s.commRenderings_own
-          ,s.commRenderings_earned
-          ,s.commContent_opens
-          ,s.commReach
-          ,s.commReach_own
-          ,s.commReach_earned
-          ,s.commEngagement
-          ,s.commFeedback
-          ,s.commFeedback_total
-          ,s.commPostCount
-          ,s.commLikes
-          ,s.commComments
-          ,s.commReshares
-          ,s.commVideo_plays
-          ,s.commMusic_plays
-          ,s.commLink_clicks
-          ,s.commNegatives
-          ,s.commHides_from_feed
-          ,s.commComplaints
-          ,s.requestDate          as requestDate
+      select 
+           sum(s.commReach)     as commReach           
+          ,sum(s.commPostCount) as commPostCount
+          ,sum(s.commLikes)     as commLikes
+          ,sum(s.commComments)  as commComments
+          ,sum(s.commReshares)  as commReshares      
+          ,max(s.requestDate)   as requestDate
         from dbo.StaCommOKTopics  as s
-        where s.groupID = t.groupID
-          and s.dayDate = @endDate
+        where s.groupID = t.groupID          
+          and s.dayDate > @preDate
+          and s.dayDate < @endDate
     ) as v
 
     outer apply (
-      select          
-           s.commRenderings
-          ,s.commRenderings_own
-          ,s.commRenderings_earned
-          ,s.commContent_opens
-          ,s.commReach
-          ,s.commReach_own
-          ,s.commReach_earned
-          ,s.commEngagement
-          ,s.commFeedback
-          ,s.commFeedback_total
-          ,s.commPostCount
-          ,s.commLikes
-          ,s.commComments
-          ,s.commReshares
-          ,s.commVideo_plays
-          ,s.commMusic_plays
-          ,s.commLink_clicks
-          ,s.commNegatives
-          ,s.commHides_from_feed
-          ,s.commComplaints
-          ,s.requestDate          as requestDate
-        from dbo.StaCommOKTopics  as s
-        where s.groupID = t.groupID
-          and s.dayDate = @preDate
-    ) as p
-    
-    outer apply (
-      select          
-           r.commMembers_count
-          ,isnull(r.commNew_members,0)        as commNew_members
-          ,isnull(r.commNew_members_target,0) as commNew_members_target
-          ,isnull(r.commLeft_members,0)       as commLeft_members
-          ,isnull(r.commMembers_diff    ,0)   as commMembers_diff     
+      select
+           sum(r.commMembers_count) as commMembers_count
+          ,sum(r.commNew_members)   as commNew_members
+          ,sum(r.commLeft_members)  as commLeft_members       
         from dbo.StaCommOKTrends as r 
         where r.groupID = t.groupID
-          and r.dayDate = @startDate
+          and r.dayDate >= @startDate 
+          and r.dayDate < cast(getdate() as date)
     ) as rs
-    
+
     outer apply (
       select
-           r.commMembers_count
-          ,isnull(r.commNew_members,0)        as commNew_members
-          ,isnull(r.commNew_members_target,0) as commNew_members_target
-          ,isnull(r.commLeft_members,0)       as commLeft_members
-          ,isnull(r.commMembers_diff    ,0)   as commMembers_diff        
+           sum(r.commMembers_count) as commMembers_count
+          ,sum(r.commNew_members)   as commNew_members
+          ,sum(r.commLeft_members)  as commLeft_members     
         from dbo.StaCommOKTrends as r 
-        where r.groupID = t.groupID
-          and r.dayDate = @endDate
+        where r.groupID = t.groupID        
+          and r.dayDate >= @preDate 
+          and r.dayDate < @endDate
     ) as re
 
     outer apply (
       select
            commLikes            = cast((s.commLikes    - v.commLikes   ) as int) 
           ,commComments         = cast((s.commComments - v.commComments) as int)
-          ,commReshares         = cast((s.commReshares    - v.commReshares   ) as int)
-          ,commMembers          = cast((rs.commMembers_count  - re.commMembers_count ) as int)
+          ,commReshares         = cast((isnull(s.commReshares,0) - isnull(v.commReshares,0)) as int)
+
+          ,commMembers          = cast((rs.commMembers_count  - re.commMembers_count )   as int)
           ,commReach            = cast((s.commReach            - v.commReach)            as int)
           ,commPostCount        = cast((s.commPostCount        - v.commPostCount)        as int)
-          
     ) as f
-    where t.areaCommID = 2 
+
+    where t.areaCommID = 2 -- OK only
       and t.groupID <> 0
+    order by t.name asc
   
-  --
   insert into @Results ( 
      projectHub_id
     ,projectHub_name
@@ -603,7 +483,7 @@ begin
        t.projectHub_id
       ,t.projectHub_name
 
-  select distinct
+  select
        t.projectHub_id
       ,t.projectHub_name
       ,t.comm_id
@@ -631,7 +511,7 @@ begin
       ,t.repostsNew
       ,t.repostsDifPercent
     from @Results as t
-    order by t.projectHub_name, t.comm_name, t.members desc
+    order by t.projectHub_name, t.comm_name
 -----------------------------------------------------------
   -- End Point
 end
@@ -640,26 +520,25 @@ go
 ----------------------------------------------
 -- <NativeCheck>
 ----------------------------------------------
-exec dbo.[NativeCheck] 'dbo.StaCommDaily_Report'
+exec dbo.[NativeCheck] 'dbo.StaCommWeekly_Report'
 go
 
 ----------------------------------------------
  -- <Fill Extended Property of db object>
 ----------------------------------------------
 exec dbo.FillExtendedProperty
-   @ObjSysName  = 'dbo.StaCommDaily_Report'
+   @ObjSysName  = 'dbo.StaCommWeekly_Report'
   ,@Author      = 'Cova Igor'
   ,@Description = 'procedure for read report with day dynamic statistic on Vkontakte by owner Hub id.'
-  ,@Params      = '@ownerHubID = owner Hub id \n
-                   @isPast = for past period \n'
+  ,@Params      = '@ownerHubID = owner Hub id \n'
 go
 
 /* Œ“À¿ƒ ¿:
 declare @ret int, @err int, @runtime datetime
 
 select @runtime = getdate()
-exec @ret = dbo.StaCommDaily_Report
-   @ownerHubId = 2
+exec @ret = dbo.StaCommWeekly_Report
+   @ownerHubId = 1
   ,@isPast = 0
 
 select @err = @@error
@@ -667,7 +546,7 @@ select @err = @@error
 select @ret as [RETURN], @err as [ERROR], convert(varchar(20), getdate()-@runtime, 114) as [RUN_TIME]
 --*/
 go
-grant execute on dbo.StaCommDaily_Report to [public]
+grant execute on dbo.StaCommWeekly_Report to [public]
 /*
 select * from dbo.StaCommVKDaily as scv
 order by scv.commID, dayDate desc*/--select * from dbo.OwnerHub as oh
